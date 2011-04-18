@@ -1,3 +1,5 @@
+NAME_ILVL_TEMPLATE = "|c%s%s %s (%.02f)|r";
+
 function MyFunction(self, ...)
     local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage, talentPoints, spec1, spec2, spec3, isLFM, Armor, SpellDamage, SpellHeal, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk1, avgILVL, Unk2, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetResults(self.index);
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
@@ -15,15 +17,16 @@ function MyFunction(self, ...)
         --Display party members.
         GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
         for i=1, partyMembers do
-            local name, level, relationship, className, areaName, comment = SearchLFGGetPartyResults(self.index, i);
+            -- SearchLFGGetPartyResults also returns "isLeader ... Expertise" fields as SearchLFGGetResults does
+            local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, talentPoints, spec1, spec2, spec3, isLFM, Armor, SpellDamage, SpellHeal, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk1, avgILVL, Unk2, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetPartyResults(self.index, i);
             if ( relationship ) then
                 if ( relationship == "ignored" ) then
-                    GameTooltip:AddDoubleLine(name, IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, RED_FONT_COLOR), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
                 elseif ( relationship == "friend" ) then
-                    GameTooltip:AddDoubleLine(name, FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
                 end
             else
-                GameTooltip:AddDoubleLine(name, PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+                GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, YELLOW_FONT_COLOR), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
             end
         end
     else
@@ -65,17 +68,7 @@ function MyFunction(self, ...)
         GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
     end
 
-    local classColor = RAID_CLASS_COLORS[class];
-
-    -- Sometimes it's nil for no reason
-    if ( not classColor ) then
-        classColor = NORMAL_FONT_COLOR;
-    end
-
-    local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
-    local spec = format("%u/%u/%u", spec1, spec2, spec3);
-
-    GameTooltip:AddLine(format(PLAYER_LEVEL, level, classColorString, spec, className));
+    GameTooltip:AddLine(GetPlayerInfoString(level, class, spec1, spec2, spec3, className));
 
     GameTooltip:AddLine("Extra info:");
 
@@ -156,6 +149,35 @@ function MyFunction(self, ...)
     end
 
     GameTooltip:Show();
+end
+
+function GetSpecString(spec1, spec2, spec3)
+    return format("%u/%u/%u", spec1, spec2, spec3);
+end
+
+function GetClassColorString(class)
+    local classColor = RAID_CLASS_COLORS[class];
+
+    -- Sometimes it's nil for no reason
+    if ( not classColor ) then
+        classColor = NORMAL_FONT_COLOR;
+    end
+
+    return ColorToString(classColor);
+end
+
+function ColorToString(color)
+    return format("ff%.2x%.2x%.2x", color.r * 255, color.g * 255, color.b * 255);
+end
+
+function GetPlayerInfoString(level, class, spec1, spec2, spec3, className)
+    return format(PLAYER_LEVEL, level, GetClassColorString(class), GetSpecString(spec1, spec2, spec3), className)
+end
+
+function GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, ilvl, color)
+    local colorStr = ColorToString(color);
+    local str = format(PLAYER_LEVEL, level, colorStr, GetSpecString(spec1, spec2, spec3), className);
+    return format(NAME_ILVL_TEMPLATE, colorStr, name, str, ilvl);
 end
 
 for i=1, NUM_LFR_LIST_BUTTONS do
