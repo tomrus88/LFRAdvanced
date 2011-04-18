@@ -1,4 +1,5 @@
 ## Interface: 40000
 ## Title: LFR Advanced
+## Author: TOM_RUS
 ## Notes: Adds nice tooltips into LFR browser
 LFRAdvanced.lua
