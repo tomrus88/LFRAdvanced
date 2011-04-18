@@ -1,5 +1,5 @@
 function MyFunction(self, ...)
-    local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage, Unk1, spec1, spec2, spec3, isGroupLeader, Armor, SpellDamage, SpellHeal, HasteMelee, HasteRanged, HasteSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk2, Defense, Dodge, Block, Parry, Crit, Expertise, Unk3 = SearchLFGGetResults(self.index);
+    local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage, talentPoints, spec1, spec2, spec3, isLFM, Armor, SpellDamage, SpellHeal, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk1, avgILVL, Unk2, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetResults(self.index);
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
 
     if ( partyMembers > 0 ) then
@@ -73,24 +73,24 @@ function MyFunction(self, ...)
     GameTooltip:AddLine(format(PLAYER_LEVEL, level, classColorString, spec, className));
 
     GameTooltip:AddLine("Test stuff:");
-    GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, tostring(Unk1)));
-    GameTooltip:AddLine(format("LFM: %s", tostring(isGroupLeader)));
+    GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
+    GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
     GameTooltip:AddLine(format(ARMOR_TEMPLATE, Armor));
     GameTooltip:AddLine(format("Spell power: %u (%u +heal)", SpellDamage, SpellHeal));
-    GameTooltip:AddLine(format("Crit rating: melee %u, ranged %u, spell %u", HasteMelee, HasteRanged, HasteSpell));
+    GameTooltip:AddLine(format("Crit rating: melee %u, ranged %u, spell %u", CritMelee, CritRanged, CritSpell));
     GameTooltip:AddLine(format("MP5: %u (in combat %u)", MP5, MP5Combat));
     GameTooltip:AddLine(format("Attack Power: %u", AttackPower));
     GameTooltip:AddLine(format("Agility: %u", Agility));
     GameTooltip:AddLine(format(MAX_HP_TEMPLATE, Health));
     GameTooltip:AddLine(format("Mana: %u", Mana));
-    GameTooltip:AddLine(format("Unknown1: %u", Unk2));
-    GameTooltip:AddLine(format("Expertise: %u", Unk3));
-    GameTooltip:AddLine(format("Average Item level: %.02f", Defense));
-    GameTooltip:AddLine(format("Unknown2: %u", Dodge));
-    GameTooltip:AddLine(format("Dodge rating: %u", Block));
-    GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, Parry));
-    GameTooltip:AddLine(format("Parry rating: %u", Crit));
-    GameTooltip:AddLine(format("Haste rating: %u", Expertise));
+    GameTooltip:AddLine(format("Unknown1: %u", Unk1));
+    GameTooltip:AddLine(format("Average Item level: %.02f", avgILVL));
+    GameTooltip:AddLine(format("Unknown2: %u", Unk2));
+    GameTooltip:AddLine(format("Dodge rating: %u", Dodge));
+    GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, Block));
+    GameTooltip:AddLine(format("Parry rating: %u", Parry));
+    GameTooltip:AddLine(format("Haste rating: %u", Haste));
+    GameTooltip:AddLine(format("Expertise: %u", Expertise));
 
     GameTooltip:Show();
 end
