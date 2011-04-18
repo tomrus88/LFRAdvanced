@@ -1,0 +1,4 @@
+## Interface: 40000
+## Title: LFR Advanced
+## Notes: Adds nice tooltips into LFR browser
+LFRAdvanced.lua
