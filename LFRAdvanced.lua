@@ -108,7 +108,7 @@ function MyFunction(self, ...)
     end
 
     if ( AttackPower and AttackPower > 0 ) then
-        GameTooltip:AddLine(format("Attack Power: %u", AttackPower));
+        GameTooltip:AddLine(format("Melee Attack Power: %u", AttackPower));
     end
 
     if ( Agility and Agility > 0 ) then
