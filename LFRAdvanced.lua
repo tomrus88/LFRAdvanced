@@ -65,32 +65,95 @@ function MyFunction(self, ...)
         GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
     end
 
-    -- Testing
     local classColor = RAID_CLASS_COLORS[class];
+
+    -- Sometimes it's nil for no reason
+    if ( not classColor ) then
+        classColor = NORMAL_FONT_COLOR;
+    end
+
     local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255);
     local spec = format("%u/%u/%u", spec1, spec2, spec3);
 
     GameTooltip:AddLine(format(PLAYER_LEVEL, level, classColorString, spec, className));
 
-    GameTooltip:AddLine("Test stuff:");
-    GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
-    GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
-    GameTooltip:AddLine(format(ARMOR_TEMPLATE, Armor));
-    GameTooltip:AddLine(format("Spell power: %u (%u +heal)", SpellDamage, SpellHeal));
-    GameTooltip:AddLine(format("Crit rating: melee %u, ranged %u, spell %u", CritMelee, CritRanged, CritSpell));
-    GameTooltip:AddLine(format("MP5: %u (in combat %u)", MP5, MP5Combat));
-    GameTooltip:AddLine(format("Attack Power: %u", AttackPower));
-    GameTooltip:AddLine(format("Agility: %u", Agility));
-    GameTooltip:AddLine(format(MAX_HP_TEMPLATE, Health));
-    GameTooltip:AddLine(format("Mana: %u", Mana));
-    GameTooltip:AddLine(format("Unknown1: %u", Unk1));
-    GameTooltip:AddLine(format("Average Item level: %.02f", avgILVL));
-    GameTooltip:AddLine(format("Unknown2: %u", Unk2));
-    GameTooltip:AddLine(format("Dodge rating: %u", Dodge));
-    GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, Block));
-    GameTooltip:AddLine(format("Parry rating: %u", Parry));
-    GameTooltip:AddLine(format("Haste rating: %u", Haste));
-    GameTooltip:AddLine(format("Expertise: %u", Expertise));
+    GameTooltip:AddLine("Extra info:");
+
+    if ( areaName ) then
+        GameTooltip:AddLine(format("Zone: %s", areaName));
+    end
+
+    if ( talentPoints and talentPoints > 0 ) then
+        GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
+    end
+
+    if ( isLFM ) then
+        GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
+    end
+
+    if ( Armor and Armor > 0 ) then
+        GameTooltip:AddLine(format(ARMOR_TEMPLATE, Armor));
+    end
+
+    if ( (SpellDamage and SpellDamage > 0) or (SpellHeal and SpellHeal > 0) ) then
+        GameTooltip:AddLine(format("Spell power: %u (%u +heal)", SpellDamage, SpellHeal));
+    end
+
+    if ( (CritMelee and CritMelee > 0) or (CritRanged and CritRanged > 0) or (CritSpell and CritSpell > 0) ) then
+        GameTooltip:AddLine(format("Crit rating: melee %u, ranged %u, spell %u", CritMelee, CritRanged, CritSpell));
+    end
+
+    if ( (MP5 and MP5 > 0) or (MP5Combat and MP5Combat > 0) ) then
+        GameTooltip:AddLine(format("MP5: %u (in combat %u)", MP5, MP5Combat));
+    end
+
+    if ( AttackPower and AttackPower > 0 ) then
+        GameTooltip:AddLine(format("Attack Power: %u", AttackPower));
+    end
+
+    if ( Agility and Agility > 0 ) then
+        GameTooltip:AddLine(format("Agility: %u", Agility));
+    end
+
+    if ( Health and Health > 0 ) then
+        GameTooltip:AddLine(format(MAX_HP_TEMPLATE, Health));
+    end
+
+    if ( Mana and Mana > 0 ) then
+        GameTooltip:AddLine(format("Mana: %u", Mana));
+    end
+
+    if ( Unk1 and Unk1 > 0 ) then
+        GameTooltip:AddLine(format("Unknown1: %u", Unk1));
+    end
+
+    if ( avgILVL and avgILVL > 0 ) then
+        GameTooltip:AddLine(format("Average Item level: %.02f", avgILVL));
+    end
+
+    if ( Unk2 and Unk2 > 0 ) then
+        GameTooltip:AddLine(format("Unknown2: %u", Unk2));
+    end
+
+    if ( Dodge and Dodge > 0 ) then
+        GameTooltip:AddLine(format("Dodge rating: %u", Dodge));
+    end
+
+    if ( Block and Block > 0 ) then
+        GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, Block));
+    end
+
+    if ( Parry and Parry > 0 ) then
+        GameTooltip:AddLine(format("Parry rating: %u", Parry));
+    end
+
+    if ( Haste and Haste > 0 ) then
+        GameTooltip:AddLine(format("Haste rating: %u", Haste));
+    end
+
+    if ( Expertise and Expertise > 0 ) then
+        GameTooltip:AddLine(format("Expertise: %u", Expertise));
+    end
 
     GameTooltip:Show();
 end
