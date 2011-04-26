@@ -26,7 +26,7 @@ function MyFunction(self, ...)
                     GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
                 end
             else
-                GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, YELLOW_FONT_COLOR), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+                GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec1, spec2, spec3, className, avgILVL, NORMAL_FONT_COLOR), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
             end
         end
     else
