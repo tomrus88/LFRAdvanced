@@ -76,9 +76,9 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format("Zone: %s", areaName));
     end
 
-    if ( talentPoints and talentPoints > 0 ) then
-        GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
-    end
+    -- if ( talentPoints and talentPoints > 0 ) then
+    --     GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
+    -- end
 
     -- if ( isLFM ) then
     --     GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
