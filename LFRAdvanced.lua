@@ -80,9 +80,9 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
     end
 
-    if ( isLFM ) then
-        GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
-    end
+    -- if ( isLFM ) then
+    --     GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
+    -- end
 
     if ( Armor and Armor > 0 ) then
         GameTooltip:AddLine(format(ARMOR_TEMPLATE, Armor));
@@ -184,3 +184,7 @@ for i=1, NUM_LFR_LIST_BUTTONS do
     local button = _G["LFRBrowseFrameListButton"..i];
     button:SetScript("OnEnter", MyFunction);
 end
+
+-- Scroll Bar Fix
+LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 0, 0);
+LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 6, -5);
