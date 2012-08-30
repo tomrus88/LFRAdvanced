@@ -145,7 +145,7 @@ function MyFunction(self, ...)
     end
 
     if ( Expertise and Expertise > 0 ) then
-        GameTooltip:AddLine(format("Expertise: %u", Expertise));
+        GameTooltip:AddLine(format("Expertise: %.02f", Expertise));
     end
 
     GameTooltip:Show();
