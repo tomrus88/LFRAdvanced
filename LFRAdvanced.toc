@@ -1,4 +1,4 @@
-## Interface: 50001
+## Interface: 50100
 ## Title: LFR Advanced
 ## Author: TOM_RUS
 ## Notes: Adds nice tooltips into LFR browser
