@@ -94,7 +94,7 @@ function MyFunction(self, ...)
     GameTooltip:AddLine("Extra info:");
 
     if ( areaName ) then
-        GameTooltip:AddLine(format("Zone: %s", areaName));
+        GameTooltip:AddLine(format(ZONE_COLON.." %s", areaName));
     end
 
     -- if ( talentPoints and talentPoints > 0 ) then
@@ -110,11 +110,11 @@ function MyFunction(self, ...)
     end
 
     if ( (SpellDamage and SpellDamage > 0) or (SpellHeal and SpellHeal > 0) ) then
-        GameTooltip:AddLine(format("Spell power: %u (%u +heal)", SpellDamage, SpellHeal));
+        GameTooltip:AddLine(format(STAT_SPELLPOWER..": %u (%u +heal)", SpellDamage, SpellHeal));
     end
 
     if ( (CritMelee and CritMelee > 0) or (CritRanged and CritRanged > 0) or (CritSpell and CritSpell > 0) ) then
-        GameTooltip:AddLine(format("Crit rating: melee %u, ranged %u, spell %u", CritMelee, CritRanged, CritSpell));
+        GameTooltip:AddLine(format(MELEE_CRIT_CHANCE..": melee %u, ranged %u, spell %u", CritMelee, CritRanged, CritSpell));
     end
 
     if ( (MP5 and MP5 > 0) or (MP5Combat and MP5Combat > 0) ) then
@@ -122,11 +122,11 @@ function MyFunction(self, ...)
     end
 
     if ( AttackPower and AttackPower > 0 ) then
-        GameTooltip:AddLine(format("Melee Attack Power: %u", AttackPower));
+        GameTooltip:AddLine(format(MELEE_ATTACK_POWER..": %u", AttackPower));
     end
 
     if ( Agility and Agility > 0 ) then
-        GameTooltip:AddLine(format("Agility: %u", Agility));
+        GameTooltip:AddLine(format(AGILITY_COLON.." %u", Agility));
     end
 
     if ( Health and Health > 0 ) then
@@ -134,7 +134,7 @@ function MyFunction(self, ...)
     end
 
     if ( Mana and Mana > 0 ) then
-        GameTooltip:AddLine(format("Mana: %u", Mana));
+        GameTooltip:AddLine(format(MANA_COLON.." %u", Mana));
     end
 
     if ( Unk1 and Unk1 > 0 ) then
@@ -142,7 +142,7 @@ function MyFunction(self, ...)
     end
 
     if ( avgILVL and avgILVL > 0 ) then
-        GameTooltip:AddLine(format("Average Item level: %.02f", avgILVL));
+        GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILVL));
     end
 
     if ( Unk2 and Unk2 > 0 ) then
@@ -150,7 +150,7 @@ function MyFunction(self, ...)
     end
 
     if ( Dodge and Dodge > 0 ) then
-        GameTooltip:AddLine(format("Dodge rating: %u", Dodge));
+        GameTooltip:AddLine(format(STAT_DODGE..": %u", Dodge));
     end
 
     if ( Block and Block > 0 ) then
@@ -158,15 +158,15 @@ function MyFunction(self, ...)
     end
 
     if ( Parry and Parry > 0 ) then
-        GameTooltip:AddLine(format("Parry rating: %u", Parry));
+        GameTooltip:AddLine(format(STAT_PARRY..": %u", Parry));
     end
 
     if ( Haste and Haste > 0 ) then
-        GameTooltip:AddLine(format("Haste rating: %u", Haste));
+        GameTooltip:AddLine(format(STAT_HASTE..": %u", Haste));
     end
 
     if ( Expertise and Expertise > 0 ) then
-        GameTooltip:AddLine(format("Expertise: %.02f", Expertise));
+        GameTooltip:AddLine(format(STAT_EXPERTISE..": %.02f", Expertise));
     end
 
     GameTooltip:Show();
@@ -208,8 +208,8 @@ for i=1, NUM_LFR_LIST_BUTTONS do
 end
 
 -- Scroll Bar Fix
--- LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 0, 0);
--- LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 6, -5);
+LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 21, 0);
+LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 18, -31);
 
 function LFGList_MyFilterFunction(dungeonID, maxLevelDiff)
 	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
@@ -241,9 +241,9 @@ function LFGList_MyFilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	-- If we're too high above the recommended level, we won't display it
-	if ( level - maxLevelDiff > recLevel ) then
-		return false;
-	end
+	--if ( level - maxLevelDiff > recLevel ) then
+	--	return false;
+	--end
 
 	-- If we're not within the hard level requirements, we won't display it
 	--if ( level < minLevel or level > maxLevel ) then
@@ -258,8 +258,6 @@ function LFGList_MyFilterFunction(dungeonID, maxLevelDiff)
 	return true;
 end
 
-MY_LFR_MAX_SHOWN_LEVEL_DIFF = 90
-
 function LFRQueueFrame_MyUpdate()
 	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 
@@ -272,7 +270,7 @@ function LFRQueueFrame_MyUpdate()
 
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
 
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFGList_MyFilterFunction, MY_LFR_MAX_SHOWN_LEVEL_DIFF);
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFGList_MyFilterFunction, LFR_MAX_SHOWN_LEVEL_DIFF);
 	
 	LFRQueueFrameSpecificList_Update();
 end
