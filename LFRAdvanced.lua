@@ -210,3 +210,176 @@ end
 -- Scroll Bar Fix
 -- LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 0, 0);
 -- LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 6, -5);
+
+function LFGList_MyFilterFunction(dungeonID, maxLevelDiff)
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
+	local level = UnitLevel("player");
+
+	-- Check whether we're initialized yet
+	if ( not LFGLockList ) then
+		return false;
+	end
+
+	-- Sometimes we want to force hide even if the server thinks we can join (e.g. there are certain dungeons where you can only join from the NPCs, so we don't want to show them in the UI)
+	if ( forceHide ) then
+		return false;
+	end
+
+	-- If the server tells us we can join, we won't argue
+	if ( not LFGLockList[dungeonID] ) then
+		return true;
+	end
+
+	-- If this doesn't have a header, we won't display it
+	if ( groupID == 0 ) then
+		return false;
+	end
+
+	-- If we don't have the right expansion, we won't display it
+	if ( EXPANSION_LEVEL < expansionLevel ) then
+		return false;
+	end
+
+	-- If we're too high above the recommended level, we won't display it
+	if ( level - maxLevelDiff > recLevel ) then
+		return false;
+	end
+
+	-- If we're not within the hard level requirements, we won't display it
+	--if ( level < minLevel or level > maxLevel ) then
+	--	return false;
+	--end
+
+	-- If we're the wrong faction, we won't display it.
+	if ( LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_WRONG_FACTION ) then
+		return false;
+	end
+
+	return true;
+end
+
+MY_LFR_MAX_SHOWN_LEVEL_DIFF = 90
+
+function LFRQueueFrame_MyUpdate()
+	local mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR);
+
+	local checkedList;
+	if ( RaidBrowser_IsEmpowered() and mode ~= "listed") then
+		checkedList = LFGEnabledList;
+	else
+		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFR];
+	end
+
+	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
+
+	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFGList_MyFilterFunction, MY_LFR_MAX_SHOWN_LEVEL_DIFF);
+	
+	LFRQueueFrameSpecificList_Update();
+end
+
+LFRQueueFrame_Update = LFRQueueFrame_MyUpdate
+
+--local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, bonusRepAmount, forceHide, numRequiredPlayers = GetLFGDungeonInfo(value);
+
+function LFRQueueFrameSpecificListButton_MySetDungeon(button, dungeonID, mode, submode)
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	button.id = dungeonID;
+	if ( LFGIsIDHeader(dungeonID) ) then
+		button.instanceName:SetText(name);
+		button.instanceName:SetFontObject(QuestDifficulty_Header);
+		button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0);
+		button.level:Hide();
+
+		if ( subtypeID == LFG_SUBTYPEID_HEROIC ) then
+			button.heroicIcon:Show();
+			button.instanceName:SetPoint("LEFT", button.heroicIcon, "RIGHT", 0, 1);
+		else
+			button.heroicIcon:Hide();
+			button.instanceName:SetPoint("LEFT", 40, 0);
+		end
+
+		button.expandOrCollapseButton:Show();
+		local isCollapsed = LFGCollapseList[dungeonID];
+		button.isCollapsed = isCollapsed;
+		if ( isCollapsed ) then
+			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP");
+		else
+			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
+		end
+
+	else
+		button.instanceName:SetText(name);
+		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
+
+		button.heroicIcon:Hide();
+		button.instanceName:SetPoint("LEFT", 40, 0);
+
+		if ( minLevel == maxLevel ) then
+			button.level:SetText(format(LFD_LEVEL_FORMAT_SINGLE, minLevel));
+		else
+			button.level:SetText(format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel));
+		end
+		button.level:Show();
+		local difficultyColor = GetQuestDifficultyColor(recLevel);
+		button.level:SetFontObject(difficultyColor.font);
+
+		if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered()) then
+			button.instanceName:SetFontObject(QuestDifficulty_Header);
+		else
+			button.instanceName:SetFontObject(difficultyColor.font);
+		end
+
+
+		button.expandOrCollapseButton:Hide();
+
+		button.isCollapsed = false;
+	end
+
+	if ( not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED) ) then
+		if ( LFR_CanQueueForMultiple() ) then
+			button.enableButton:Show();
+			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
+		else
+			if ( LFGIsIDHeader(dungeonID) ) then
+				button.enableButton:Hide();
+			else
+				button.enableButton:Show();
+				LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, true);
+			end
+		end
+		button.lockedIndicator:Hide();
+	else
+		button.enableButton:Show();
+		button.lockedIndicator:Hide();
+	end
+
+	local enableState;
+	if ( mode == "queued" or mode == "listed" or mode == "suspended" ) then
+		enableState = LFGQueuedForList[LE_LFG_CATEGORY_LFR][dungeonID];
+	elseif ( not LFR_CanQueueForMultiple() ) then
+		enableState = dungeonID == LFRQueueFrame.selectedLFM;
+	else
+		enableState = LFGEnabledList[dungeonID];
+	end
+
+	if ( LFR_CanQueueForMultiple() ) then
+		if ( enableState == 1 ) then	--Some are checked, some aren't.
+			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
+			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Disabled");
+		else
+			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+		end
+		button.enableButton:SetChecked(enableState and enableState ~= 0);
+	else
+		button.enableButton:SetChecked(enableState);
+	end
+
+	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered() ) then
+		button.enableButton:Disable();
+	else
+		button.enableButton:Enable();
+	end
+end
+
+LFRQueueFrameSpecificListButton_SetDungeon = LFRQueueFrameSpecificListButton_MySetDungeon
