@@ -166,13 +166,14 @@ function MyFunction(self, ...)
     end
 
     if ( Expertise and Expertise > 0 ) then
-        GameTooltip:AddLine(format(STAT_EXPERTISE..": %.02f", Expertise));
+        GameTooltip:AddLine(format(STAT_EXPERTISE..": %.02f", Expertise).."%");
     end
 
     GameTooltip:Show();
 end
 
 function GetSpecString(spec)
+    if spec == nil or spec == 0 then return "Unknown spec" end
     local _, spec = GetSpecializationInfoByID(spec);
     return spec;
 end
@@ -304,7 +305,6 @@ function LFRQueueFrameSpecificListButton_MySetDungeon(button, dungeonID, mode, s
 		else
 			button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP");
 		end
-
 	else
 		button.instanceName:SetText(name);
 		button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0);
@@ -326,7 +326,6 @@ function LFRQueueFrameSpecificListButton_MySetDungeon(button, dungeonID, mode, s
 		else
 			button.instanceName:SetFontObject(difficultyColor.font);
 		end
-
 
 		button.expandOrCollapseButton:Hide();
 
