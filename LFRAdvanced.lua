@@ -206,11 +206,48 @@ end
 for i=1, NUM_LFR_LIST_BUTTONS do
     local button = _G["LFRBrowseFrameListButton"..i];
     button:SetScript("OnEnter", MyFunction);
+    button:SetSize(410, 16);
+    local tex = button:GetHighlightTexture()
+    tex:SetSize(410, 16);
+
+    local fs = button:CreateFontString("LFRBrowseFrameListButton"..i.."ILevel", "ARTWORK", "GameFontHighlightSmall")
+    fs:SetSize(40, 14);
+    fs:SetPoint("LEFT", "LFRBrowseFrameListButton"..i.."PartyIcon", "RIGHT", 9, 0);
+    button.ilvl = fs;
 end
 
+local LFRBrowseFrameListButton_SetData_Old = LFRBrowseFrameListButton_SetData;
+
+function MyLFRBrowseFrameListButton_SetData(button, index)
+    LFRBrowseFrameListButton_SetData_Old(button, index);
+
+    local ilvl = select(32, SearchLFGGetResults(index)) or 0;
+    button.ilvl:SetText(format("%u ilvl", ilvl));
+end
+
+LFRBrowseFrameListButton_SetData = MyLFRBrowseFrameListButton_SetData
+
 -- Scroll Bar Fix
-LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 21, 0);
-LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 18, -31);
+--LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 21, 0);
+--LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 18, -31);
+
+LFRBrowseFrameListScrollFrame:SetPoint("TOPRIGHT", -31, 0)
+LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", 0, 29)
+
+-- Test stuff
+local LFRFrame_SetActiveTab_Old = LFRFrame_SetActiveTab
+
+function MyLFRFrame_SetActiveTab(tab)
+    LFRFrame_SetActiveTab_Old(tab)
+
+    if tab == 1 then
+        RaidBrowserFrame:SetSize(350, 450);
+    else
+        RaidBrowserFrame:SetSize(450, 450);
+    end
+end
+    
+LFRFrame_SetActiveTab = MyLFRFrame_SetActiveTab
 
 function LFGList_MyFilterFunction(dungeonID, maxLevelDiff)
 	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
