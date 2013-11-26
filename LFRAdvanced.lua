@@ -1,4 +1,33 @@
-NAME_ILVL_TEMPLATE = "|c%s%s %s (%.02f)|r";
+local NAME_ILVL_TEMPLATE = "|c%s%s %s (%.02f)|r";
+
+local RB_RETURN_VALUES_START_PLAYER = 15;
+local RB_RETURN_VALUES_START_PARTY = 10;
+
+local RB_RETURN_VALUES = {
+    bossKills = 1,
+    specID = 2,
+    isGroupLeader = 3,
+    armor = 4,
+    spellDamage = 5,
+    plusHealing = 6,
+    CritMelee = 7,
+    CritRanged = 8,
+    critSpell = 9,
+    mp5 = 10,
+    mp5Combat = 11,
+    attackPower = 12,
+    agility = 13,
+    maxHealth = 14,
+    maxMana = 15,
+    gearRating = 16,
+    avgILevel = 17,
+    defenseRating = 18,
+    dodgeRating = 19,
+    BlockRating = 20,
+    ParryRating = 21,
+    HasteRating = 22,
+    expertise = 23
+}
 
 local function IsGuildie(player)
     local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
@@ -11,7 +40,7 @@ local function IsGuildie(player)
     return false
 end
 
-function MyFunction(self, ...)
+function MyOnEnterFunction(self, ...)
     local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, gearRating, avgILVL, defenseRating, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetResults(self.index);
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 47, -37);
 
@@ -97,13 +126,14 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format(ZONE_COLON.." %s", areaName));
     end
 
+    -- this is sum of kills for all bosses on normal mode
     if ( bossKills and bossKills > 0 ) then
         GameTooltip:AddLine(format("Boss kills: %u", bossKills));
     end
 
-    if ( isGroupLeader ) then
-        GameTooltip:AddLine(format("Is Group Leader: %s", tostring(isGroupLeader)));
-    end
+    --if ( isGroupLeader ) then
+    --    GameTooltip:AddLine(format("Is Group Leader: %s", tostring(isGroupLeader)));
+    --end
 
     if ( armor and armor > 0 ) then
         GameTooltip:AddLine(format(ARMOR_TEMPLATE, armor));
@@ -137,14 +167,17 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format(MANA_COLON.." %u", Mana));
     end
 
+    -- no clue wtf this value means
     if ( gearRating and gearRating > 0 ) then
         GameTooltip:AddLine(format("Gear Rating: %u", gearRating));
     end
 
+    -- max average ilvl
     if ( avgILVL and avgILVL > 0 ) then
         GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILVL));
     end
 
+    -- has been removed in Cataclysm as stat
     if ( defenseRating and defenseRating > 0 ) then
         GameTooltip:AddLine(format("Defense Rating: %u", defenseRating));
     end
@@ -174,19 +207,8 @@ end
 
 function GetSpecString(spec)
     if spec == nil or spec == 0 then return "Unknown spec" end
-    local _, spec = GetSpecializationInfoByID(spec);
-    return spec;
-end
-
-function GetClassColorString(class)
-    local classColor = RAID_CLASS_COLORS[class];
-
-    -- Sometimes it's nil for no reason
-    if ( not classColor ) then
-        classColor = NORMAL_FONT_COLOR;
-    end
-
-    return ColorToString(classColor);
+    local _, spec, _, _, _, _, class = GetSpecializationInfoByID(spec);
+    return spec, class;
 end
 
 function ColorToString(color)
@@ -194,21 +216,23 @@ function ColorToString(color)
 end
 
 function GetPlayerInfoString(level, class, spec, className)
-    return format(PLAYER_LEVEL, level, GetClassColorString(class), GetSpecString(spec), className)
+    local classColor = RAID_CLASS_COLORS[class].colorStr or "ffffd200";
+    return format(PLAYER_LEVEL, level, classColor, GetSpecString(spec), className)
 end
 
 function GetPlayerInfoStringWithIlvl(name, level, spec, className, ilvl, color)
-    local colorStr = ColorToString(color);
-    local str = format(PLAYER_LEVEL, level, colorStr, GetSpecString(spec), className);
-    return format(NAME_ILVL_TEMPLATE, colorStr, name, str, ilvl);
+    local specName, class = GetSpecString(spec);
+    local classColor = RAID_CLASS_COLORS[class].colorStr or "ffffd200";
+    local str = format(PLAYER_LEVEL, level, classColor, specName, className);
+    return format(NAME_ILVL_TEMPLATE, ColorToString(color), name, str, ilvl);
 end
 
 for i=1, NUM_LFR_LIST_BUTTONS do
     local button = _G["LFRBrowseFrameListButton"..i];
-    button:SetScript("OnEnter", MyFunction);
-    button:SetSize(410, 16);
+    button:SetScript("OnEnter", MyOnEnterFunction);
+    button:SetSize(360, 16);
     local tex = button:GetHighlightTexture()
-    tex:SetSize(410, 16);
+    tex:SetSize(360, 16);
 
     local fs = button:CreateFontString("LFRBrowseFrameListButton"..i.."ILevel", "ARTWORK", "GameFontHighlightSmall")
     fs:SetSize(40, 14);
@@ -228,9 +252,6 @@ end
 LFRBrowseFrameListButton_SetData = MyLFRBrowseFrameListButton_SetData
 
 -- Scroll Bar Fix
---LFRBrowseFrameListScrollFrame:SetPoint("TOPLEFT", LFRBrowseFrameListButton1, "TOPLEFT", 21, 0);
---LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", LFRBrowseFrameListButton19, "BOTTOMRIGHT", 18, -31);
-
 LFRBrowseFrameListScrollFrame:SetPoint("TOPRIGHT", -31, 0)
 LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", 0, 29)
 
@@ -243,7 +264,7 @@ function MyLFRFrame_SetActiveTab(tab)
     if tab == 1 then
         RaidBrowserFrame:SetSize(350, 450);
     else
-        RaidBrowserFrame:SetSize(450, 450);
+        RaidBrowserFrame:SetSize(400, 450);
     end
 end
     
