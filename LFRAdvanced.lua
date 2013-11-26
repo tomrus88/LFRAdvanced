@@ -12,8 +12,8 @@ local function IsGuildie(player)
 end
 
 function MyFunction(self, ...)
-    local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, talentPoints, spec, isLFM, Armor, SpellDamage, SpellHeal, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk1, avgILVL, Unk2, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetResults(self.index);
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
+    local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, gearRating, avgILVL, defenseRating, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetResults(self.index);
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 47, -37);
 
     if ( partyMembers > 0 ) then
         GameTooltip:AddLine(LOOKING_FOR_RAID);
@@ -29,22 +29,22 @@ function MyFunction(self, ...)
         local displayedMembersLabel = false;
         for i=1, partyMembers do
             -- SearchLFGGetPartyResults also returns "isLeader ... Expertise" fields as SearchLFGGetResults does
-            local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, talentPoints, spec, isLFM, Armor, SpellDamage, SpellHeal, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, Unk1, avgILVL, Unk2, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetPartyResults(self.index, i);
+            local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, CritSpell, MP5, MP5Combat, AttackPower, Agility, Health, Mana, gearRating, avgILVL, defenseRating, Dodge, Block, Parry, Haste, Expertise = SearchLFGGetPartyResults(self.index, i);
             if ( relationship ) then
                 if ( not displayedMembersLabel ) then
                     displayedMembersLabel = true;
                     GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
                 end
                 if ( relationship == "ignored" ) then
-                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec, className, avgILVL, RED_FONT_COLOR), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILVL, RED_FONT_COLOR), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
                 elseif ( relationship == "friend" ) then
-                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
                 end
             else
                 if IsGuildie(name) then
-                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILVL, GREEN_FONT_COLOR), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
                 else
-                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, spec, className, avgILVL, NORMAL_FONT_COLOR), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+                    GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILVL, NORMAL_FONT_COLOR), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
                 end
             end
         end
@@ -89,7 +89,7 @@ function MyFunction(self, ...)
         GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
     end
 
-    GameTooltip:AddLine(GetPlayerInfoString(level, class, spec, className));
+    GameTooltip:AddLine(GetPlayerInfoString(level, class, specID, className));
 
     GameTooltip:AddLine("Extra info:");
 
@@ -97,20 +97,20 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format(ZONE_COLON.." %s", areaName));
     end
 
-    -- if ( talentPoints and talentPoints > 0 ) then
-    --     GameTooltip:AddLine(format(UNSPENT_TALENT_POINTS, talentPoints));
-    -- end
-
-    -- if ( isLFM ) then
-    --     GameTooltip:AddLine(format("LFM: %s", tostring(isLFM)));
-    -- end
-
-    if ( Armor and Armor > 0 ) then
-        GameTooltip:AddLine(format(ARMOR_TEMPLATE, Armor));
+    if ( bossKills and bossKills > 0 ) then
+        GameTooltip:AddLine(format("Boss kills: %u", bossKills));
     end
 
-    if ( (SpellDamage and SpellDamage > 0) or (SpellHeal and SpellHeal > 0) ) then
-        GameTooltip:AddLine(format(STAT_SPELLPOWER..": %u (%u +heal)", SpellDamage, SpellHeal));
+    if ( isGroupLeader ) then
+        GameTooltip:AddLine(format("Is Group Leader: %s", tostring(isGroupLeader)));
+    end
+
+    if ( armor and armor > 0 ) then
+        GameTooltip:AddLine(format(ARMOR_TEMPLATE, armor));
+    end
+
+    if ( (spellDamage and spellDamage > 0) or (plusHealing and plusHealing > 0) ) then
+        GameTooltip:AddLine(format(STAT_SPELLPOWER..": %u (%u +heal)", spellDamage, plusHealing));
     end
 
     if ( (CritMelee and CritMelee > 0) or (CritRanged and CritRanged > 0) or (CritSpell and CritSpell > 0) ) then
@@ -137,16 +137,16 @@ function MyFunction(self, ...)
         GameTooltip:AddLine(format(MANA_COLON.." %u", Mana));
     end
 
-    if ( Unk1 and Unk1 > 0 ) then
-        GameTooltip:AddLine(format("Unknown1: %u", Unk1));
+    if ( gearRating and gearRating > 0 ) then
+        GameTooltip:AddLine(format("Gear Rating: %u", gearRating));
     end
 
     if ( avgILVL and avgILVL > 0 ) then
         GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILVL));
     end
 
-    if ( Unk2 and Unk2 > 0 ) then
-        GameTooltip:AddLine(format("Unknown2: %u", Unk2));
+    if ( defenseRating and defenseRating > 0 ) then
+        GameTooltip:AddLine(format("Defense Rating: %u", defenseRating));
     end
 
     if ( Dodge and Dodge > 0 ) then
