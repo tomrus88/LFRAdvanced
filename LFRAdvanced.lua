@@ -1,4 +1,4 @@
-local NAME_ILVL_TEMPLATE = "|c%s%s %s (%.02f)|r";
+﻿local NAME_ILVL_TEMPLATE = "|c%s%s %s (%.02f)|r";
 
 local RB_RETURN_VALUES_START_PLAYER = 15;
 local RB_RETURN_VALUES_START_PARTY = 10;
