@@ -206,7 +206,7 @@ function MyOnEnterFunction(self, ...)
 end
 
 function GetSpecString(spec)
-    if spec == nil or spec == 0 then return "Unknown spec" end
+    if not spec or spec == 0 then return "Unknown spec" end
     local _, spec, _, _, _, _, class = GetSpecializationInfoByID(spec);
     return spec, class;
 end
@@ -215,15 +215,17 @@ function ColorToString(color)
     return format("ff%.2x%.2x%.2x", color.r * 255, color.g * 255, color.b * 255);
 end
 
+local dummyColor = { colorStr = "ffffd200" };
+
 function GetPlayerInfoString(level, class, spec, className)
-    local classColor = RAID_CLASS_COLORS[class].colorStr or "ffffd200";
-    return format(PLAYER_LEVEL, level, classColor, GetSpecString(spec), className)
+    local colorTable = RAID_CLASS_COLORS[class] or dummyColor;
+    return format(PLAYER_LEVEL, level, colorTable.colorStr, GetSpecString(spec), className)
 end
 
 function GetPlayerInfoStringWithIlvl(name, level, spec, className, ilvl, color)
     local specName, class = GetSpecString(spec);
-    local classColor = RAID_CLASS_COLORS[class].colorStr or "ffffd200";
-    local str = format(PLAYER_LEVEL, level, classColor, specName, className);
+    local colorTable = RAID_CLASS_COLORS[class] or dummyColor;
+    local str = format(PLAYER_LEVEL, level, colorTable.colorStr, specName, className);
     return format(NAME_ILVL_TEMPLATE, ColorToString(color), name, str, ilvl);
 end
 
