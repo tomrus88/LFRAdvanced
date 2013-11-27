@@ -32,7 +32,7 @@ local RB_RETURN_VALUES = {
 local function IsGuildie(player)
     local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
     for i = 1, totalMembers do
-        local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(i);
+        local name = GetGuildRosterInfo(i);
         if name == player then
             return true
         end
