@@ -1,4 +1,20 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFRAdvanced.lua"/>
+
+	<Button name="PVEFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" parent="PVEFrame" text="LOOKING_FOR_RAID" >
+		<Size x="100" y="21"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="60" y="-390"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				ToggleRaidBrowser();
+			</OnClick>
+		</Scripts>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+	</Button>
 </Ui>
