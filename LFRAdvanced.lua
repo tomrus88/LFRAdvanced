@@ -206,7 +206,7 @@ function MyOnEnterFunction(self, ...)
 end
 
 function GetSpecString(spec)
-    if not spec or spec == 0 then return "Unknown spec" end
+    if not spec or spec == 0 then return "Unknown spec", "Unknown class" end
     local _, spec, _, _, _, _, class = GetSpecializationInfoByID(spec);
     return spec, class;
 end
@@ -225,7 +225,7 @@ end
 function GetPlayerInfoStringWithIlvl(name, level, spec, className, ilvl, color)
     local specName, class = GetSpecString(spec);
     local colorTable = RAID_CLASS_COLORS[class] or dummyColor;
-    local str = format(PLAYER_LEVEL, level, colorTable.colorStr, specName, className);
+    local str = format(PLAYER_LEVEL, level, colorTable.colorStr, specName or "Unknown", className or "Unknown");
     return format(NAME_ILVL_TEMPLATE, ColorToString(color), name, str, ilvl);
 end
 
