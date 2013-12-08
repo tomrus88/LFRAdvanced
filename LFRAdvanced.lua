@@ -58,50 +58,11 @@ function GetPlayerInfoStringWithIlvl(name, level, spec, className, ilvl, color)
 end
 
 function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
-	return true;
-end
-
-function MyLFGList_FilterFunction2(dungeonID, maxLevelDiff)
 	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
 	local level = UnitLevel("player");
 
-	-- Check whether we're initialized yet
-	if ( not LFGLockList ) then
-		return false;
-	end
-
-	-- Sometimes we want to force hide even if the server thinks we can join (e.g. there are certain dungeons where you can only join from the NPCs, so we don't want to show them in the UI)
-	if ( forceHide ) then
-		return false;
-	end
-
-	-- If the server tells us we can join, we won't argue
-	if ( not LFGLockList[dungeonID] ) then
-		return true;
-	end
-
-	-- If this doesn't have a header, we won't display it
-	if ( groupID == 0 ) then
-		return false;
-	end
-
-	-- If we don't have the right expansion, we won't display it
-	if ( EXPANSION_LEVEL < expansionLevel ) then
-		return false;
-	end
-
-	-- If we're too high above the recommended level, we won't display it
-	--if ( level - maxLevelDiff > recLevel ) then
-	--	return false;
-	--end
-
 	-- If we're not within the hard level requirements, we won't display it
-	--if ( level < minLevel or level > maxLevel ) then
-	--	return false;
-	--end
-
-	-- If we're the wrong faction, we won't display it.
-	if ( LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_WRONG_FACTION ) then
+	if ( level < minLevel ) then
 		return false;
 	end
 
