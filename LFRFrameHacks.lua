@@ -20,14 +20,14 @@ function MyLFRBrowseFrameListButton_SetData(button, index)
 	LFRBrowseFrameListButton_SetData_Old(button, index);
 
 	local ilvl = select(32, SearchLFGGetResults(index)) or 0;
-	button.ilvl:SetText(format("%u ilvl", ilvl));
+	button.ilvl:SetText(format("%.02f", ilvl));
 end
 
 LFRBrowseFrameListButton_SetData = MyLFRBrowseFrameListButton_SetData
 
 -- OnEnter hack
 function MyLFRBrowseButton_OnEnter(self)
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, fakeIndex = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 47, -37);
 
 	if ( partyMembers > 0 ) then
@@ -44,7 +44,7 @@ function MyLFRBrowseButton_OnEnter(self)
 		--Display party members.
 		local displayedMembersLabel = false;
 		for i=1, partyMembers do
-			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(self.index, i);
+			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(fakeIndex or self.index, i);
 			if ( relationship ) then
 				if ( not displayedMembersLabel ) then
 					displayedMembersLabel = true;
@@ -206,7 +206,7 @@ end
 -- ilevel sort hack (breaks for group leaders, disabled)
 local SearchLFGGetResults_Old = SearchLFGGetResults;
 local sortOrder = false;
-local ilevelSortEnabled = false;
+local ilevelSortEnabled = true;
 
 function MySearchLFGGetResults(index)
 	local numResults, totalResults = SearchLFGGetNumResults();
@@ -214,6 +214,7 @@ function MySearchLFGGetResults(index)
 
 	for i = 1, numResults do
 		values[i] = {SearchLFGGetResults_Old(i)};
+		table.insert(values[i], i); -- put original index
 	end
 
 	table.sort(values, SortByILevel);
