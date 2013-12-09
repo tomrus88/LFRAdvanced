@@ -34,6 +34,7 @@ function MyLFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine(LOOKING_FOR_RAID);
 
 		GameTooltip:AddLine(name);
+		GameTooltip:AddLine(GetPlayerInfoString(level, specID, className));
 		GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0, 0.25, 0, 1);
 
 		GameTooltip:AddLine(format(LFM_NUM_RAID_MEMBER_TEMPLATE, partyMembers));
