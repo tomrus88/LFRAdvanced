@@ -18,7 +18,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
-	
+
 	<Button name="PVEFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="COPY_FILTER" >
 		<Size x="65" y="22"/>
 		<Anchors>
@@ -34,6 +34,19 @@
 				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName)
 				ChatFrameEditBox:HighlightText()
 			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="LFRBrowseFrameColumnHeader8" inherits="LFRBrowseFrameColumnHeaderTemplate" parent="LFRBrowseFrame" text="ilvl">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="LFRBrowseFrameColumnHeader7" relativePoint="RIGHT" x="-2" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				WhoFrameColumn_SetWidth(self, 40);
+				self.sortType = "ilevel";
+			</OnLoad>
+			<OnClick function="MySearchLFGSort"/>
 		</Scripts>
 	</Button>
 </Ui>

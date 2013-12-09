@@ -203,6 +203,57 @@ for i=1, NUM_LFR_LIST_BUTTONS do
 	button.ilvl = fs;
 end
 
+-- ilevel sort hack (breaks for group leaders, disabled)
+local SearchLFGGetResults_Old = SearchLFGGetResults;
+local sortOrder = false;
+local ilevelSortEnabled = false;
+
+function MySearchLFGGetResults(index)
+	local numResults, totalResults = SearchLFGGetNumResults();
+	local values = {};
+
+	for i = 1, numResults do
+		values[i] = {SearchLFGGetResults_Old(i)};
+	end
+
+	table.sort(values, SortByILevel);
+	return unpack(values[index]);
+end
+
+function SortByILevel(a, b)
+	if sortOrder then
+		return a[32] < b[32]
+	else
+		return a[32] > b[32]
+	end
+end
+
+function MySearchLFGSort(self)
+	if ilevelSortEnabled then
+		if ( self.sortType == "ilevel" ) then
+			sortOrder = not sortOrder;
+			SearchLFGGetResults = MySearchLFGGetResults
+			if ( LFRBrowseFrame:IsVisible() ) then
+				LFRBrowseFrameList_Update();
+			end
+		else
+			SearchLFGGetResults = SearchLFGGetResults_Old
+			if ( self.sortType ) then
+				SearchLFGSort(self.sortType);
+			end
+		end
+	else
+		if ( self.sortType and self.sortType ~= "ilevel") then
+			SearchLFGSort(self.sortType);
+		end
+	end
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+for i = 1, 7 do
+	_G["LFRBrowseFrameColumnHeader"..i]:SetScript("OnClick", MySearchLFGSort);
+end
+
 -- Scroll Bar Fix
 LFRBrowseFrameListScrollFrame:SetPoint("TOPRIGHT", -31, 0)
 LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", 0, 29)
