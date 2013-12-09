@@ -247,3 +247,20 @@ function MyLFRQueueFrame_Update()
 end
 
 LFRQueueFrame_Update = MyLFRQueueFrame_Update
+
+-- UpdateButtonStates hack
+local LFRBrowse_UpdateButtonStates_Old = LFRBrowse_UpdateButtonStates
+
+function MyLFRBrowse_UpdateButtonStates()
+	LFRBrowse_UpdateButtonStates_Old()
+	local playerName = UnitName("player");
+	local selectedName = LFRBrowseFrame.selectedName;
+
+	if ( selectedName and selectedName ~= playerName ) then
+		PVEFrameCopyNameButton:Enable();
+	else
+		PVEFrameCopyNameButton:Disable();
+	end
+end
+
+LFRBrowse_UpdateButtonStates = MyLFRBrowse_UpdateButtonStates
