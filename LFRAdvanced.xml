@@ -18,4 +18,22 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
+	
+	<Button name="PVEFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="..." >
+		<Size x="30" y="22"/>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRefreshButton" relativePoint="RIGHT" x="3" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				if not LFRBrowseFrame.selectedName then return end
+				local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
+				if (not ChatFrameEditBox:IsShown()) then
+					ChatEdit_ActivateChat(ChatFrameEditBox)
+				end
+				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName)
+				ChatFrameEditBox:HighlightText()
+			</OnClick>
+		</Scripts>
+	</Button>
 </Ui>
