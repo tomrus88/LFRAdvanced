@@ -128,10 +128,25 @@ function MyLFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine(format("Boss kills (normal): %u", bossKills));
 	end
 
+	-- max average ilvl
+	if ( avgILevel and avgILevel > 0 ) then
+		GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILevel));
+	end
+
+	-- no clue wtf this value means
+	if ( gearRating and gearRating > 0 ) then
+		GameTooltip:AddLine(format("Gear Rating: %u", gearRating));
+	end
+
 	-- always true?
 --	if ( isGroupLeader ) then
 --		GameTooltip:AddLine(format("Is Group Leader: %s", tostring(isGroupLeader)));
 --	end
+
+	if not LFRAdvancedOptions.ShowStats then
+		GameTooltip:Show();
+		return;
+	end
 
 	if ( armor and armor > 0 ) then
 		GameTooltip:AddLine(format(ARMOR_TEMPLATE, armor));
@@ -163,16 +178,6 @@ function MyLFRBrowseButton_OnEnter(self)
 
 	if ( maxMana and maxMana > 0 ) then
 		GameTooltip:AddLine(format(MANA_COLON.." %u", maxMana));
-	end
-
-	-- no clue wtf this value means
-	if ( gearRating and gearRating > 0 ) then
-		GameTooltip:AddLine(format("Gear Rating: %u", gearRating));
-	end
-
-	-- max average ilvl
-	if ( avgILevel and avgILevel > 0 ) then
-		GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILevel));
 	end
 
 	-- has been removed in Cataclysm as stat

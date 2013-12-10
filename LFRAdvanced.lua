@@ -3,6 +3,12 @@
 local RB_RETURN_VALUES_START_PLAYER = 15;
 local RB_RETURN_VALUES_START_PARTY = 10;
 
+if LFRAdvancedOptions == nil then
+	LFRAdvancedOptions = {
+		ShowStats = true,
+	}
+end
+
 local RB_RETURN_VALUES = {
 	bossKills = 1,
 	specID = 2,
