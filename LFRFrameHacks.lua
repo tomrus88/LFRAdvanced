@@ -43,11 +43,13 @@ function MyLFRBrowseButton_OnEnter(self)
 
 		--Display party members.
 		local displayedMembersLabel = false;
-		local groupILevel = 0;
+		local groupILevel = avgILevel;
+		local groupMembers = 0;
 		for i=1, partyMembers do
 			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(realIndex or self.index, i);
 			if name then
 				groupILevel = groupILevel + avgILevel;
+				groupMembers = groupMembers + 1
 				if ( relationship ) then
 					if ( not displayedMembersLabel ) then
 						displayedMembersLabel = true;
@@ -68,7 +70,7 @@ function MyLFRBrowseButton_OnEnter(self)
 			end
 		end
 		if groupILevel > 0 then
-			GameTooltip:AddLine("Group avg ilvl: "..groupILevel/partyMembers);
+			GameTooltip:AddLine("Group avg ilvl: "..groupILevel/(groupMembers+1));
 		end
 	else
 		GameTooltip:AddLine(name);
