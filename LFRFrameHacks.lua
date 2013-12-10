@@ -37,12 +37,12 @@ function MyLFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine(GetPlayerInfoString(level, specID, className));
 		GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0, 0.25, 0, 1);
 
-		GameTooltip:AddLine(format(LFM_NUM_RAID_MEMBER_TEMPLATE, partyMembers + 1));
+		GameTooltip:AddLine("\n"..format(LFM_NUM_RAID_MEMBER_TEMPLATE, partyMembers + 1));
 		-- Bogus texture to fix spacing
-		GameTooltip:AddTexture("");
+		--GameTooltip:AddTexture("");
 
 		--Display party members.
-		local displayedMembersLabel = false;
+		--local displayedMembersLabel = false;
 		local groupILevel = 0;
 		local groupMembers = 0;
 		for i=0, partyMembers do
@@ -50,13 +50,14 @@ function MyLFRBrowseButton_OnEnter(self)
 			if name then
 				groupILevel = groupILevel + avgILevel;
 				groupMembers = groupMembers + 1
+
+				--if ( not displayedMembersLabel ) then
+				--	displayedMembersLabel = true;
+				--	GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
+				--end
+
 				if groupMembers < 20 then--limit to 20 members in tooltip
 					if ( relationship ) then
-						if ( not displayedMembersLabel ) then
-							displayedMembersLabel = true;
-							GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
-							GameTooltip:AddTexture("");
-						end
 						if ( relationship == "ignored" ) then
 							GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, RED_FONT_COLOR_CODE), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 						elseif ( relationship == "friend" ) then
@@ -72,15 +73,15 @@ function MyLFRBrowseButton_OnEnter(self)
 					--if ( isLeader ) then
 					--	GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0, 0.25, 0, 1);
 					--end
-					if ( isTank ) then
-						GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.5, 0.75, 0, 1);
-					end
-					if ( isHealer ) then
-						GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.75, 1, 0, 1);
-					end
-					if ( isDamage ) then
-						GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.25, 0.5, 0, 1);
-					end
+					--if ( isTank ) then
+					--	GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.5, 0.75, 0, 1);
+					--end
+					--if ( isHealer ) then
+					--	GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.75, 1, 0, 1);
+					--end
+					--if ( isDamage ) then
+					--	GameTooltip:AddTexture("Interface\\LFGFrame\\LFGRole", 0.25, 0.5, 0, 1);
+					--end
 				end
 			end
 		end
