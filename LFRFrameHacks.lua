@@ -7,7 +7,7 @@ function MyLFRFrame_SetActiveTab(tab)
 	if tab == 1 then
 		RaidBrowserFrame:SetSize(350, 450);
 	else
-		RaidBrowserFrame:SetSize(400, 450);
+		RaidBrowserFrame:SetSize(420, 450);
 	end
 end
 
@@ -27,7 +27,7 @@ LFRBrowseFrameListButton_SetData = MyLFRBrowseFrameListButton_SetData
 
 -- OnEnter hack
 function MyLFRBrowseButton_OnEnter(self)
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, fakeIndex = SearchLFGGetResults(self.index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, realIndex = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 47, -37);
 
 	if ( partyMembers > 0 ) then
@@ -44,7 +44,7 @@ function MyLFRBrowseButton_OnEnter(self)
 		--Display party members.
 		local displayedMembersLabel = false;
 		for i=1, partyMembers do
-			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(fakeIndex or self.index, i);
+			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(realIndex or self.index, i);
 			if ( relationship ) then
 				if ( not displayedMembersLabel ) then
 					displayedMembersLabel = true;
@@ -91,7 +91,7 @@ function MyLFRBrowseButton_OnEnter(self)
 	if ( encountersComplete > 0 or isIneligible ) then
 		GameTooltip:AddLine("\n"..BOSSES);
 		for i=1, encountersTotal do
-			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(self.index, i);
+			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(realIndex or self.index, i);
 			if ( isKilled ) then
 				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			elseif ( isIneligible ) then
@@ -193,20 +193,21 @@ end
 for i=1, NUM_LFR_LIST_BUTTONS do
 	local button = _G["LFRBrowseFrameListButton"..i];
 	button:SetScript("OnEnter", MyLFRBrowseButton_OnEnter);
-	button:SetSize(360, 16);
+	button:SetSize(375, 16);
+	button.level:SetSize(30, 14)
 	local tex = button:GetHighlightTexture()
-	tex:SetSize(360, 16);
+	tex:SetSize(375, 16);
 
 	local fs = button:CreateFontString("LFRBrowseFrameListButton"..i.."ILevel", "ARTWORK", "GameFontHighlightSmall")
 	fs:SetSize(50, 14);
-	fs:SetPoint("LEFT", "LFRBrowseFrameListButton"..i.."PartyIcon", "RIGHT", 9, 0);
+	fs:SetPoint("LEFT", "LFRBrowseFrameListButton"..i.."PartyIcon", "RIGHT", 0, 0);
 	button.ilvl = fs;
 end
 
 -- ilevel sort hack (breaks for group leaders, disabled)
 local SearchLFGGetResults_Old = SearchLFGGetResults;
 local sortOrder = false;
-local ilevelSortEnabled = false;
+local ilevelSortEnabled = true;
 
 function MySearchLFGGetResults(index)
 	local numResults, totalResults = SearchLFGGetNumResults();

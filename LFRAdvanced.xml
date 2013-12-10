@@ -20,7 +20,7 @@
 	</Button>
 
 	<Button name="PVEFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="COPY_FILTER" >
-		<Size x="65" y="22"/>
+		<Size x="80" y="22"/>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRefreshButton" relativePoint="RIGHT" x="3" y="0"/>
 		</Anchors>
