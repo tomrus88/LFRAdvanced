@@ -206,7 +206,7 @@ end
 -- ilevel sort hack (breaks for group leaders, disabled)
 local SearchLFGGetResults_Old = SearchLFGGetResults;
 local sortOrder = false;
-local ilevelSortEnabled = true;
+local ilevelSortEnabled = false;
 
 function MySearchLFGGetResults(index)
 	local numResults, totalResults = SearchLFGGetNumResults();
