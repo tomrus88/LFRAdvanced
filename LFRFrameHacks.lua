@@ -74,7 +74,7 @@ function MyLFRBrowseButton_OnEnter(self)
 			end
 		end
 		if groupILevel > 0 then
-			GameTooltip:AddLine("Group avg ilvl: "..groupILevel/groupMembers);
+			GameTooltip:AddLine(format("Group avg ilvl: %.02f", groupILevel/groupMembers));
 		end
 	else
 		GameTooltip:AddLine(name);
