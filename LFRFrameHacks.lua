@@ -208,25 +208,31 @@ end
 local SearchLFGGetResults_Old = SearchLFGGetResults;
 local sortOrder = false;
 local ilevelSortEnabled = true;
+local idx = {};
+local ilvls = {};
 
 function MySearchLFGGetResults(index)
 	local numResults, totalResults = SearchLFGGetNumResults();
-	local values = {};
+
+	table.wipe(idx);
+	table.wipe(ilvls);
 
 	for i = 1, numResults do
-		values[i] = {SearchLFGGetResults_Old(i)};
-		table.insert(values[i], i); -- put original index
+		idx[i] = i;
+		ilvls[i] = select(32, SearchLFGGetResults_Old(i));
 	end
 
-	table.sort(values, SortByILevel);
-	return unpack(values[index]);
+	table.sort(idx, SortByILevel);
+
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults_Old(idx[index]);
+	return name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, idx[index];
 end
 
 function SortByILevel(a, b)
 	if sortOrder then
-		return a[32] < b[32]
+		return ilvls[a] < ilvls[b]
 	else
-		return a[32] > b[32]
+		return ilvls[a] > ilvls[b]
 	end
 end
 
