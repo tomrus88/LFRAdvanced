@@ -204,7 +204,7 @@ for i=1, NUM_LFR_LIST_BUTTONS do
 	button.ilvl = fs;
 end
 
--- ilevel sort hack (breaks for group leaders, disabled)
+-- ilevel sort hack
 local SearchLFGGetResults_Old = SearchLFGGetResults;
 local sortOrder = false;
 local ilevelSortEnabled = true;
