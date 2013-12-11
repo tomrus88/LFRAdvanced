@@ -123,9 +123,9 @@ function MyLFRBrowseButton_OnEnter(self)
 		GameTooltip:AddLine(format(ZONE_COLON.." %s", areaName));
 	end
 
-	-- this is sum of kills for all bosses on normal mode
+	-- this is sum of kills for all bosses on normal mode or flex
 	if ( bossKills and bossKills > 0 ) then
-		GameTooltip:AddLine(format("Boss kills (normal): %u", bossKills));
+		GameTooltip:AddLine(format("Boss kills: %u", bossKills));
 	end
 
 	-- max average ilvl
