@@ -145,7 +145,7 @@ function MyLFRBrowseButton_OnEnter(self)
 --		GameTooltip:AddLine(format("Is Group Leader: %s", tostring(isGroupLeader)));
 --	end
 
-	if not LFRAdvancedOptions.ShowStats or not IsShiftKeyDown() then
+	if not LFRAdvancedOptions.ShowStats and not IsShiftKeyDown() then
 		GameTooltip:Show();
 		return;
 	end

@@ -110,3 +110,32 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 
 	return true;
 end
+
+--local function CreateCheckButton(parent, checkBoxName, posX, posY, displayText, tooltipText)
+--	local checkButton = CreateFrame("CheckButton", checkBoxName, parent, "InterfaceOptionsCheckButtonTemplate");
+--	checkButton:SetPoint("TOPLEFT", posX, posY);
+--	checkButton:SetWidth(25);
+--	checkButton:SetHeight(25);
+--	checkButton.tooltipText = tooltipText;
+--	_G[checkButton:GetName() .. 'Text']:SetText(displayText);
+--	return checkButton;
+--end
+
+function SaveLFRAOptions()
+	LFRAdvancedOptions.ShowStats = LFRAdvancedOptionsFrameShowStats:GetChecked();
+end
+
+function RefreshLFRAOptions()
+	LFRAdvancedOptionsFrameShowStats:SetChecked(LFRAdvancedOptions.ShowStats);
+end
+
+--local optionsFrameName = "LFRAdvancedOptionsFrame";
+
+--LFRAdvanced.panel = CreateFrame( "Frame", optionsFrameName, InterfaceOptionsFramePanelContainer);
+--LFRAdvanced.panel.name = "LFRAdvanced";
+--LFRAdvanced.panel.okay = SaveLFRAOptions;
+--LFRAdvanced.panel.refresh = RefreshLFRAOptions;
+--InterfaceOptions_AddCategory(LFRAdvanced.panel);
+
+--LFRAdvanced.panel.showStats = CreateCheckButton(LFRAdvanced.panel, optionsFrameName.."ShowStats", 10, -10, "Show player stats in tooltip", "Display additional player stats in tooltip");
+--LFRAdvanced.panel.check2 = CreateCheckButton(LFRAdvanced.panel, optionsFrameName.."check2", 10, -30, "Test text!", "Test tooltip");

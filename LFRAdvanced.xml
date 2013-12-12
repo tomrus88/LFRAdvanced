@@ -49,4 +49,29 @@
 			<OnClick function="MySearchLFGSort"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
+		<Frames>
+			<CheckButton name="$parentShowStats" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetText("Show player stats in tooltip");
+						self.tooltipText = "Display additional player stats in tooltip";
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = "LFRAdvanced";
+				self.okay = SaveLFRAOptions;
+				self.refresh = RefreshLFRAOptions;
+				InterfaceOptions_AddCategory(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

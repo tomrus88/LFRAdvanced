@@ -1,5 +1,6 @@
 ﻿## Interface: 50400
 ## Title: LFR Advanced
+## Version: 1.0
 ## Author: TOM_RUS
 ## Notes: Adds nice tooltips into LFR browser
 ## SavedVariables: LFRAdvancedOptions
