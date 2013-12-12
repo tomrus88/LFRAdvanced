@@ -2,6 +2,10 @@
 
 local RB_RETURN_VALUES_START_PLAYER = 15;
 local RB_RETURN_VALUES_START_PARTY = 10;
+local GetNumGuildMembers, GetGuildRosterInfo = GetNumGuildMembers, GetGuildRosterInfo;
+local GetSpecializationInfoByID = GetSpecializationInfoByID;
+
+LFRAdvanced = {}
 
 if LFRAdvancedOptions == nil then
 	LFRAdvancedOptions = {
@@ -35,6 +39,29 @@ local RB_RETURN_VALUES = {
 	expertise = 23
 }
 
+function EventHandler(self, event, ...)
+--	if event == "PLAYER_ENTERING_WORLD" then
+--		if not IsAddonMessagePrefixRegistered("LFRA") then
+--			RegisterAddonMessagePrefix("LFRA")
+--		end
+--	elseif event == "CHAT_MSG_ADDON" then
+--		local prefix, msg, channel, sender = ...;
+--		if prefix == "LFRA" then
+--			print("Addon msg: "..prefix.." "..msg.." "..channel.." "..sender);
+--		end
+	if event == "MODIFIER_STATE_CHANGED" then
+		if LFRAdvanced.lastOnEnterButton then
+			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
+		end
+	end
+end
+
+local mainFrame = CreateFrame("Frame")
+--mainFrame:RegisterEvent("CHAT_MSG_ADDON")
+--mainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
+mainFrame:SetScript("OnEvent", EventHandler)
+
 function IsGuildie(player)
 	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
 	for i = 1, totalMembers do
@@ -47,7 +74,9 @@ function IsGuildie(player)
 end
 
 function GetSpecString(specID)
-	if not specID or specID == 0 then return "Unknown spec", "Unknown class" end
+	if not specID or specID == 0 then
+		return "Unknown spec", "Unknown class", "DAMAGER"
+	end
 	local _, spec, _, _, _, role, class = GetSpecializationInfoByID(specID);
 	return spec, class, role;
 end
