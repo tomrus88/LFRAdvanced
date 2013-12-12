@@ -29,7 +29,7 @@ LFRBrowseFrameListButton_SetData = MyLFRBrowseFrameListButton_SetData
 function MyLFRBrowseButton_OnEnter(self)
 	LFRAdvanced.lastOnEnterButton = self;
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, realIndex = SearchLFGGetResults(self.index);
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 47, -37);
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 50, 16);
 
 	if ( partyMembers > 0 ) then
 		GameTooltip:AddLine(LOOKING_FOR_RAID);
