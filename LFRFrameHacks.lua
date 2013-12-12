@@ -126,7 +126,7 @@ function MyLFRBrowseButton_OnEnter(self)
 	end
 
 	-- this is sum of kills for all bosses on normal mode or flex
-	if ( bossKills and bossKills > 0 ) then
+	if ( LFRAdvancedOptions.ShowBossKills and bossKills and bossKills > 0 ) then
 		GameTooltip:AddLine(format("Boss kills: %u", bossKills));
 	end
 

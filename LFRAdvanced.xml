@@ -53,14 +53,24 @@
 	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
 		<Frames>
 			<CheckButton name="$parentShowStats" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show player stats in tooltip");
+						self.Text:SetText("Show player stats");
 						self.tooltipText = "Display additional player stats in tooltip";
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowBossKills" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowStats" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetText("Show boss kills count");
+						self.tooltipText = "Display boss kills count in tooltip";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
