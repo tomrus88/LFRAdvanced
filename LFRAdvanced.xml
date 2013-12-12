@@ -59,7 +59,7 @@
 				<Scripts>
 					<OnLoad>
 						self.Text:SetText("Show player stats");
-						self.tooltipText = "Display additional player stats in tooltip";
+						self.tooltipText = "Display additional player stats in tooltip.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -70,7 +70,7 @@
 				<Scripts>
 					<OnLoad>
 						self.Text:SetText("Show boss kills count");
-						self.tooltipText = "Display boss kills count in tooltip";
+						self.tooltipText = "Display boss kills count in tooltip. If disabled, you can still see them by holding SHIFT key.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
