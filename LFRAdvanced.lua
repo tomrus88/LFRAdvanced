@@ -40,6 +40,9 @@ local RB_RETURN_VALUES = {
 	expertise = 23
 }
 
+local mainFrame = CreateFrame("Frame")
+local creatingRaid = false;
+
 function EventHandler(self, event, ...)
 --	if event == "PLAYER_ENTERING_WORLD" then
 --		if not IsAddonMessagePrefixRegistered("LFRA") then
@@ -54,13 +57,20 @@ function EventHandler(self, event, ...)
 		if LFRAdvanced.lastOnEnterButton then
 			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
 		end
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		if creatingRaid and GetNumGroupMembers() > 0 and not IsInRaid() then
+			ConvertToRaid();
+			creatingRaid = false;
+		elseif GetNumGroupMembers() == 0 then
+			LFRBrowseFrameCreateRaidButton:Enable();
+		end
 	end
 end
 
-local mainFrame = CreateFrame("Frame")
 --mainFrame:RegisterEvent("CHAT_MSG_ADDON")
 --mainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
+mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
 mainFrame:SetScript("OnEvent", EventHandler)
 
 function IsGuildie(player)
@@ -110,6 +120,46 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 	end
 
 	return true;
+end
+
+local function IU(name)
+	print("Inviting "..name);
+	InviteUnit(name);
+end
+
+function LFRAdvanced_CreateRaid()
+	local joinedId = SearchLFGGetJoinedID() or 0;
+	if joinedId ~= 767 and joinedId ~= 768 then
+	--if joinedId ~= 358  then
+		print("Can't create raid for this LFG id ("..joinedId..")");
+		return;
+	end
+
+	print("Creating raid for "..GetLFGDungeonInfo(joinedId));
+
+	local numResults, totalResults = SearchLFGGetNumResults();
+
+	if numResults == 0 then
+		print("List for "..GetLFGDungeonInfo(joinedId).." is empty");
+		return;
+	end
+
+	local numInvited = 0;
+
+	for i = 1, numResults do
+		local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(i);
+		if name and name ~= UNKNOWN and partyMembers == 0 then
+			IU(name);
+			numInvited = numInvited + 1;
+			if numInvited == 1 then
+				creatingRaid = true;
+				LFRBrowseFrameCreateRaidButton:Disable();
+			elseif numInvited == 39 then
+				break;
+			end
+		end
+	end
+	print("Invited "..numInvited.." players.");
 end
 
 function SaveLFRAOptions()

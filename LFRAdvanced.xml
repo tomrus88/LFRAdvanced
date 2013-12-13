@@ -19,7 +19,7 @@
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 
-	<Button name="PVEFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="CALENDAR_COPY_EVENT" >
+	<Button name="LFRBrowseFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="CALENDAR_COPY_EVENT" >
 		<Size x="80" y="22"/>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRefreshButton" relativePoint="RIGHT" x="3" y="0"/>
@@ -34,6 +34,16 @@
 				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName)
 				ChatFrameEditBox:HighlightText()
 			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="LFRBrowseFrameCreateRaidButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="Create raid" >
+		<Size x="80" y="22"/>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRaidDropDown" relativePoint="RIGHT" x="0" y="4"/>
+		</Anchors>
+		<Scripts>
+			<OnClick function="LFRAdvanced_CreateRaid"/>
 		</Scripts>
 	</Button>
 

@@ -397,9 +397,9 @@ function MyLFRBrowse_UpdateButtonStates()
 	local selectedName = LFRBrowseFrame.selectedName;
 
 	if ( selectedName and selectedName ~= playerName ) then
-		PVEFrameCopyNameButton:Enable();
+		LFRBrowseFrameCopyNameButton:Enable();
 	else
-		PVEFrameCopyNameButton:Disable();
+		LFRBrowseFrameCopyNameButton:Disable();
 	end
 end
 
