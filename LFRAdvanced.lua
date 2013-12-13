@@ -14,6 +14,19 @@ if LFRAdvancedOptions == nil then
 	}
 end
 
+StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
+	preferredIndex = STATICPOPUPS_NUMDIALOGS,
+	text = "You are about to create raid with other players. Are you sure?",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		LFRAdvanced_CreateRaid()
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+};
+
 local RB_RETURN_VALUES = {
 	bossKills = 1,
 	specID = 2,

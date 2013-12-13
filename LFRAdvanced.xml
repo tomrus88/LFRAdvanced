@@ -26,13 +26,15 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				if not LFRBrowseFrame.selectedName then return end
-				local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
-				if (not ChatFrameEditBox:IsShown()) then
-					ChatEdit_ActivateChat(ChatFrameEditBox)
+				if not LFRBrowseFrame.selectedName then
+					return;
 				end
-				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName)
-				ChatFrameEditBox:HighlightText()
+				local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
+				if (not ChatFrameEditBox:IsShown()) then
+					ChatEdit_ActivateChat(ChatFrameEditBox);
+				end
+				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName);
+				ChatFrameEditBox:HighlightText();
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -43,7 +45,9 @@
 			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRaidDropDown" relativePoint="RIGHT" x="0" y="4"/>
 		</Anchors>
 		<Scripts>
-			<OnClick function="LFRAdvanced_CreateRaid"/>
+			<OnClick>
+				StaticPopup_Show("LFRADVANCED_CREATERAID");
+			</OnClick>
 		</Scripts>
 	</Button>
 
