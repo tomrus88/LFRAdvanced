@@ -16,7 +16,7 @@ end
 
 StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
 	preferredIndex = STATICPOPUPS_NUMDIALOGS,
-	text = "You are about to create raid with other players. Are you sure?",
+	text = "You are about to create raid with other players.\nAre you sure?",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
@@ -135,8 +135,8 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 	return true;
 end
 
-local function IU(name)
-	print("Inviting "..name);
+local function IU(name, role)
+	print("Inviting "..name.." ("..role..")");
 	InviteUnit(name);
 end
 
@@ -158,20 +158,54 @@ function LFRAdvanced_CreateRaid()
 	end
 
 	local numInvited = 0;
+	local players = {};
+	local tanks, healers, dps = 0, 0, 0;
+	local tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
 
 	for i = 1, numResults do
 		local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(i);
 		if name and name ~= UNKNOWN and partyMembers == 0 then
-			IU(name);
-			numInvited = numInvited + 1;
-			if numInvited == 1 then
-				creatingRaid = true;
-				LFRBrowseFrameCreateRaidButton:Disable();
-			elseif numInvited == 39 then
-				break;
+			if isTank then
+				players[name] = TANK;
+				tanks = tanks + 1;
+			elseif isHealer then
+				players[name] = HEALER;
+				healers = healers + 1;
+			elseif isDamage then
+				players[name] = DAMAGER;
+				dps = dps + 1;
 			end
 		end
 	end
+
+	print(format("We have %u tanks, %u healers and %u dps listed so far", tanks, healers, dps));
+
+	for k, v in pairs(players) do
+		if tankNeeds > 0 and v == TANK then
+			tankNeeds = tankNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+		elseif healerNeeds > 0 and v == HEALER then
+			healerNeeds = healerNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+		elseif dpsNeeds > 0 and v == DAMAGER then
+			dpsNeeds = dpsNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+		elseif tankNeeds == 0 and healerNeeds == 0 then
+			IU(k, v);
+			numInvited = numInvited + 1;
+		end
+
+		if numInvited == 1 then
+			creatingRaid = true;
+			LFRBrowseFrameCreateRaidButton:Disable();
+		elseif numInvited == 39 then
+			break;
+		end
+	end
+
 	print("Invited "..numInvited.." players.");
 end
 
