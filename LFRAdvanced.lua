@@ -53,10 +53,72 @@ local RB_RETURN_VALUES = {
 	expertise = 23
 }
 
+local ROLE_ICONS = {
+	LEADER  = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:0:16:0:16|t",
+	TANK    = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:32:48:0:16|t",
+	HEALER  = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:48:64:0:16|t",
+	DAMAGER = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:16:32:0:16|t"
+}
+
 local mainFrame = CreateFrame("Frame")
+local players = {};
+local numInvited = 0;
+local tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
 local creatingRaid = false;
 
-function EventHandler(self, event, ...)
+local function table_size(t)
+	local n = 0;
+	for k, v in pairs(t) do
+		n = n + 1;
+	end
+	return n;
+end
+
+local function IU(name, role)
+	print("Inviting "..name.." ("..role..")");
+	InviteUnit(name);
+end
+
+local function LFRA_InvitePlayers(max)
+	local count = 0;
+
+	for k, v in pairs(players) do
+		if count >= max then return end
+
+		if tankNeeds > 0 and v == TANK then
+			tankNeeds = tankNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+			players[k] = nil;
+			count = count + 1;
+		elseif healerNeeds > 0 and v == HEALER then
+			healerNeeds = healerNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+			players[k] = nil;
+			count = count + 1;
+		elseif dpsNeeds > 0 and v == DAMAGER then
+			dpsNeeds = dpsNeeds - 1;
+			IU(k, v);
+			numInvited = numInvited + 1;
+			players[k] = nil;
+			count = count + 1;
+		elseif v and tankNeeds == 0 and healerNeeds == 0 then
+			IU(k, v);
+			numInvited = numInvited + 1;
+			players[k] = nil;
+			count = count + 1;
+		end
+
+		if numInvited == 1 then
+			creatingRaid = true;
+		elseif numInvited == 39 then
+			break;
+		end
+	end
+end
+
+local function EventHandler(self, event, ...)
 --	if event == "PLAYER_ENTERING_WORLD" then
 --		if not IsAddonMessagePrefixRegistered("LFRA") then
 --			RegisterAddonMessagePrefix("LFRA")
@@ -74,9 +136,31 @@ function EventHandler(self, event, ...)
 		if creatingRaid and GetNumGroupMembers() > 0 and not IsInRaid() then
 			ConvertToRaid();
 			creatingRaid = false;
+		elseif IsInRaid() and table_size(players) > 0 then
+			LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
+			print("Invited "..numInvited.." players.");
+			table.wipe(players);
+			numInvited = 0;
+			tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
 		elseif GetNumGroupMembers() == 0 then
 			LFRBrowseFrameCreateRaidButton:Enable();
 		end
+	end
+end
+
+local timer = 10;
+local function UpdateHandler(self, elapsed)
+	timer = timer - elapsed;
+	if timer < 0 and not IsInRaid() then
+		--print("fail safe!");
+		timer = 10;
+
+		creatingRaid = false;
+		table.wipe(players);
+		numInvited = 0;
+		tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
+
+		mainFrame:SetScript("OnUpdate", nil)
 	end
 end
 
@@ -97,20 +181,13 @@ function IsGuildie(player)
 	return false
 end
 
-function GetSpecString(specID)
+local function GetSpecString(specID)
 	if not specID or specID == 0 then
 		return "Unknown spec", "Unknown class", "DAMAGER"
 	end
 	local _, spec, _, _, _, role, class = GetSpecializationInfoByID(specID);
 	return spec, class, role;
 end
-
-local ROLE_ICONS = {
-	LEADER  = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:0:16:0:16|t",
-	TANK    = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:32:48:0:16|t",
-	HEALER  = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:48:64:0:16|t",
-	DAMAGER = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:16:32:0:16|t"
-}
 
 function GetPlayerInfoString(level, spec, className)
 	local specName, class, role = GetSpecString(spec);
@@ -135,11 +212,6 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 	return true;
 end
 
-local function IU(name, role)
-	print("Inviting "..name.." ("..role..")");
-	InviteUnit(name);
-end
-
 function LFRAdvanced_CreateRaid()
 	local joinedId = SearchLFGGetJoinedID() or 0;
 	if joinedId ~= 767 and joinedId ~= 768 then
@@ -157,10 +229,9 @@ function LFRAdvanced_CreateRaid()
 		return;
 	end
 
-	local numInvited = 0;
-	local players = {};
+	LFRBrowseFrameCreateRaidButton:Disable();
+
 	local tanks, healers, dps = 0, 0, 0;
-	local tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
 
 	for i = 1, numResults do
 		local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(i);
@@ -180,33 +251,8 @@ function LFRAdvanced_CreateRaid()
 
 	print(format("We have %u tanks, %u healers and %u dps listed so far", tanks, healers, dps));
 
-	for k, v in pairs(players) do
-		if tankNeeds > 0 and v == TANK then
-			tankNeeds = tankNeeds - 1;
-			IU(k, v);
-			numInvited = numInvited + 1;
-		elseif healerNeeds > 0 and v == HEALER then
-			healerNeeds = healerNeeds - 1;
-			IU(k, v);
-			numInvited = numInvited + 1;
-		elseif dpsNeeds > 0 and v == DAMAGER then
-			dpsNeeds = dpsNeeds - 1;
-			IU(k, v);
-			numInvited = numInvited + 1;
-		elseif tankNeeds == 0 and healerNeeds == 0 then
-			IU(k, v);
-			numInvited = numInvited + 1;
-		end
-
-		if numInvited == 1 then
-			creatingRaid = true;
-			LFRBrowseFrameCreateRaidButton:Disable();
-		elseif numInvited == 39 then
-			break;
-		end
-	end
-
-	print("Invited "..numInvited.." players.");
+	LFRA_InvitePlayers(4);
+	mainFrame:SetScript("OnUpdate", UpdateHandler)
 end
 
 function SaveLFRAOptions()
