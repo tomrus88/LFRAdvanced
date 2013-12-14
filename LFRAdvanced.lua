@@ -252,11 +252,17 @@ function LFRAdvanced_CreateRaid()
 
 	print(format("We have %u tanks, %u healers and %u dps listed so far", tanks, healers, dps));
 
-	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
-		LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
-		table.wipe(players);--wipe now to skip GROUP_ROSTER_UPDATE
+	if IsInRaid() then
+		if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+			LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
+			table.wipe(players);--wipe now to skip GROUP_ROSTER_UPDATE
+		else
+			print("Can't invite players (not leader or no assist)");
+			table.wipe(players);
+			return;
+		end
 	else
-		LFRA_InvitePlayers(4);
+		LFRA_InvitePlayers(4);--initial invite, we need raid group to invite rest
 	end
 
 	mainFrame:SetScript("OnUpdate", UpdateHandler)
