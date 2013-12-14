@@ -116,6 +116,13 @@ local function LFRA_InvitePlayers(max)
 	print("Invited "..numInvited.." players.");
 end
 
+local function ResetVars()
+	table.wipe(players);
+	numInvited = 0;
+	tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
+	LFRBrowseFrameCreateRaidButton:Enable();
+end
+
 local function EventHandler(self, event, ...)
 --	if event == "PLAYER_ENTERING_WORLD" then
 --		if not IsAddonMessagePrefixRegistered("LFRA") then
@@ -136,12 +143,10 @@ local function EventHandler(self, event, ...)
 				ConvertToRaid();
 			elseif IsInRaid() then
 				LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
-				table.wipe(players);
-				numInvited = 0;
-				tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
+				ResetVars();
 			end
 		elseif GetNumGroupMembers() == 0 then
-			LFRBrowseFrameCreateRaidButton:Enable();
+			ResetVars();
 		end
 	end
 end
@@ -150,13 +155,8 @@ local timer = 10;
 local function UpdateHandler(self, elapsed)
 	timer = timer - elapsed;
 	if timer < 0 then
-		--print("fail safe!");
 		timer = 10;
-
-		table.wipe(players);
-		numInvited = 0;
-		tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
-		LFRBrowseFrameCreateRaidButton:Enable();
+		ResetVars();
 		mainFrame:SetScript("OnUpdate", nil)
 	end
 end
@@ -250,11 +250,12 @@ function LFRAdvanced_CreateRaid()
 
 	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
 		LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
-		table.wipe(players);
+		table.wipe(players);--wipe now to skip GROUP_ROSTER_UPDATE
 	else
 		LFRA_InvitePlayers(4);
-		mainFrame:SetScript("OnUpdate", UpdateHandler)
 	end
+
+	mainFrame:SetScript("OnUpdate", UpdateHandler)
 end
 
 function SaveLFRAOptions()
