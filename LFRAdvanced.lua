@@ -64,7 +64,6 @@ local mainFrame = CreateFrame("Frame")
 local players = {};
 local numInvited = 0;
 local tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
-local creatingRaid = false;
 
 local function table_size(t)
 	local n = 0;
@@ -83,7 +82,7 @@ local function LFRA_InvitePlayers(max)
 	local count = 0;
 
 	for k, v in pairs(players) do
-		if count >= max then return end
+		if count >= max then break end
 
 		if tankNeeds > 0 and v == TANK then
 			tankNeeds = tankNeeds - 1;
@@ -110,12 +109,11 @@ local function LFRA_InvitePlayers(max)
 			count = count + 1;
 		end
 
-		if numInvited == 1 then
-			creatingRaid = true;
-		elseif numInvited == 39 then
+		if numInvited == 39 then
 			break;
 		end
 	end
+	print("Invited "..numInvited.." players.");
 end
 
 local function EventHandler(self, event, ...)
@@ -133,15 +131,15 @@ local function EventHandler(self, event, ...)
 			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" then
-		if creatingRaid and GetNumGroupMembers() > 0 and not IsInRaid() then
-			ConvertToRaid();
-			creatingRaid = false;
-		elseif IsInRaid() and table_size(players) > 0 then
-			LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
-			print("Invited "..numInvited.." players.");
-			table.wipe(players);
-			numInvited = 0;
-			tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
+		if UnitIsGroupLeader("player") then
+			if table_size(players) > 0 and GetNumGroupMembers() > 0 and not IsInRaid() then
+				ConvertToRaid();
+			elseif IsInRaid() and table_size(players) > 0 then
+				LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
+				table.wipe(players);
+				numInvited = 0;
+				tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
+			end
 		elseif GetNumGroupMembers() == 0 then
 			LFRBrowseFrameCreateRaidButton:Enable();
 		end
@@ -151,15 +149,14 @@ end
 local timer = 10;
 local function UpdateHandler(self, elapsed)
 	timer = timer - elapsed;
-	if timer < 0 and not IsInRaid() then
+	if timer < 0 then
 		--print("fail safe!");
 		timer = 10;
 
-		creatingRaid = false;
 		table.wipe(players);
 		numInvited = 0;
 		tankNeeds, healerNeeds, dpsNeeds = 2, 6, 17;
-
+		LFRBrowseFrameCreateRaidButton:Enable();
 		mainFrame:SetScript("OnUpdate", nil)
 	end
 end
@@ -251,8 +248,12 @@ function LFRAdvanced_CreateRaid()
 
 	print(format("We have %u tanks, %u healers and %u dps listed so far", tanks, healers, dps));
 
-	LFRA_InvitePlayers(4);
-	mainFrame:SetScript("OnUpdate", UpdateHandler)
+	if IsInRaid() and UnitIsGroupAssistant("player") then
+		LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
+	else
+		LFRA_InvitePlayers(4);
+		mainFrame:SetScript("OnUpdate", UpdateHandler)
+	end
 end
 
 function SaveLFRAOptions()
