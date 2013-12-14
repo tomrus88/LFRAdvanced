@@ -211,9 +211,13 @@ end
 
 function LFRAdvanced_CreateRaid()
 	local joinedId = SearchLFGGetJoinedID() or 0;
-	if joinedId ~= 767 and joinedId ~= 768 then
+	if joinedId == 0 then
+		print("Please select world boss from dropdown menu!");
+		return;
+	elseif joinedId ~= 767 and joinedId ~= 768 then
 	--if joinedId ~= 358  then
-		print("Can't create raid for this LFG id ("..joinedId..")");
+		local dun = GetLFGDungeonInfo(joinedId);
+		print("Can't create raid for this LFG id ("..(dun or "Unknown")..")");
 		return;
 	end
 
