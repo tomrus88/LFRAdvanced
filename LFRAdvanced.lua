@@ -131,10 +131,10 @@ local function EventHandler(self, event, ...)
 			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" then
-		if UnitIsGroupLeader("player") then
-			if table_size(players) > 0 and GetNumGroupMembers() > 0 and not IsInRaid() then
+		if UnitIsGroupLeader("player") and table_size(players) > 0 then
+			if GetNumGroupMembers() > 0 and not IsInRaid() then
 				ConvertToRaid();
-			elseif IsInRaid() and table_size(players) > 0 then
+			elseif IsInRaid() then
 				LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
 				table.wipe(players);
 				numInvited = 0;
@@ -248,8 +248,9 @@ function LFRAdvanced_CreateRaid()
 
 	print(format("We have %u tanks, %u healers and %u dps listed so far", tanks, healers, dps));
 
-	if IsInRaid() and UnitIsGroupAssistant("player") then
+	if IsInRaid() and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
 		LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
+		table.wipe(players);
 	else
 		LFRA_InvitePlayers(4);
 		mainFrame:SetScript("OnUpdate", UpdateHandler)
