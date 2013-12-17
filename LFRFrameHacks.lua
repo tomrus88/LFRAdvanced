@@ -407,6 +407,7 @@ LFRBrowse_UpdateButtonStates = MyLFRBrowse_UpdateButtonStates
 
 -- Join hack
 local LFRQueueFrame_Join_Old = LFRQueueFrame_Join
+local listErrorMsg = "You can't list for cross realm and your realm only raids at same time.\nPlease check your selection!";
 
 function MyLFRQueueFrame_Join()
 	local ids = {}
@@ -439,7 +440,8 @@ function MyLFRQueueFrame_Join()
 	end
 
 	if crossRealmGroupFound and realmGroupFound then
-		print("You can't list for cross realm and your realm only raids at same time. Please check your selection!");
+		UIErrorsFrame:AddMessage(listErrorMsg, 1.0, 0.1, 0.1, 1.0);
+		print(listErrorMsg);
 		print("You have selected:");
 
 		for k, v in pairs(ids) do

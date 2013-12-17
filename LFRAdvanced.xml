@@ -46,7 +46,7 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				StaticPopup_Show("LFRADVANCED_CREATERAID");
+				LFRAdvanced_CreateRaid(true);
 			</OnClick>
 		</Scripts>
 	</Button>

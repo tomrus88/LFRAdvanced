@@ -20,7 +20,7 @@ StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
-		LFRAdvanced_CreateRaid()
+		LFRAdvanced_CreateRaid(false)
 	end,
 	timeout = 0,
 	whileDead = true,
@@ -209,7 +209,12 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 	return true;
 end
 
-function LFRAdvanced_CreateRaid()
+function LFRAdvanced_CreateRaid(click)
+	if click and not IsInRaid() then
+		StaticPopup_Show("LFRADVANCED_CREATERAID");
+		return;
+	end
+
 	local joinedId = SearchLFGGetJoinedID() or 0;
 	if joinedId == 0 then
 		print("Please select world boss from dropdown menu!");
