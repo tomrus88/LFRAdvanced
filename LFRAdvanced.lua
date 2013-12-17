@@ -16,7 +16,7 @@ end
 
 StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
 	preferredIndex = STATICPOPUPS_NUMDIALOGS,
-	text = "You are about to create raid with other players.\nAre you sure?",
+	text = "EXPERIMENTAL FEATURE! USE AT YOUR OWN RISK!\nYou are about to create raid with other players.\nAre you sure?",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
@@ -277,3 +277,13 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowStats:SetChecked(LFRAdvancedOptions.ShowStats);
 	LFRAdvancedOptionsFrameShowBossKills:SetChecked(LFRAdvancedOptions.ShowBossKills);
 end
+
+--local SetLFGDungeon_Old = SetLFGDungeon;
+
+--function MySetLFGDungeon(t, d)
+--	print("Type:"..t..", dungeon "..d.."("..GetLFGDungeonInfo(d)..")");
+--	SetLFGDungeon_Old(t, d);
+--end
+
+--SetLFGDungeon = MySetLFGDungeon;
+--/script local o=SetLFGDungeon function n(t,d) local nm,_,_,_,_,_,_,_,_,_,_,di=GetLFGDungeonInfo(d) print("Type:"..t..", dungeon "..d.." ("..nm.."-"..GetDifficultyInfo(di)..")") o(t,d) end SetLFGDungeon=n

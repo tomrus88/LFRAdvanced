@@ -404,3 +404,56 @@ function MyLFRBrowse_UpdateButtonStates()
 end
 
 LFRBrowse_UpdateButtonStates = MyLFRBrowse_UpdateButtonStates
+
+-- Join hack
+local LFRQueueFrame_Join_Old = LFRQueueFrame_Join
+
+function MyLFRQueueFrame_Join()
+	local ids = {}
+	for _, queueID in pairs(LFRRaidList) do
+		if not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] then
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(queueID);
+			if typeID == 2 then
+				ids[queueID] = groupID;
+			end
+		end
+	end
+	for _, queueID in pairs(LFRHiddenByCollapseList) do
+		if not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] then
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(queueID);
+			if typeID == 2 then
+				ids[queueID] = groupID;
+			end
+		end
+	end
+
+	local crossRealmGroupFound = false;
+	local realmGroupFound = false;
+	for k, v in pairs(ids) do
+		if v == -45 or v == -46 then
+			crossRealmGroupFound = true;
+		else
+			realmGroupFound = true;
+		end
+		--print(k.." "..v);
+	end
+
+	if crossRealmGroupFound and realmGroupFound then
+		print("You can't list for cross realm and your realm only raids at same time. Please check your selection!");
+		print("You have selected:");
+
+		for k, v in pairs(ids) do
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(k);
+			if v == -45 or v == -46 then
+				print(name.."-"..(GetDifficultyInfo(difficulty) or "Unknown difficulty").." (Cross realm)");
+			else
+				print(name.."-"..(GetDifficultyInfo(difficulty) or "Unknown difficulty").." (Your realm only)");
+			end
+		end
+		return;
+	end
+
+	LFRQueueFrame_Join_Old();
+end
+
+LFRQueueFrame_Join = MyLFRQueueFrame_Join
