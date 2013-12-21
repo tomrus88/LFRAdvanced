@@ -16,7 +16,7 @@ end
 
 StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
 	preferredIndex = STATICPOPUPS_NUMDIALOGS,
-	text = "EXPERIMENTAL FEATURE! USE AT YOUR OWN RISK!\nYou are about to create raid with other players.\nAre you sure?",
+	text = "You are about to create raid with other players.\nAre you sure?",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
