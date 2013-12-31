@@ -11,6 +11,7 @@ if LFRAdvancedOptions == nil then
 	LFRAdvancedOptions = {
 		ShowStats = true,
 		ShowBossKills = true,
+		ShowLockouts = true,
 	}
 end
 
@@ -264,6 +265,7 @@ function LFRAdvanced_CreateRaid(click)
 		else
 			print("Can't invite players (not leader or no assist)");
 			table.wipe(players);
+			LFRBrowseFrameCreateRaidButton:Enable();
 			return;
 		end
 	else
@@ -276,19 +278,11 @@ end
 function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowStats = LFRAdvancedOptionsFrameShowStats:GetChecked();
 	LFRAdvancedOptions.ShowBossKills = LFRAdvancedOptionsFrameShowBossKills:GetChecked();
+	LFRAdvancedOptions.ShowLockouts = LFRAdvancedOptionsFrameShowLockouts:GetChecked();
 end
 
 function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowStats:SetChecked(LFRAdvancedOptions.ShowStats);
 	LFRAdvancedOptionsFrameShowBossKills:SetChecked(LFRAdvancedOptions.ShowBossKills);
+	LFRAdvancedOptionsFrameShowLockouts:SetChecked(LFRAdvancedOptions.ShowLockouts);
 end
-
---local SetLFGDungeon_Old = SetLFGDungeon;
-
---function MySetLFGDungeon(t, d)
---	print("Type:"..t..", dungeon "..d.."("..GetLFGDungeonInfo(d)..")");
---	SetLFGDungeon_Old(t, d);
---end
-
---SetLFGDungeon = MySetLFGDungeon;
---/script local o=SetLFGDungeon function n(t,d) local nm,_,_,_,_,_,_,_,_,_,_,di=GetLFGDungeonInfo(d) print("Type:"..t..", dungeon "..d.." ("..nm.."-"..GetDifficultyInfo(di)..")") o(t,d) end SetLFGDungeon=n

@@ -103,20 +103,22 @@ function MyLFRBrowseButton_OnEnter(self)
 		end
 	end
 
-	if ( encountersComplete > 0 or isIneligible ) then
-		GameTooltip:AddLine("\n"..BOSSES);
-		for i=1, encountersTotal do
-			local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(realIndex or self.index, i);
-			if ( isKilled ) then
-				GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-			elseif ( isIneligible ) then
-				GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE_INELIGIBLE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-			else
-				GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	if ( LFRAdvancedOptions.ShowLockouts ) then
+		if ( encountersComplete > 0 or isIneligible ) then
+			GameTooltip:AddLine("\n"..BOSSES);
+			for i=1, encountersTotal do
+				local bossName, texture, isKilled, isIneligible = SearchLFGGetEncounterResults(realIndex or self.index, i);
+				if ( isKilled ) then
+					GameTooltip:AddDoubleLine(bossName, BOSS_DEAD, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				elseif ( isIneligible ) then
+					GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE_INELIGIBLE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				else
+					GameTooltip:AddDoubleLine(bossName, BOSS_ALIVE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				end
 			end
+		elseif ( partyMembers > 0 and encountersTotal > 0) then
+			GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
 		end
-	elseif ( partyMembers > 0 and encountersTotal > 0) then
-		GameTooltip:AddLine("\n"..ALL_BOSSES_ALIVE);
 	end
 
 	GameTooltip:AddLine("Extra info:");
