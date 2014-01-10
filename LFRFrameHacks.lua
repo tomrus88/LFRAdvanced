@@ -353,19 +353,22 @@ local LFRQueueFrameSpecificListButton_SetDungeon_Old = LFRQueueFrameSpecificList
 
 function MyLFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, submode)
 	LFRQueueFrameSpecificListButton_SetDungeon_Old(button, dungeonID, mode, submode)
-	-- unlock it!
-	if ( LFR_CanQueueForMultiple() ) then
-		button.enableButton:Show();
-		LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
-	else
-		if ( LFGIsIDHeader(dungeonID) ) then
-			button.enableButton:Hide();
-		else
+
+	if LFRAdvancedOptions.ShowOldRaids then
+		-- unlock it!
+		if ( LFR_CanQueueForMultiple() ) then
 			button.enableButton:Show();
-			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, true);
+			LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, false);
+		else
+			if ( LFGIsIDHeader(dungeonID) ) then
+				button.enableButton:Hide();
+			else
+				button.enableButton:Show();
+				LFGSpecificChoiceEnableButton_SetIsRadio(button.enableButton, true);
+			end
 		end
+		button.lockedIndicator:Hide();
 	end
-	button.lockedIndicator:Hide();
 end
 
 LFRQueueFrameSpecificListButton_SetDungeon = MyLFRQueueFrameSpecificListButton_SetDungeon
@@ -380,11 +383,15 @@ function MyLFRQueueFrame_Update()
 	else
 		checkedList = LFGQueuedForList[LE_LFG_CATEGORY_LFR];
 	end
-	
+
 	LFRRaidList = GetLFRChoiceOrder(LFRRaidList);
-		
-	LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, MyLFGList_FilterFunction, LFR_MAX_SHOWN_LEVEL_DIFF);
-	
+
+	if LFRAdvancedOptions.ShowOldRaids then
+		LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, MyLFGList_FilterFunction, LFR_MAX_SHOWN_LEVEL_DIFF);
+	else
+		LFGQueueFrame_UpdateLFGDungeonList(LFRRaidList, LFRHiddenByCollapseList, checkedList, LFR_CURRENT_FILTER, LFR_MAX_SHOWN_LEVEL_DIFF);
+	end
+
 	LFRQueueFrameSpecificList_Update();
 end
 

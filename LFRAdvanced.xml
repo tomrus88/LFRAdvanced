@@ -94,8 +94,19 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show boss lockouots");
+						self.Text:SetText("Show boss lockouts");
 						self.tooltipText = "Display boss lockouts in tooltip.";
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowOldRaids" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowLockouts" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetText("Show old raids");
+						self.tooltipText = "Show old raids in Raid Browser.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
