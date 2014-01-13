@@ -1,7 +1,5 @@
 ﻿local NAME_ILVL_TEMPLATE = "%s %s (%.02f)";
 
-local RB_RETURN_VALUES_START_PLAYER = 15;
-local RB_RETURN_VALUES_START_PARTY = 10;
 local GetNumGuildMembers, GetGuildRosterInfo = GetNumGuildMembers, GetGuildRosterInfo;
 local GetSpecializationInfoByID = GetSpecializationInfoByID;
 
@@ -13,6 +11,7 @@ if LFRAdvancedOptions == nil then
 		ShowBossKills = true,
 		ShowLockouts = true,
 		ShowOldRaids = true,
+		ShowPartyMembers = true,
 	}
 end
 
@@ -28,32 +27,6 @@ StaticPopupDialogs["LFRADVANCED_CREATERAID"] = {
 	whileDead = true,
 	hideOnEscape = true,
 };
-
-local RB_RETURN_VALUES = {
-	bossKills = 1,
-	specID = 2,
-	isGroupLeader = 3,
-	armor = 4,
-	spellDamage = 5,
-	plusHealing = 6,
-	CritMelee = 7,
-	CritRanged = 8,
-	critSpell = 9,
-	mp5 = 10,
-	mp5Combat = 11,
-	attackPower = 12,
-	agility = 13,
-	maxHealth = 14,
-	maxMana = 15,
-	gearRating = 16,
-	avgILevel = 17,
-	defenseRating = 18,
-	dodgeRating = 19,
-	BlockRating = 20,
-	ParryRating = 21,
-	HasteRating = 22,
-	expertise = 23
-}
 
 local ROLE_ICONS = {
 	LEADER  = "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0:64:16:0:16:0:16|t",
@@ -126,15 +99,6 @@ local function ResetVars()
 end
 
 local function EventHandler(self, event, ...)
---	if event == "PLAYER_ENTERING_WORLD" then
---		if not IsAddonMessagePrefixRegistered("LFRA") then
---			RegisterAddonMessagePrefix("LFRA")
---		end
---	elseif event == "CHAT_MSG_ADDON" then
---		local prefix, msg, channel, sender = ...;
---		if prefix == "LFRA" then
---			print("Addon msg: "..prefix.." "..msg.." "..channel.." "..sender);
---		end
 	if event == "MODIFIER_STATE_CHANGED" then
 		if LFRAdvanced.lastOnEnterButton then
 			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
@@ -163,8 +127,6 @@ local function UpdateHandler(self, elapsed)
 	end
 end
 
---mainFrame:RegisterEvent("CHAT_MSG_ADDON")
---mainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
 mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
 mainFrame:SetScript("OnEvent", EventHandler)

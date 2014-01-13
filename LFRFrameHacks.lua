@@ -48,7 +48,6 @@ function MyLFRBrowseButton_OnEnter(self)
 		local groupMembers = 0;
 		for i=0, partyMembers do
 			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(realIndex or self.index, i);
-			--print("dbg!"..i.." of "..(partyMembers or "nil").." "..(name or "nil"));
 			if name then
 				groupILevel = groupILevel + avgILevel;
 				groupMembers = groupMembers + 1
@@ -238,83 +237,24 @@ local SearchLFGGetNumResults = SearchLFGGetNumResults;
 local sortOrder = false;
 local idx = {};
 local ilvls = {};
---local temp = {};
 
 function MySearchLFGGetResults(index)
 	local numResults, totalResults = SearchLFGGetNumResults();
 
 	table.wipe(idx);
 	table.wipe(ilvls);
-	--table.wipe(temp);
 
 	for i = 1, numResults do
 		idx[i] = i;
 		local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults_Old(i);
 		ilvls[i] = avgILevel;
-		--if not temp[i] then temp[i] = {} end
-		--temp[i].name = name;
-		--temp[i].level = level;
-		--temp[i].areaName = areaName;
-		--temp[i].className = className;
-		--temp[i].comment = comment;
-		--temp[i].partyMembers = partyMembers;
-		--temp[i].status = status;
-		--temp[i].class = class;
-		--temp[i].encountersTotal = encountersTotal;
-		--temp[i].encountersComplete = encountersComplete;
-		--temp[i].isIneligible = isIneligible;
-		--temp[i].isLeader = isLeader;
-		--temp[i].isTank = isTank;
-		--temp[i].isHealer = isHealer;
-		--temp[i].isDamage = isDamage;
-		--temp[i].bossKills = bossKills;
-		--temp[i].specID = specID;
-		--temp[i].isGroupLeader = isGroupLeader;
-		--temp[i].armor = armor;
-		--temp[i].spellDamage = spellDamage;
-		--temp[i].plusHealing = plusHealing;
-		--temp[i].CritMelee = CritMelee;
-		--temp[i].CritRanged = CritRanged;
-		--temp[i].critSpell = critSpell;
-		--temp[i].mp5 = mp5;
-		--temp[i].mp5Combat = mp5Combat;
-		--temp[i].attackPower = attackPower;
-		--temp[i].agility = agility;
-		--temp[i].maxHealth = maxHealth;
-		--temp[i].maxMana = maxMana;
-		--temp[i].gearRating = gearRating;
-		--temp[i].avgILevel = avgILevel;
-		--temp[i].defenseRating = defenseRating;
-		--temp[i].dodgeRating = dodgeRating;
-		--temp[i].BlockRating = BlockRating;
-		--temp[i].ParryRating = ParryRating;
-		--temp[i].HasteRating = HasteRating;
-		--temp[i].expertise = expertise;
-		--temp[i].realIndex = i;
 	end
 
-	--table.sort(temp, SortByILevel);
 	table.sort(idx, SortByILevel);
 
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults_Old(idx[index]);
 	return name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise, idx[index];
-	--local ret = temp[index];
-	--for i = 1, #temp do
-	--	if i ~= index then
-	--		table.wipe(temp[i]);
-	--	end
-	--end
-	--table.wipe(temp);
-	--return ret.name, ret.level, ret.areaName, ret.className, ret.comment, ret.partyMembers, ret.status, ret.class, ret.encountersTotal, ret.encountersComplete, ret.isIneligible, ret.isLeader, ret.isTank, ret.isHealer, ret.isDamage, ret.bossKills, ret.specID, ret.isGroupLeader, ret.armor, ret.spellDamage, ret.plusHealing, ret.CritMelee, ret.CritRanged, ret.critSpell, ret.mp5, ret.mp5Combat, ret.attackPower, ret.agility, ret.maxHealth, ret.maxMana, ret.gearRating, ret.avgILevel, ret.defenseRating, ret.dodgeRating, ret.BlockRating, ret.ParryRating, ret.HasteRating, ret.expertise, ret.realIndex;
 end
-
---function SortByILevel(a, b)
---	if sortOrder then
---		return a.avgILevel < b.avgILevel
---	else
---		return a.avgILevel > b.avgILevel
---	end
---end
 
 function SortByILevel(a, b)
 	if sortOrder then
@@ -445,7 +385,6 @@ function MyLFRQueueFrame_Join()
 		else
 			realmGroupFound = true;
 		end
-		--print(k.." "..v);
 	end
 
 	if crossRealmGroupFound and realmGroupFound then
