@@ -42,40 +42,42 @@ function MyLFRBrowseButton_OnEnter(self)
 		-- Bogus texture to fix spacing
 		--GameTooltip:AddTexture("");
 
-		--Display party members.
-		--local displayedMembersLabel = false;
-		local groupILevel = 0;
-		local groupMembers = 0;
-		for i=0, partyMembers do
-			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(realIndex or self.index, i);
-			if name then
-				groupILevel = groupILevel + avgILevel;
-				groupMembers = groupMembers + 1
+		if ( LFRAdvancedOptions.ShowPartyInfo ) then
+			--Display party members.
+			--local displayedMembersLabel = false;
+			local groupILevel = 0;
+			local groupMembers = 0;
+			for i=0, partyMembers do
+				local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(realIndex or self.index, i);
+				if name then
+					groupILevel = groupILevel + avgILevel;
+					groupMembers = groupMembers + 1
 
-				--if ( not displayedMembersLabel ) then
-				--	displayedMembersLabel = true;
-				--	GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
-				--end
+					--if ( not displayedMembersLabel ) then
+					--	displayedMembersLabel = true;
+					--	GameTooltip:AddLine("\n"..IMPORTANT_PEOPLE_IN_GROUP);
+					--end
 
-				if groupMembers < 20 then--limit to 20 members in tooltip
-					if ( relationship ) then
-						if ( relationship == "ignored" ) then
-							GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, RED_FONT_COLOR_CODE), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-						elseif ( relationship == "friend" ) then
-							GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, GREEN_FONT_COLOR_CODE), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-						end
-					else
-						if IsGuildie(name) then
-							GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, GREEN_FONT_COLOR_CODE), GUILD, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+					if groupMembers < 20 then--limit to 20 members in tooltip
+						if ( relationship ) then
+							if ( relationship == "ignored" ) then
+								GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, RED_FONT_COLOR_CODE), IGNORED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+							elseif ( relationship == "friend" ) then
+								GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, GREEN_FONT_COLOR_CODE), FRIEND, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+							end
 						else
-							GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, NORMAL_FONT_COLOR_CODE), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+							if IsGuildie(name) then
+								GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, GREEN_FONT_COLOR_CODE), GUILD, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+							else
+								GameTooltip:AddDoubleLine(GetPlayerInfoStringWithIlvl(name, level, specID, className, avgILevel, NORMAL_FONT_COLOR_CODE), PLAYER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+							end
 						end
 					end
 				end
 			end
-		end
-		if groupILevel > 0 then
-			GameTooltip:AddLine(format("Group avg ilvl: %.02f", groupILevel/groupMembers));
+			if groupILevel > 0 then
+				GameTooltip:AddLine(format("Group avg ilvl: %.02f", groupILevel/groupMembers));
+			end
 		end
 	else
 		GameTooltip:AddLine(name);

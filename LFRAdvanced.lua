@@ -11,7 +11,7 @@ if LFRAdvancedOptions == nil then
 		ShowBossKills = true,
 		ShowLockouts = true,
 		ShowOldRaids = true,
-		ShowPartyMembers = true,
+		ShowPartyInfo = true,
 	}
 end
 
@@ -243,6 +243,7 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowBossKills = LFRAdvancedOptionsFrameShowBossKills:GetChecked();
 	LFRAdvancedOptions.ShowLockouts = LFRAdvancedOptionsFrameShowLockouts:GetChecked();
 	LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
+	LFRAdvancedOptions.ShowPartyInfo = LFRAdvancedOptionsFrameShowPartyInfo:GetChecked();
 end
 
 function RefreshLFRAOptions()
@@ -250,4 +251,5 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowBossKills:SetChecked(LFRAdvancedOptions.ShowBossKills);
 	LFRAdvancedOptionsFrameShowLockouts:SetChecked(LFRAdvancedOptions.ShowLockouts);
 	LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);
+	LFRAdvancedOptionsFrameShowPartyInfo:SetChecked(LFRAdvancedOptions.ShowPartyInfo);
 end
