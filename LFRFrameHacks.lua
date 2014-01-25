@@ -1,4 +1,8 @@
-﻿-- Tab hack
+﻿local SearchLFGGetResults_Old = SearchLFGGetResults;
+local SearchLFGGetNumResults = SearchLFGGetNumResults;
+local classFilter = "NONE";
+
+-- Tab hack
 local LFRFrame_SetActiveTab_Old = LFRFrame_SetActiveTab
 
 function MyLFRFrame_SetActiveTab(tab)
@@ -12,6 +16,57 @@ function MyLFRFrame_SetActiveTab(tab)
 end
 
 LFRFrame_SetActiveTab = MyLFRFrame_SetActiveTab
+
+-- Update hack
+local LFRBrowseFrameList_Update_Old = LFRBrowseFrameList_Update
+
+function MyLFRBrowseFrameList_Update()
+	LFRBrowseFrameRefreshButton.timeUntilNextRefresh = LFR_BROWSE_AUTO_REFRESH_TIME;
+
+	local numResults, totalResults = SearchLFGGetNumResults();
+	local filteredNum = 0;
+	local foundIds = {};
+	for i = 1, numResults do
+		local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults_Old(i);
+		if classFilter == "NONE" or classFilter == class then
+			filteredNum = filteredNum + 1;
+			table.insert(foundIds, i);
+		end
+	end
+
+	FauxScrollFrame_Update(LFRBrowseFrameListScrollFrame, filteredNum, NUM_LFR_LIST_BUTTONS, 16);
+
+	local offset = FauxScrollFrame_GetOffset(LFRBrowseFrameListScrollFrame);
+
+	for i=1, NUM_LFR_LIST_BUTTONS do
+		local button = _G["LFRBrowseFrameListButton"..i];
+
+		if ( i <= filteredNum ) then
+			LFRBrowseFrameListButton_SetData(button, foundIds[i + offset]);
+			button:Show();
+		else
+			button:Hide();
+		end
+	end
+
+	if ( LFRBrowseFrame.selectedName ) then
+		local nameStillThere = false;
+		for i=1, numResults do
+			local name = SearchLFGGetResults(i);
+			if ( LFRBrowseFrame.selectedName == name ) then
+				nameStillThere = true;
+				break;
+			end
+		end
+		if ( not nameStillThere ) then
+			LFRBrowseFrame.selectedName = nil;
+		end
+	end
+
+	LFRBrowse_UpdateButtonStates();
+end
+
+LFRBrowseFrameList_Update = MyLFRBrowseFrameList_Update
 
 -- SetData hack
 local LFRBrowseFrameListButton_SetData_Old = LFRBrowseFrameListButton_SetData;
@@ -234,8 +289,6 @@ for i=1, NUM_LFR_LIST_BUTTONS do
 end
 
 -- ilevel sort hack, slow
-local SearchLFGGetResults_Old = SearchLFGGetResults;
-local SearchLFGGetNumResults = SearchLFGGetNumResults;
 local sortOrder = false;
 local idx = {};
 local ilvls = {};
@@ -287,8 +340,44 @@ for i = 1, 7 do
 end
 
 -- Scroll Bar Fix
-LFRBrowseFrameListScrollFrame:SetPoint("TOPRIGHT", -31, 0)
-LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", 0, 29)
+LFRBrowseFrameListScrollFrame:SetPoint("TOPRIGHT", -31, 0);
+LFRBrowseFrameListScrollFrame:SetPoint("BOTTOMRIGHT", 0, 29);
+
+LFRBrowseFrameRaidDropDown:SetPoint("TOPLEFT", 60, -25);
+
+function LFRBrowseFrameClassDropDown_SetUp(self)
+	UIDropDownMenu_SetWidth(self, 50);
+	UIDropDownMenu_Initialize(self, LFRBrowseFrameClassDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(LFRBrowseFrameClassDropDown, classFilter);
+end
+
+function LFRBrowseFrameClassDropDown_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+
+	if ( not level or level == 1 ) then
+		info.text = NONE;
+		info.value = "NONE";
+		info.func = LFRBrowseFrameClassDropDownButton_OnClick;
+		info.checked = classFilter == info.value;
+		UIDropDownMenu_AddButton(info);
+
+		for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+			info.text = v;
+			info.value = k;
+			info.func = LFRBrowseFrameClassDropDownButton_OnClick;
+			info.checked = classFilter == info.value;
+			UIDropDownMenu_AddButton(info, 1);
+		end
+	end
+end
+
+function LFRBrowseFrameClassDropDownButton_OnClick(self)
+	LFRBrowseFrameClassDropDown.activeValue = self.value;
+	UIDropDownMenu_SetSelectedValue(LFRBrowseFrameClassDropDown, self.value);
+	HideDropDownMenu(1);	--Hide the category menu. It gets annoying.
+	classFilter = self.value;
+	LFRBrowseFrameList_Update();
+end
 
 -- SetDungeon hack
 local LFRQueueFrameSpecificListButton_SetDungeon_Old = LFRQueueFrameSpecificListButton_SetDungeon

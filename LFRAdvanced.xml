@@ -39,10 +39,19 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="LFRBrowseFrameClassDropDown" inherits="UIDropDownMenuTemplate" parent="LFRBrowseFrame" id="2">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRaidDropDown" relativePoint="RIGHT" x="-20" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnShow function="LFRBrowseFrameClassDropDown_SetUp"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="LFRBrowseFrameCreateRaidButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="Create raid" >
 		<Size x="80" y="22"/>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRaidDropDown" relativePoint="RIGHT" x="0" y="4"/>
+			<Anchor point="LEFT" relativeTo="LFRBrowseFrameClassDropDown" relativePoint="RIGHT" x="0" y="4"/>
 		</Anchors>
 		<Scripts>
 			<OnClick>
