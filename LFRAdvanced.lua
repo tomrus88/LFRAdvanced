@@ -12,6 +12,7 @@ if LFRAdvancedOptions == nil then
 		ShowLockouts = true,
 		ShowOldRaids = true,
 		ShowPartyInfo = true,
+		IgnoreLevelReq = false,
 	}
 end
 
@@ -166,7 +167,7 @@ function MyLFGList_FilterFunction(dungeonID, maxLevelDiff)
 	local level = UnitLevel("player");
 
 	-- If we're not within the hard level requirements, we won't display it
-	if ( level < minLevel ) then
+	if ( not LFRAdvancedOptions.IgnoreLevelReq and level < minLevel ) then
 		return false;
 	end
 
