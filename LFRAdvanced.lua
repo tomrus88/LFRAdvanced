@@ -245,6 +245,7 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowLockouts = LFRAdvancedOptionsFrameShowLockouts:GetChecked();
 	LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
 	LFRAdvancedOptions.ShowPartyInfo = LFRAdvancedOptionsFrameShowPartyInfo:GetChecked();
+	LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
 end
 
 function RefreshLFRAOptions()
@@ -253,4 +254,5 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowLockouts:SetChecked(LFRAdvancedOptions.ShowLockouts);
 	LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);
 	LFRAdvancedOptionsFrameShowPartyInfo:SetChecked(LFRAdvancedOptions.ShowPartyInfo);
+	LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
 end
