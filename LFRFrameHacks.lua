@@ -2,6 +2,18 @@
 local SearchLFGGetNumResults = SearchLFGGetNumResults;
 local classFilter = "NONE";
 
+local function Colorize(value)
+	--if something111 then
+	--	return "|cffffffff"..value.."|r"
+	--end
+	--return value
+	return "|cffffffff"..value.."|r"
+end
+
+local function round(number, decimals)
+	return (("%%.%df"):format(decimals)):format(number)
+end
+
 -- Tab hack
 local LFRFrame_SetActiveTab_Old = LFRFrame_SetActiveTab
 
@@ -177,25 +189,25 @@ function MyLFRBrowseButton_OnEnter(self)
 		end
 	end
 
-	GameTooltip:AddLine("Extra info:");
+	GameTooltip:AddLine("• Extra info •");
 
 	if ( areaName ) then
-		GameTooltip:AddLine(format(ZONE_COLON.." %s", areaName));
+		GameTooltip:AddLine(format(ZONE_COLON.." %s", Colorize(areaName)));
 	end
 
 	-- this is sum of kills for all bosses on normal mode or flex
 	if ( LFRAdvancedOptions.ShowBossKills and bossKills and bossKills > 0 ) then
-		GameTooltip:AddLine(format("Boss kills: %u", bossKills));
+		GameTooltip:AddLine(format("Boss kills: %s", Colorize(bossKills)));
 	end
 
 	-- max average ilvl
 	if ( avgILevel and avgILevel > 0 ) then
-		GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %.02f", avgILevel));
+		GameTooltip:AddLine(format(STAT_AVERAGE_ITEM_LEVEL..": %s", Colorize(round(avgILevel, 2))));
 	end
 
 	-- no clue wtf this value means
 	if ( gearRating and gearRating > 0 ) then
-		GameTooltip:AddLine(format("Gear Rating: %u", gearRating));
+		GameTooltip:AddLine(format("Gear Rating: %s", Colorize(gearRating)));
 	end
 
 	-- always true?
@@ -209,60 +221,60 @@ function MyLFRBrowseButton_OnEnter(self)
 	end
 
 	if ( armor and armor > 0 ) then
-		GameTooltip:AddLine(format(ARMOR_TEMPLATE, armor));
+		GameTooltip:AddLine(format(ARMOR_TEMPLATE, Colorize(armor)));
 	end
 
 	if ( (spellDamage and spellDamage > 0) or (plusHealing and plusHealing > 0) ) then
-		GameTooltip:AddLine(format(STAT_SPELLPOWER..": %u (%u +heal)", spellDamage, plusHealing));
+		GameTooltip:AddLine(format(STAT_SPELLPOWER..": %s (%s +heal)", Colorize(spellDamage), Colorize(plusHealing)));
 	end
 
 	if ( (CritMelee and CritMelee > 0) or (CritRanged and CritRanged > 0) or (critSpell and critSpell > 0) ) then
-		GameTooltip:AddLine(format(MELEE_CRIT_CHANCE..": melee %u, ranged %u, spell %u", CritMelee, CritRanged, critSpell));
+		GameTooltip:AddLine(format(MELEE_CRIT_CHANCE..": melee %s, ranged %s, spell %s", Colorize(CritMelee), Colorize(CritRanged), Colorize(critSpell)));
 	end
 
 	if ( (mp5 and mp5 > 0) or (mp5Combat and mp5Combat > 0) ) then
-		GameTooltip:AddLine(format("MP5: %u (in combat %u)", mp5, mp5Combat));
+		GameTooltip:AddLine(format("MP5: %s (in combat %s)", Colorize(mp5), Colorize(mp5Combat)));
 	end
 
 	if ( attackPower and attackPower > 0 ) then
-		GameTooltip:AddLine(format(MELEE_ATTACK_POWER..": %u", attackPower));
+		GameTooltip:AddLine(format(MELEE_ATTACK_POWER..": %s", Colorize(attackPower)));
 	end
 
 	if ( agility and agility > 0 ) then
-		GameTooltip:AddLine(format(AGILITY_COLON.." %u", agility));
+		GameTooltip:AddLine(format(AGILITY_COLON.." %s", Colorize(agility)));
 	end
 
 	if ( maxHealth and maxHealth > 0 ) then
-		GameTooltip:AddLine(format(MAX_HP_TEMPLATE, maxHealth));
+		GameTooltip:AddLine(format(HEALTH_COLON.." %s", Colorize(maxHealth)));
 	end
 
 	if ( maxMana and maxMana > 0 ) then
-		GameTooltip:AddLine(format(MANA_COLON.." %u", maxMana));
+		GameTooltip:AddLine(format(MANA_COLON.." %s", Colorize(maxMana)));
 	end
 
 	-- has been removed in Cataclysm as stat
 	if ( defenseRating and defenseRating > 0 ) then
-		GameTooltip:AddLine(format("Defense Rating: %u", defenseRating));
+		GameTooltip:AddLine(format("Defense Rating: %s", Colorize(defenseRating)));
 	end
 
 	if ( dodgeRating and dodgeRating > 0 ) then
-		GameTooltip:AddLine(format(STAT_DODGE..": %u", dodgeRating));
+		GameTooltip:AddLine(format(STAT_DODGE..": %s", Colorize(dodgeRating)));
 	end
 
 	if ( BlockRating and BlockRating > 0 ) then
-		GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, BlockRating));
+		GameTooltip:AddLine(format(SHIELD_BLOCK_TEMPLATE, Colorize(BlockRating)));
 	end
 
 	if ( ParryRating and ParryRating > 0 ) then
-		GameTooltip:AddLine(format(STAT_PARRY..": %u", ParryRating));
+		GameTooltip:AddLine(format(STAT_PARRY..": %s", Colorize(ParryRating)));
 	end
 
 	if ( HasteRating and HasteRating > 0 ) then
-		GameTooltip:AddLine(format(STAT_HASTE..": %u", HasteRating));
+		GameTooltip:AddLine(format(STAT_HASTE..": %s", Colorize(HasteRating)));
 	end
 
 	if ( expertise and expertise > 0 ) then
-		GameTooltip:AddLine(format(STAT_EXPERTISE..": %.02f", expertise).."%");
+		GameTooltip:AddLine(format(STAT_EXPERTISE..": %s", Colorize(round(expertise, 2).."%")));
 	end
 
 	GameTooltip:Show();
