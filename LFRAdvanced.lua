@@ -105,15 +105,15 @@ local function EventHandler(self, event, ...)
 			MyLFRBrowseButton_OnEnter(LFRAdvanced.lastOnEnterButton)
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" then
-		if UnitIsGroupLeader("player") and table_size(players) > 0 then
+		if not IsInGroup() or GetNumGroupMembers() == 0 then
+			ResetVars();
+		elseif UnitIsGroupLeader("player") and table_size(players) > 0 then
 			if GetNumGroupMembers() > 0 and not IsInRaid() then
 				ConvertToRaid();
 			elseif IsInRaid() then
 				LFRA_InvitePlayers(40-GetNumGroupMembers()-numInvited);
 				ResetVars();
 			end
-		elseif GetNumGroupMembers() == 0 then
-			ResetVars();
 		end
 	end
 end
