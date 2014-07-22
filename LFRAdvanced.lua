@@ -13,6 +13,7 @@ if LFRAdvancedOptions == nil then
 		ShowOldRaids = true,
 		ShowPartyInfo = true,
 		IgnoreLevelReq = false,
+		ColorizeTooltip = true,
 	}
 end
 

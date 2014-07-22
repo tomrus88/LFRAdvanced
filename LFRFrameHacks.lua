@@ -3,11 +3,10 @@ local SearchLFGGetNumResults = SearchLFGGetNumResults;
 local classFilter = "NONE";
 
 local function Colorize(value)
-	--if something111 then
-	--	return "|cffffffff"..value.."|r"
-	--end
-	--return value
-	return "|cffffffff"..value.."|r"
+	if LFRAdvancedOptions.ColorizeTooltip then
+		return "|cffffffff"..value.."|r"
+	end
+	return value
 end
 
 local function round(number, decimals)
