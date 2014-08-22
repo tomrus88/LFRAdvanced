@@ -312,7 +312,6 @@ function MySearchLFGGetResults(index)
 
 	for i = 1, numResults do
 		idx[i] = i;
-		--local _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, avgILevel, _, _, _, _, _, _ = SearchLFGGetResults_Old(i);
 		local avgILevel = select(32, SearchLFGGetResults_Old(i));
 		ilvls[i] = avgILevel;
 	end
