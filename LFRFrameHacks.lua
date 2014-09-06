@@ -312,8 +312,7 @@ function MySearchLFGGetResults(index)
 
 	for i = 1, numResults do
 		idx[i] = i;
-		local avgILevel = select(32, SearchLFGGetResults_Old(i));
-		ilvls[i] = avgILevel;
+		ilvls[i] = select(32, SearchLFGGetResults_Old(i));
 	end
 
 	table.sort(idx, SortByILevel);
