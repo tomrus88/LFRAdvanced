@@ -48,7 +48,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="LFRBrowseFrameCreateRaidButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="Create raid" >
+	<Button name="LFRBrowseFrameCreateRaidButton" inherits="UIPanelButtonTemplate" hidden="true" parent="LFRBrowseFrame" text="Create raid" >
 		<Size x="80" y="22"/>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="LFRBrowseFrameClassDropDown" relativePoint="RIGHT" x="0" y="4"/>
