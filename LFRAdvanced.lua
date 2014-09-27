@@ -1,4 +1,5 @@
-﻿local NAME_ILVL_TEMPLATE = "%s %s (%.02f)";
+﻿local ADDON_NAME = ...;
+local NAME_ILVL_TEMPLATE = "%s %s (%.02f)";
 
 local GetNumGuildMembers, GetGuildRosterInfo = GetNumGuildMembers, GetGuildRosterInfo;
 local GetSpecializationInfoByID = GetSpecializationInfoByID;
@@ -14,6 +15,7 @@ if LFRAdvancedOptions == nil then
 		ShowPartyInfo = true,
 		IgnoreLevelReq = false,
 		ColorizeTooltip = true,
+		CreateRaid = false,
 	}
 end
 
@@ -116,6 +118,15 @@ local function EventHandler(self, event, ...)
 				ResetVars();
 			end
 		end
+	elseif event == "ADDON_LOADED" then
+		local addon = select(1, ...);
+		if addon == ADDON_NAME then
+			if LFRAdvancedOptions.CreateRaid then
+				LFRBrowseFrameCreateRaidButton:Show();
+			else
+				LFRBrowseFrameCreateRaidButton:Hide();
+			end
+		end
 	end
 end
 
@@ -129,9 +140,10 @@ local function UpdateHandler(self, elapsed)
 	end
 end
 
-mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED")
+mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
-mainFrame:SetScript("OnEvent", EventHandler)
+mainFrame:RegisterEvent("ADDON_LOADED");
+mainFrame:SetScript("OnEvent", EventHandler);
 
 function IsGuildie(player)
 	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
@@ -247,6 +259,13 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
 	LFRAdvancedOptions.ShowPartyInfo = LFRAdvancedOptionsFrameShowPartyInfo:GetChecked();
 	LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
+	LFRAdvancedOptions.CreateRaid = LFRAdvancedOptionsFrameCreateRaid:GetChecked();
+
+	if LFRAdvancedOptions.CreateRaid then
+		LFRBrowseFrameCreateRaidButton:Show();
+	else
+		LFRBrowseFrameCreateRaidButton:Hide();
+	end
 end
 
 function RefreshLFRAOptions()
@@ -256,4 +275,5 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);
 	LFRAdvancedOptionsFrameShowPartyInfo:SetChecked(LFRAdvancedOptions.ShowPartyInfo);
 	LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
+	LFRAdvancedOptionsFrameCreateRaid:SetChecked(LFRAdvancedOptions.CreateRaid);
 end
