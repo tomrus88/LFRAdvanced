@@ -121,11 +121,7 @@ local function EventHandler(self, event, ...)
 	elseif event == "ADDON_LOADED" then
 		local addon = select(1, ...);
 		if addon == ADDON_NAME then
-			if LFRAdvancedOptions.CreateRaid then
-				LFRBrowseFrameCreateRaidButton:Show();
-			else
-				LFRBrowseFrameCreateRaidButton:Hide();
-			end
+			LFRAdvanced_OnSettingsChanged()
 		end
 	end
 end
@@ -252,6 +248,14 @@ function LFRAdvanced_CreateRaid(click)
 	mainFrame:SetScript("OnUpdate", UpdateHandler)
 end
 
+function LFRAdvanced_OnSettingsChanged()
+	if LFRAdvancedOptions.CreateRaid then
+		LFRBrowseFrameCreateRaidButton:Show();
+	else
+		LFRBrowseFrameCreateRaidButton:Hide();
+	end
+end
+
 function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowStats = LFRAdvancedOptionsFrameShowStats:GetChecked();
 	LFRAdvancedOptions.ShowBossKills = LFRAdvancedOptionsFrameShowBossKills:GetChecked();
@@ -261,11 +265,7 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
 	LFRAdvancedOptions.CreateRaid = LFRAdvancedOptionsFrameCreateRaid:GetChecked();
 
-	if LFRAdvancedOptions.CreateRaid then
-		LFRBrowseFrameCreateRaidButton:Show();
-	else
-		LFRBrowseFrameCreateRaidButton:Hide();
-	end
+	LFRAdvanced_OnSettingsChanged()
 end
 
 function RefreshLFRAOptions()
