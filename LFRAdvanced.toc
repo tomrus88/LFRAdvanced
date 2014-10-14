@@ -1,4 +1,4 @@
-﻿## Interface: 50400
+﻿## Interface: 60000
 ## Title: LFR Advanced
 ## Title-ruRU: LFR Advanced
 ## Version: 1.0
