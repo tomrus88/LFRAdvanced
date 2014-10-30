@@ -34,10 +34,12 @@ function LFGListSearchPanel_UpdateResultList(self)
 			local matches = false;
 
 			local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(self.results[i]);
+			local activityName = C_LFGList.GetActivityInfo(activityID);
 			--print(id.." : "..name.. " : "..comment)
+			local actvMatch = activityName:lower():find(searchText:lower());
 			local nameMatch = name:lower():find(searchText:lower());
 			local commMatch = comment:lower():find(searchText:lower());
-			local matches = nameMatch or commMatch;
+			local matches = actvMatch or nameMatch or commMatch;
 			if matches then
 				numResults = numResults + 1
 				newResults[numResults] = self.results[i];
