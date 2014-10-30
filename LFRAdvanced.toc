@@ -7,3 +7,4 @@
 ## Notes-ruRU: Добавляет информативные подсказки в поисковик рейдов
 ## SavedVariables: LFRAdvancedOptions
 LFRAdvanced.xml
+LFGListDropDown.xml

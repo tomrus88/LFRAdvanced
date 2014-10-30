@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="LFGListDropDown.lua"/>
+	<Script file="LFGListHacks.lua"/>
+
+	<Frame name="LFGListDropDown" inherits="UIDropDownMenuTemplate">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="">
+					<Size x="90" y="12" /> 
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="10" y="2" /> 
+					</Anchors>
+				</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnShow function="LFGListDropDown_SetUp" />
+		<OnLoad>
+			self:SetParent(LFGListFrame.SearchPanel);
+			self:SetPoint("TOPLEFT", LFGListFrame.SearchPanel, "TOPLEFT", -15, -28);
+		</OnLoad>
+	</Scripts>
+	</Frame>
+</Ui>

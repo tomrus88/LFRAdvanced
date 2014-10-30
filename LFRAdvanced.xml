@@ -3,7 +3,7 @@
 	<Script file="LFRAdvanced.lua"/>
 	<Script file="LFRFrameHacks.lua"/>
 
-	<Button name="PVEFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" parent="PVEFrame" text="LOOKING_FOR_RAID" >
+	<Button name="PVEFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" hidden="true" parent="PVEFrame" text="LOOKING_FOR_RAID" >
 		<Size x="100" y="21"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="60" y="-390"/>
