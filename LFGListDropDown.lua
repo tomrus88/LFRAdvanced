@@ -330,7 +330,5 @@ function LFGListDropDownButton_OnClick(self)
 	LFGListDropDown.activeValue = self.value;
 	UIDropDownMenu_SetSelectedValue(LFGListDropDown, self.value);
 	HideDropDownMenu(1);
-	if self.value == 0 then return end
-	local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(self.value);
-	C_LFGList.Search(categoryID, fullName, 0, 0);
+	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
 end
