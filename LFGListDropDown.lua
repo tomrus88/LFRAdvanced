@@ -218,8 +218,20 @@ local activityToExpansion = {
 function LFGListDropDown_SetUp(self)
 	C_LFGList.RequestAvailableActivities();
 	UIDropDownMenu_SetWidth(self, 240);
+	LFGListDropDown_UpdateText();
 	UIDropDownMenu_Initialize(self, LFGListDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(LFGListDropDown, self.activeValue or "");
+end
+
+function LFGListDropDown_UpdateText(act, text)
+	local activity = act or LFGListDropDown.activeValue or 0;
+
+	if activity == 0 then
+		local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
+		UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
+	else
+		local fullName = text or C_LFGList.GetActivityInfo(activity);
+		UIDropDownMenu_SetText(LFGListDropDown, fullName);
+	end
 end
 
 function LFGListDropDown_Initialize(self, level)
