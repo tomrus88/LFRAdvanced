@@ -9,6 +9,7 @@ function LFGListSearchPanel_DoSearch(self)
 		C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
 	else
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
+		self.categoryID = categoryID;
 		C_LFGList.Search(categoryID, fullName, 0, 0);
 	end
 

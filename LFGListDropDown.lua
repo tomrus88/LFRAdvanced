@@ -228,8 +228,9 @@ function LFGListDropDown_Initialize(self, level)
 	if ( not level or level == 1 ) then
 		info.text = NONE;
 		info.value = 0;
-		info.func = LFGListDropDownButton_OnClick;
-		info.checked = self.activeValue == info.value;
+		info.func = LFGListDropDownButton_OnClickCategory;
+		info.hasArrow = false;
+		info.checked = LFGListFrame.SearchPanel.categoryID == info.value;
 		UIDropDownMenu_AddButton(info);
 
 		local categories = C_LFGList.GetAvailableCategories();
@@ -239,10 +240,9 @@ function LFGListDropDown_Initialize(self, level)
 
 			info.text = name;
 			info.value = categoryID;
-			info.func = nil;
+			info.func = LFGListDropDownButton_OnClickCategory;
 			info.hasArrow = true;
-			info.checked = false;
-			info.isRadio = false;
+			info.checked = LFGListFrame.SearchPanel.categoryID == info.value;
 			UIDropDownMenu_AddButton(info, 1);
 		end
 	elseif ( level == 2 ) then
@@ -263,30 +263,23 @@ function LFGListDropDown_Initialize(self, level)
 				local key = browseCategory..customName;
 				if not customGroups[key] then
 					customGroups[key] = true;
+
 					info.text = customName;
 					info.value = key;
 					info.func = nil;
 					info.hasArrow = true;
 					info.checked = false;
-					info.isRadio = false;
 					UIDropDownMenu_AddButton(info, level);
 				end
 			else
 				if not browseGroups[groupID] then
 					browseGroups[groupID] = true;
 
-					if groupID == 0 then
-						info.text = OTHER;
-					else
-						local name = C_LFGList.GetActivityGroupInfo(groupID);
-						info.text = name;
-					end
-
+					info.text = groupID == 0 and OTHER or C_LFGList.GetActivityGroupInfo(groupID);
 					info.value = groupID;
 					info.func = nil;
 					info.hasArrow = true;
 					info.checked = false;
-					info.isRadio = false;
 					UIDropDownMenu_AddButton(info, level);
 				end
 			end
@@ -308,7 +301,6 @@ function LFGListDropDown_Initialize(self, level)
 					info.func = LFGListDropDownButton_OnClick;
 					info.hasArrow = false;
 					info.checked = (self.activeValue == info.value);
-					info.isRadio = true;
 					UIDropDownMenu_AddButton(info, level);
 				end
 			else
@@ -318,7 +310,6 @@ function LFGListDropDown_Initialize(self, level)
 					info.func = LFGListDropDownButton_OnClick;
 					info.hasArrow = false;
 					info.checked = (self.activeValue == info.value);
-					info.isRadio = true;
 					UIDropDownMenu_AddButton(info, level);
 				end
 			end
@@ -326,9 +317,15 @@ function LFGListDropDown_Initialize(self, level)
 	end
 end
 
-function LFGListDropDownButton_OnClick(self)
+function LFGListDropDownButton_OnClick(self, arg1, arg2, checked)
 	LFGListDropDown.activeValue = self.value;
-	UIDropDownMenu_SetSelectedValue(LFGListDropDown, self.value);
-	HideDropDownMenu(1);
+	CloseDropDownMenus();
+	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
+end
+
+function LFGListDropDownButton_OnClickCategory(self, arg1, arg2, checked)
+	LFGListDropDown.activeValue = 0;
+	CloseDropDownMenus();
+	LFGListFrame.SearchPanel.categoryID = self.value;
 	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
 end
