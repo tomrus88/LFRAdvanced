@@ -75,7 +75,7 @@
 
 	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
 		<Frames>
-			<CheckButton name="$parentShowStats" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowStats" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-10"/>
 				</Anchors>
@@ -86,7 +86,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowBossKills" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowBossKills" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowStats" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -97,7 +97,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowLockouts" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowLockouts" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowBossKills" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -108,7 +108,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowOldRaids" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowOldRaids" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowLockouts" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -119,7 +119,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowPartyInfo" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowPartyInfo" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowOldRaids" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -130,7 +130,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentIgnoreLevelReq" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentIgnoreLevelReq" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowPartyInfo" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -141,7 +141,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCreateRaid" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentCreateRaid" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentIgnoreLevelReq" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
