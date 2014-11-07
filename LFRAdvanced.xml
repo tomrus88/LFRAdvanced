@@ -10,7 +10,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Use server side filtering (blizz default)");
+						self.Text:SetText("Use server side filtering (blizzard default)");
 						self.tooltipText = "Use server side filtering instead of client side.";
 					</OnLoad>
 				</Scripts>

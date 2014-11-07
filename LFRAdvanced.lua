@@ -1,6 +1,4 @@
-﻿local ADDON_NAME = ...;
-
-LFRAdvanced = {}
+﻿local ADDON_NAME, ADDON_TABLE = ...;
 
 if LFRAdvancedOptions == nil then
 	LFRAdvancedOptions = {
@@ -8,7 +6,7 @@ if LFRAdvancedOptions == nil then
 	}
 end
 
-local mainFrame = CreateFrame("Frame")
+--local mainFrame = CreateFrame("Frame")
 
 local function EventHandler(self, event, ...)
 	if event == "MODIFIER_STATE_CHANGED" then
