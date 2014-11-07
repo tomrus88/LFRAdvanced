@@ -1,94 +1,23 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFRAdvanced.lua"/>
-	<Script file="LFRFrameHacks.lua"/>
-
-	<Button name="PVEFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" hidden="true" parent="PVEFrame" text="LOOKING_FOR_RAID" >
-		<Size x="100" y="21"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="60" y="-390"/>
-		</Anchors>
-		<Scripts>
-			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
-				ToggleRaidBrowser();
-			</OnClick>
-		</Scripts>
-		<NormalFont style="GameFontNormalSmall"/>
-		<HighlightFont style="GameFontHighlightSmall"/>
-		<DisabledFont style="GameFontDisableSmall"/>
-	</Button>
-
-	<Button name="LFRBrowseFrameCopyNameButton" inherits="UIPanelButtonTemplate" parent="LFRBrowseFrame" text="CALENDAR_COPY_EVENT" >
-		<Size x="80" y="22"/>
-		<Anchors>
-			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRefreshButton" relativePoint="RIGHT" x="3" y="0"/>
-		</Anchors>
-		<Scripts>
-			<OnClick>
-				if not LFRBrowseFrame.selectedName then
-					return;
-				end
-				local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
-				if (not ChatFrameEditBox:IsShown()) then
-					ChatEdit_ActivateChat(ChatFrameEditBox);
-				end
-				ChatFrameEditBox:Insert(LFRBrowseFrame.selectedName);
-				ChatFrameEditBox:HighlightText();
-			</OnClick>
-		</Scripts>
-	</Button>
-
-	<Frame name="LFRBrowseFrameClassDropDown" inherits="UIDropDownMenuTemplate" parent="LFRBrowseFrame" id="2">
-		<Anchors>
-			<Anchor point="LEFT" relativeTo="LFRBrowseFrameRaidDropDown" relativePoint="RIGHT" x="-20" y="0"/>
-		</Anchors>
-		<Scripts>
-			<OnShow function="LFRBrowseFrameClassDropDown_SetUp"/>
-		</Scripts>
-	</Frame>
-
-	<Button name="LFRBrowseFrameCreateRaidButton" inherits="UIPanelButtonTemplate" hidden="true" parent="LFRBrowseFrame" text="Create raid" >
-		<Size x="80" y="22"/>
-		<Anchors>
-			<Anchor point="LEFT" relativeTo="LFRBrowseFrameClassDropDown" relativePoint="RIGHT" x="0" y="4"/>
-		</Anchors>
-		<Scripts>
-			<OnClick>
-				LFRAdvanced_CreateRaid(true);
-			</OnClick>
-		</Scripts>
-	</Button>
-
-	<Button name="LFRBrowseFrameColumnHeader8" inherits="LFRBrowseFrameColumnHeaderTemplate" parent="LFRBrowseFrame" text="ilvl">
-		<Anchors>
-			<Anchor point="LEFT" relativeTo="LFRBrowseFrameColumnHeader7" relativePoint="RIGHT" x="-2" y="0"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				WhoFrameColumn_SetWidth(self, 40);
-				self.sortType = "ilevel";
-			</OnLoad>
-			<OnClick function="MySearchLFGSort"/>
-		</Scripts>
-	</Button>
 
 	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
 		<Frames>
-			<CheckButton name="$parentShowStats" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentServerSideFiltering" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show player stats");
-						self.tooltipText = "Display additional player stats in tooltip. If disabled, you can still see them by holding SHIFT key.";
+						self.Text:SetText("Use server side filtering (blizz default)");
+						self.tooltipText = "Use server side filtering instead of client side.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentShowBossKills" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowStats" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentServerSideFiltering" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

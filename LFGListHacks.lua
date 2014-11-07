@@ -3,7 +3,7 @@ function LFGListSearchPanel_DoSearch(self)
 
 	local activity = LFGListDropDown.activeValue or 0;
 
-	if activity == 0 then
+	if LFRAdvancedOptions.ServerSideFiltering and activity == 0 then
 		-- Blizzard default code
 		local searchText = self.SearchBox:GetText();
 		LFGListDropDown_UpdateText(activity);
@@ -25,7 +25,7 @@ end
 function LFGListSearchPanel_UpdateResultList(self)
 	--print("LFGListSearchPanel_UpdateResultList");
 	local searchText = self.SearchBox:GetText();
-	if searchText ~= "" then
+	if not LFRAdvancedOptions.ServerSideFiltering and searchText ~= "" then
 		--print("SearchText: "..searchText);
 
 		self.totalResults, self.results = C_LFGList.GetSearchResults();
@@ -59,7 +59,12 @@ function LFGListSearchPanel_UpdateResultList(self)
 end
 
 -- disable autocomplete
+local LFGListSearchPanel_UpdateAutoCompleteOrig = LFGListSearchPanel_UpdateAutoComplete;
 function LFGListSearchPanel_UpdateAutoComplete(self)
+	if LFRAdvancedOptions.ServerSideFiltering and LFGListDropDown.activeValue == 0 then
+		LFGListSearchPanel_UpdateAutoCompleteOrig(self);
+		return;
+	end
 	self.AutoCompleteFrame:Hide();
 	self.AutoCompleteFrame.selected = nil;
 end

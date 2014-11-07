@@ -19,6 +19,7 @@
 		<OnLoad>
 			self:SetParent(LFGListFrame.SearchPanel);
 			self:SetPoint("TOPLEFT", LFGListFrame.SearchPanel, "TOPLEFT", -15, -28);
+			self.activeValue = 0;
 			LFGListFrame.SearchPanel.CategoryName:Hide();
 		</OnLoad>
 	</Scripts>
