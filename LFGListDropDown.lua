@@ -218,13 +218,11 @@ local activityToExpansion = {
 function LFGListDropDown_SetUp(self)
 	C_LFGList.RequestAvailableActivities();
 	UIDropDownMenu_SetWidth(self, 240);
-	LFGListDropDown_UpdateText();
+	LFGListDropDown_UpdateText(0);
 	UIDropDownMenu_Initialize(self, LFGListDropDown_Initialize);
 end
 
-function LFGListDropDown_UpdateText(act, text)
-	local activity = act or LFGListDropDown.activeValue or 0;
-
+function LFGListDropDown_UpdateText(activity, text)
 	if activity == 0 then
 		local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
 		UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
