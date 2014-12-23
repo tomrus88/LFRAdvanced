@@ -15,20 +15,20 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowBossKills" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentShowMemberInfo" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentServerSideFiltering" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show boss kills count");
-						self.tooltipText = "Display boss kills count in tooltip.";
+						self.Text:SetText("Show each member's class and role in group tooltip");
+						self.tooltipText = "Show each member's class and role in group tooltip.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentShowLockouts" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowBossKills" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowMemberInfo" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

@@ -103,16 +103,16 @@ function MyLFGListSearchEntry_OnEnter(self)
 		GameTooltip:AddLine(" ");
 	end
 
-	--if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+	if ( LFRAdvancedOptions.ShowMemberInfo ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 		for i=1, numMembers do
 			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
 			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
 			GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
 		end
-	--else
-	--	GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
-	--end
+	else
+		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+	end
 
 	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
 		GameTooltip:AddLine(" ");
