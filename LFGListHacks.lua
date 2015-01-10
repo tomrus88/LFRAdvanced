@@ -1,4 +1,4 @@
-function LFGListSearchPanel_DoSearch(self)
+﻿function LFGListSearchPanel_DoSearch(self)
 	--print("LFGListSearchPanel_DoSearch!");
 
 	local activity = LFGListDropDown.activeValue;
@@ -36,13 +36,14 @@ function LFGListSearchPanel_UpdateResultList(self)
 		for i=1, #self.results do
 			local matches = false;
 
-			local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(self.results[i]);
+			local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(self.results[i]);
 			local activityName = C_LFGList.GetActivityInfo(activityID);
 			--print(id.." : "..name.. " : "..comment)
 			local actvMatch = activityName:lower():find(searchText:lower());
 			local nameMatch = name:lower():find(searchText:lower());
 			local commMatch = comment:lower():find(searchText:lower());
-			local matches = actvMatch or nameMatch or commMatch;
+			local leadMatch = leaderName:lower():find(searchText:lower());
+			local matches = actvMatch or nameMatch or commMatch or leadMatch;
 			if matches then
 				numResults = numResults + 1
 				newResults[numResults] = self.results[i];
@@ -150,3 +151,25 @@ function MyLFGListSearchPanel_OnShow(self)
 end
 
 LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow)
+
+function LFGListUtil_SortSearchResultsCB(id1, id2)
+	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
+	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
+
+	--If one has more friends, do that one first
+	if ( numBNetFriends1 ~= numBNetFriends2 ) then
+		return numBNetFriends1 > numBNetFriends2;
+	end
+
+	if ( numCharFriends1 ~= numCharFriends2 ) then
+		return numCharFriends1 > numCharFriends2;
+	end
+
+	if ( numGuildMates1 ~= numGuildMates2 ) then
+		return numGuildMates1 > numGuildMates2;
+	end
+
+	--If we aren't sorting by anything else, just go by ID
+	--return id1 < id2;
+	return age1 < age2
+end
