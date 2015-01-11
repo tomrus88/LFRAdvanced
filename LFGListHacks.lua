@@ -3,12 +3,17 @@
 
 	local activity = LFGListDropDown.activeValue;
 
-	if LFRAdvancedOptions.ServerSideFiltering or activity == 0 then
+	if LFRAdvancedOptions.ServerSideFiltering then
 		-- Blizzard default code
 		local searchText = self.SearchBox:GetText();
 		LFGListDropDown_UpdateText(activity);
 		C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
+	elseif activity <= 0 then
+		-- category search
+		LFGListDropDown_UpdateText(activity);
+		C_LFGList.Search(self.categoryID, "", 0, 0);
 	else
+		-- activity search
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
 		self.categoryID = categoryID;
 		LFGListDropDown_UpdateText(activity, fullName);
@@ -25,6 +30,7 @@ end
 function LFGListSearchPanel_UpdateResultList(self)
 	--print("LFGListSearchPanel_UpdateResultList");
 	local searchText = self.SearchBox:GetText();
+
 	if not LFRAdvancedOptions.ServerSideFiltering and searchText ~= "" then
 		--print("SearchText: "..searchText);
 
@@ -34,22 +40,13 @@ function LFGListSearchPanel_UpdateResultList(self)
 		local newResults = {};
 
 		for i=1, #self.results do
-			local matches = false;
-
-			local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(self.results[i]);
-			local activityName = C_LFGList.GetActivityInfo(activityID);
-			--print(id.." : "..name.. " : "..comment)
-			local actvMatch = activityName:lower():find(searchText:lower());
-			local nameMatch = name:lower():find(searchText:lower());
-			local commMatch = comment:lower():find(searchText:lower());
-			local leadMatch = leaderName:lower():find(searchText:lower());
-			local matches = actvMatch or nameMatch or commMatch or leadMatch;
-			if matches then
+			if LFRAdvanced_MatchSearchResult(searchText, self.results[i]) then
 				numResults = numResults + 1
 				newResults[numResults] = self.results[i];
 			end
 		end
 
+		--print("totalResults: "..self.totalResults..", displayed: "..numResults)
 		self.totalResults = numResults;
 		self.results = newResults;
 	else
@@ -62,7 +59,7 @@ end
 -- disable autocomplete
 local LFGListSearchPanel_UpdateAutoCompleteOrig = LFGListSearchPanel_UpdateAutoComplete;
 function LFGListSearchPanel_UpdateAutoComplete(self)
-	if LFRAdvancedOptions.ServerSideFiltering or LFGListDropDown.activeValue == 0 then
+	if LFRAdvancedOptions.ServerSideFiltering then
 		LFGListSearchPanel_UpdateAutoCompleteOrig(self);
 		return;
 	end

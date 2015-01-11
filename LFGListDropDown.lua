@@ -258,7 +258,7 @@ function LFGListDropDown_SetUp(self)
 end
 
 function LFGListDropDown_UpdateText(activity, text)
-	if activity == 0 then
+	if activity <= 0 then
 		local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
 		UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
 	else
@@ -369,7 +369,7 @@ function LFGListDropDownButton_OnClick(self, arg1, arg2, checked)
 end
 
 function LFGListDropDownButton_OnClickCategory(self, arg1, arg2, checked)
-	LFGListDropDown.activeValue = 0;
+	LFGListDropDown.activeValue = -self.value;
 	CloseDropDownMenus();
 	LFGListFrame.SearchPanel.categoryID = self.value;
 	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
