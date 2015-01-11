@@ -56,16 +56,9 @@ function LFRAdvanced_MatchSearchResult(pattern, resultID)
 	end
 
 	local activityName = C_LFGList.GetActivityInfo(activityID);
-	local actvMatch = activityName:lower():find(pattern:lower()) and true or false;
-	local nameMatch = LFRAdvanced_MatchString(pattern:lower(), name:lower());
-	local commMatch = LFRAdvanced_MatchString(pattern:lower(), comment:lower());
-	local leadMatch = leaderName and leaderName:lower():find(pattern:lower()) and true or false;
-
-	--print(id.." : "..name.." : "..comment.." : "..tostring(nameMatch).." : "..tostring(commMatch).." : "..tostring(actvMatch).." : "..tostring(leadMatch))
-	if actvMatch or leadMatch or nameMatch and (comment ~= "" and commMatch or true) then
-		return true
-	end
-	return false
+	local text = activityName:lower().." "..name:lower().." "..comment:lower().." "..(leaderName and leaderName:lower() or "");
+	--print(id.." : "..text);
+	return LFRAdvanced_MatchString(pattern:lower(), text);
 end
 
 function LFRAdvanced_GetMatchTokens(pattern)

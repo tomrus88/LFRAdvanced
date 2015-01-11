@@ -47,13 +47,13 @@ function LFGListSearchPanel_UpdateResultList(self)
 		end
 
 		--print("totalResults: "..self.totalResults..", displayed: "..numResults)
-		self.totalResults = numResults;
-		self.results = newResults;
+		self.totalResults, self.results = numResults, newResults;
 	else
 		self.totalResults, self.results = C_LFGList.GetSearchResults();
-		self.applications = C_LFGList.GetApplications();
-		LFGListUtil_SortSearchResults(self.results);
 	end
+
+	self.applications = C_LFGList.GetApplications();
+	LFGListUtil_SortSearchResults(self.results);
 end
 
 -- disable autocomplete
@@ -168,5 +168,5 @@ function LFGListUtil_SortSearchResultsCB(id1, id2)
 
 	--If we aren't sorting by anything else, just go by ID
 	--return id1 < id2;
-	return age1 < age2
+	return age1 < age2;
 end
