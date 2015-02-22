@@ -26,20 +26,20 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowLockouts" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentAutoRefresh" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowMemberInfo" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show boss lockouts");
-						self.tooltipText = "Display boss lockouts in tooltip.";
+						self.Text:SetText("Auto refresh search list");
+						self.tooltipText = "Automatically refresh search list every 30 sec.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentShowOldRaids" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowLockouts" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefresh" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

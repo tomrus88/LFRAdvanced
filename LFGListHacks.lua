@@ -1,5 +1,11 @@
-﻿function LFGListSearchPanel_DoSearch(self)
+﻿local refreshTicker
+
+function LFGListSearchPanel_DoSearch(self)
 	--print("LFGListSearchPanel_DoSearch!");
+
+	if LFRAdvancedOptions.AutoRefresh and not refreshTicker then 
+		refreshTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end)
+	end
 
 	local activity = LFGListDropDown.activeValue;
 
@@ -138,16 +144,29 @@ end
 local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 
 function MyLFGListSearchPanel_OnShow(self)
-	--print("LFGListSearchPanel_OnShow");
+	--print("MyLFGListSearchPanel_OnShow");
 	LFGListSearchPanel_OnShowOld(self);
 
 	local buttons = self.ScrollFrame.buttons;
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
 	end
+
+	if LFRAdvancedOptions.AutoRefresh and LFGListFrame.SearchPanel:IsVisible() and not refreshTicker then
+		refreshTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end)
+	end
+end
+
+function MyLFGListSearchPanel_OnHide(self)
+	--print("MyLFGListSearchPanel_OnHide")
+	if LFRAdvancedOptions.AutoRefresh then
+		refreshTicker:Cancel()
+		refreshTicker = nil
+	end
 end
 
 LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow)
+LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide)
 
 function LFGListUtil_SortSearchResultsCB(id1, id2)
 	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
