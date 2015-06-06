@@ -1,7 +1,13 @@
 ﻿local refreshTicker
 
+LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
+	--print("LFGListCategorySelection_FindGroup");
+	LFGListDropDown.activeValue = 0;
+	LFGListCategorySelectionFindGroupButton_OnClick(self)
+end)
+
 function LFGListSearchPanel_DoSearch(self)
-	--print("LFGListSearchPanel_DoSearch!");
+	--print("LFGListSearchPanel_DoSearch");
 
 	if LFRAdvancedOptions.AutoRefresh and not refreshTicker then 
 		refreshTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end)
@@ -83,7 +89,7 @@ function MyLFGListSearchEntry_OnEnter(self)
 	GameTooltip:SetText(name, 1, 1, 1, true);
 	GameTooltip:AddLine(activityName);
 	if ( comment ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	GameTooltip:AddLine(" ");
 	if ( iLvl > 0 ) then
