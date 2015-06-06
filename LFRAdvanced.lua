@@ -72,25 +72,25 @@ function LFRAdvanced_GetMatchTokens(pattern)
 		table.insert(words, word);
 	end
 
-	for i,w in pairs(words) do
-		local firstChar = w:sub(1,1);
+	for i,word in pairs(words) do
+		local firstChar = word:sub(1,1);
 		if firstChar == "+" then
-			w = w:sub(2, w:len());
-			if w ~= "" then
-				table.insert(include, w);
+			word = word:sub(2);
+			if word ~= "" then
+				table.insert(include, word);
 			end
 		elseif firstChar == "-" then
-			w = w:sub(2, w:len());
-			if w ~= "" then
-				table.insert(exclude, w);
+			word = word:sub(2);
+			if word ~= "" then
+				table.insert(exclude, word);
 			end
 		elseif firstChar == "?" then
-			w = w:sub(2, w:len());
-			if w ~= "" then
-				table.insert(possible, w);
+			word = word:sub(2);
+			if word ~= "" then
+				table.insert(possible, word);
 			end
 		else
-			table.insert(include, w);
+			table.insert(include, word);
 		end
 	end
 
@@ -98,7 +98,7 @@ function LFRAdvanced_GetMatchTokens(pattern)
 end
 
 function LFRAdvanced_MatchString(pattern, str)
-	if pattern == "" then
+	if not pattern or pattern == "" then
 		return true;
 	end
 
@@ -106,31 +106,28 @@ function LFRAdvanced_MatchString(pattern, str)
 
 	local matches = true;
 
-	if next(include) ~= nil then
-		for i,w in pairs(include) do
-			local strMatch = str:find(w);
-			if strMatch == nil then
+	if next(include) then
+		for i,word in pairs(include) do
+			if not str:find(word) then
 				matches = false;
 				break;
 			end
 		end
 	end
 
-	if matches and next(exclude) ~= nil then
-		for i,w in pairs(exclude) do
-			local strMatch = str:find(w);
-			if strMatch ~= nil then
+	if matches and next(exclude) then
+		for i,word in pairs(exclude) do
+			if str:find(word) then
 				matches = false;
 				break;
 			end
 		end
 	end
 
-	if matches and next(possible) ~= nil then
+	if matches and next(possible) then
 		local strMatch = false;
-		for i,w in pairs(possible) do
-			local possibleMatch = str:find(w);
-			if possibleMatch ~= nil then
+		for i,word in pairs(possible) do
+			if str:find(word) then
 				strMatch = true;
 				break;
 			end
