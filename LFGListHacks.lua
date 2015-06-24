@@ -14,22 +14,23 @@ function LFGListSearchPanel_DoSearch(self)
 	end
 
 	local activity = LFGListDropDown.activeValue;
+	local languages = C_LFGList.GetLanguageSearchFilter();
 
 	if LFRAdvancedOptions.ServerSideFiltering then
 		-- Blizzard default code
 		local searchText = self.SearchBox:GetText();
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
+		C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters, languages);
 	elseif activity <= 0 then
 		-- category search
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, "", 0, 0);
+		C_LFGList.Search(self.categoryID, "", 0, 0, languages);
 	else
 		-- activity search
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
 		self.categoryID = categoryID;
 		LFGListDropDown_UpdateText(activity, fullName);
-		C_LFGList.Search(categoryID, fullName, 0, 0);
+		C_LFGList.Search(categoryID, fullName, 0, 0, languages);
 	end
 
 	self.searching = true;
