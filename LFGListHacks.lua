@@ -16,15 +16,19 @@ function LFGListSearchPanel_DoSearch(self)
 	local activity = LFGListDropDown.activeValue;
 	local languages = C_LFGList.GetLanguageSearchFilter();
 
-	if LFRAdvancedOptions.ServerSideFiltering then
+	if LFGListFrame.SearchPanel:IsVisible() then
+		--print("LFGListFrame.SearchPanel:IsVisible()")
+		LFRAdvancedOptions.LastSearchText = self.SearchBox:GetText();
+	end
+
+	if activity <= 0 then
 		-- Blizzard default code
-		local searchText = self.SearchBox:GetText();
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters, languages);
-	elseif activity <= 0 then
-		-- category search
-		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, "", 0, 0, languages);
+		C_LFGList.Search(self.categoryID, LFRAdvancedOptions.LastSearchText, self.filters, self.preferredFilters, languages);
+	--elseif activity <= 0 then
+	--	-- category search
+	--	LFGListDropDown_UpdateText(activity);
+	--	C_LFGList.Search(self.categoryID, "", 0, 0, languages);
 	else
 		-- activity search
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
@@ -59,10 +63,11 @@ function LFGListSearchPanel_UpdateResultList(self)
 			end
 		end
 
-		--print("totalResults: "..self.totalResults..", displayed: "..numResults)
+		--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults)
 		self.totalResults, self.results = numResults, newResults;
 	else
 		self.totalResults, self.results = C_LFGList.GetSearchResults();
+		--print("totalResults: "..self.totalResults..", received: "..#self.results)
 	end
 
 	self.applications = C_LFGList.GetApplications();
@@ -153,6 +158,11 @@ local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 function MyLFGListSearchPanel_OnShow(self)
 	--print("MyLFGListSearchPanel_OnShow");
 	LFGListSearchPanel_OnShowOld(self);
+
+	local text = LFRAdvancedOptions.LastSearchText;
+	if text then
+		self.SearchBox:SetText(text);
+	end
 
 	local buttons = self.ScrollFrame.buttons;
 	for i = 1, #buttons do
