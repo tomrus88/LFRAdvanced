@@ -1,5 +1,9 @@
 ﻿local refreshTicker
 
+LFGListCustomSearchBox:SetParent(LFGListFrame.SearchPanel);
+LFGListCustomSearchBox:SetPoint("TOPLEFT", LFGListFrame.SearchPanel.CategoryName, "BOTTOMLEFT", 4, -30);
+LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
+
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
 	--print("LFGListCategorySelection_FindGroup");
 	LFGListDropDown.activeValue = 0;
@@ -25,16 +29,16 @@ function LFGListSearchPanel_DoSearch(self)
 		-- Blizzard default code
 		LFGListDropDown_UpdateText(activity);
 		C_LFGList.Search(self.categoryID, LFRAdvancedOptions.LastSearchText, self.filters, self.preferredFilters, languages);
-	--elseif activity <= 0 then
-	--	-- category search
-	--	LFGListDropDown_UpdateText(activity);
-	--	C_LFGList.Search(self.categoryID, "", 0, 0, languages);
 	else
-		-- activity search
+		-- activity search from dropdown
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
 		self.categoryID = categoryID;
+		--local oldScript = self.SearchBox:GetScript("OnTextChanged");
+		--self.SearchBox:SetScript("OnTextChanged", nil);
+		--self.SearchBox:SetText(fullName);
+		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, fullName);
-		C_LFGList.Search(categoryID, fullName, 0, 0, languages);
+		C_LFGList.Search(self.categoryID, fullName, 0, 0, languages);
 	end
 
 	self.searching = true;
@@ -46,9 +50,9 @@ end
 
 function LFGListSearchPanel_UpdateResultList(self)
 	--print("LFGListSearchPanel_UpdateResultList");
-	local searchText = self.SearchBox:GetText();
+	local searchText = LFGListCustomSearchBox:GetText();
 
-	if not LFRAdvancedOptions.ServerSideFiltering and searchText ~= "" then
+	if searchText ~= "" then
 		--print("SearchText: "..searchText);
 
 		self.totalResults, self.results = C_LFGList.GetSearchResults();
@@ -75,15 +79,15 @@ function LFGListSearchPanel_UpdateResultList(self)
 end
 
 -- disable autocomplete
-local LFGListSearchPanel_UpdateAutoCompleteOrig = LFGListSearchPanel_UpdateAutoComplete;
-function LFGListSearchPanel_UpdateAutoComplete(self)
-	if LFRAdvancedOptions.ServerSideFiltering then
-		LFGListSearchPanel_UpdateAutoCompleteOrig(self);
-		return;
-	end
-	self.AutoCompleteFrame:Hide();
-	self.AutoCompleteFrame.selected = nil;
-end
+--local LFGListSearchPanel_UpdateAutoCompleteOrig = LFGListSearchPanel_UpdateAutoComplete;
+--function LFGListSearchPanel_UpdateAutoComplete(self)
+--	if LFRAdvancedOptions.ServerSideFiltering then
+--		LFGListSearchPanel_UpdateAutoCompleteOrig(self);
+--		return;
+--	end
+--	self.AutoCompleteFrame:Hide();
+--	self.AutoCompleteFrame.selected = nil;
+--end
 
 function MyLFGListSearchEntry_OnEnter(self)
 	--print("LFGListSearchEntry_OnEnter");

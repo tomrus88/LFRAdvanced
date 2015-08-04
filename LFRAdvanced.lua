@@ -48,6 +48,13 @@ function RefreshLFRAOptions()
 	--LFRAdvancedOptionsFrameCreateRaid:SetChecked(LFRAdvancedOptions.CreateRaid);
 end
 
+function LFGListCustomSearchBox_OnTextChanged(self)
+	--print("LFGListCustomSearchBox_OnTextChanged");
+	SearchBoxTemplate_OnTextChanged(self);
+	LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
+	LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel);
+end
+
 function LFRAdvanced_MatchSearchResult(pattern, resultID)
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
 
