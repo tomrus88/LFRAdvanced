@@ -2,6 +2,8 @@
 
 LFGListCustomSearchBox:SetParent(LFGListFrame.SearchPanel);
 LFGListCustomSearchBox:SetPoint("TOPLEFT", LFGListFrame.SearchPanel.CategoryName, "BOTTOMLEFT", 4, -30);
+LFGListCustomSearchBox.Instructions:SetText(FILTER);
+
 LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
 
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
