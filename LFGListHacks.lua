@@ -210,3 +210,14 @@ function LFGListUtil_SortSearchResultsCB(id1, id2)
 	--return id1 < id2;
 	return age1 < age2;
 end
+
+local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu
+
+function LFGListUtil_GetSearchEntryMenu(resultID)
+	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID)
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	retVal[2].disabled = not leaderName;
+	retVal[2].tooltipTitle = nil;
+	retVal[2].tooltipText = nil;
+	return retVal
+end
