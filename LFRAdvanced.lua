@@ -2,7 +2,7 @@
 
 if LFRAdvancedOptions == nil then
 	LFRAdvancedOptions = {
-		ServerSideFiltering = false,
+		--ServerSideFiltering = false,
 		ShowMemberInfo = true,
 		AutoRefresh = false,
 		LastSearchText = ""
@@ -33,7 +33,7 @@ mainFrame:RegisterEvent("ADDON_LOADED");
 mainFrame:SetScript("OnEvent", EventHandler);
 
 function SaveLFRAOptions()
-	LFRAdvancedOptions.ServerSideFiltering = LFRAdvancedOptionsFrameServerSideFiltering:GetChecked();
+	--LFRAdvancedOptions.ServerSideFiltering = LFRAdvancedOptionsFrameServerSideFiltering:GetChecked();
 	LFRAdvancedOptions.ShowMemberInfo = LFRAdvancedOptionsFrameShowMemberInfo:GetChecked();
 	LFRAdvancedOptions.AutoRefresh = LFRAdvancedOptionsFrameAutoRefresh:GetChecked();
 	--LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
@@ -43,7 +43,7 @@ function SaveLFRAOptions()
 end
 
 function RefreshLFRAOptions()
-	LFRAdvancedOptionsFrameServerSideFiltering:SetChecked(LFRAdvancedOptions.ServerSideFiltering);
+	--LFRAdvancedOptionsFrameServerSideFiltering:SetChecked(LFRAdvancedOptions.ServerSideFiltering);
 	LFRAdvancedOptionsFrameShowMemberInfo:SetChecked(LFRAdvancedOptions.ShowMemberInfo);
 	LFRAdvancedOptionsFrameAutoRefresh:SetChecked(LFRAdvancedOptions.AutoRefresh);
 	--LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);

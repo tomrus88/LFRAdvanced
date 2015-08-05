@@ -9,7 +9,7 @@
 	</EditBox>
 	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
 		<Frames>
-			<CheckButton name="$parentServerSideFiltering" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentServerSideFiltering" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-10"/>
 				</Anchors>
