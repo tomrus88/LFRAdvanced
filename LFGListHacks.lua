@@ -166,7 +166,7 @@ function MyLFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_OnShowOld(self);
 
 	local text = LFRAdvancedOptions.LastSearchText;
-	if text then
+	if text and text ~= "" then
 		self.SearchBox:SetText(text);
 	end
 
