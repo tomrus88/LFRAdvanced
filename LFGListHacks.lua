@@ -1,4 +1,5 @@
-﻿local refreshTicker
+﻿local warnTicker;
+local warnedGroups = {};
 
 LFGListCustomSearchBox:SetParent(LFGListFrame.SearchPanel);
 LFGListCustomSearchBox:SetPoint("TOPLEFT", LFGListFrame.SearchPanel.CategoryName, "BOTTOMLEFT", 4, -30);
@@ -9,21 +10,17 @@ LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
 	--print("LFGListCategorySelection_FindGroup");
 	LFGListDropDown.activeValue = 0;
-	LFGListCategorySelectionFindGroupButton_OnClick(self)
+	LFGListCategorySelectionFindGroupButton_OnClick(self);
 end)
 
 function LFGListSearchPanel_DoSearch(self)
 	--print("LFGListSearchPanel_DoSearch");
 
-	if LFRAdvancedOptions.AutoRefresh and not refreshTicker then 
-		refreshTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end)
-	end
-
 	local activity = LFGListDropDown.activeValue;
 	local languages = C_LFGList.GetLanguageSearchFilter();
 
 	if LFGListFrame.SearchPanel:IsVisible() then
-		--print("LFGListFrame.SearchPanel:IsVisible()")
+		--print("LFGListFrame.SearchPanel:IsVisible()");
 		LFRAdvancedOptions.LastSearchText = self.SearchBox:GetText();
 	end
 
@@ -54,26 +51,41 @@ function LFGListSearchPanel_UpdateResultList(self)
 	--print("LFGListSearchPanel_UpdateResultList");
 	local searchText = LFGListCustomSearchBox:GetText();
 
+	self.totalResults, self.results = C_LFGList.GetSearchResults();
+
 	if searchText ~= "" then
 		--print("SearchText: "..searchText);
-
-		self.totalResults, self.results = C_LFGList.GetSearchResults();
 
 		local numResults = 0;
 		local newResults = {};
 
 		for i=1, #self.results do
 			if LFRAdvanced_MatchSearchResult(searchText, self.results[i]) then
-				numResults = numResults + 1
+				numResults = numResults + 1;
 				newResults[numResults] = self.results[i];
 			end
 		end
 
-		--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults)
+		--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults);
 		self.totalResults, self.results = numResults, newResults;
-	else
-		self.totalResults, self.results = C_LFGList.GetSearchResults();
-		--print("totalResults: "..self.totalResults..", received: "..#self.results)
+	end
+
+	-- New groups warning
+	if warnTicker then
+		local numNotWarned = 0;
+		for i=1, #self.results do
+			local _, _, name, _, _, _, _, _, _, _, _, leaderName = C_LFGList.GetSearchResultInfo(self.results[i]);
+			if leaderName and not warnedGroups[leaderName] then
+				warnedGroups[leaderName] = true;
+				numNotWarned = numNotWarned + 1;
+				print("New group "..name.." by "..leaderName);
+			end
+		end
+
+		if numNotWarned > 0 then
+			PlaySound("ReadyCheck", "Master");
+			FlashClientIcon();
+		end
 	end
 
 	self.applications = C_LFGList.GetApplications();
@@ -95,6 +107,7 @@ function MyLFGListSearchEntry_OnEnter(self)
 	--print("LFGListSearchEntry_OnEnter");
 	local resultID = self.resultID;
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+	--print(id, name, leaderName or "NONE");
 	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
@@ -127,11 +140,44 @@ function MyLFGListSearchEntry_OnEnter(self)
 
 	if ( LFRAdvancedOptions.ShowMemberInfo ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+		--local classCounts = {};
+		--for i=1, numMembers do
+		--	local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+		--	local counts = classCounts[class] or {};
+		--	classCounts[class] = counts;
+		--	if not counts[role] then
+		--		counts[role] = 1;
+		--	else
+		--		counts[role] = counts[role] + 1;
+		--	end
+		--end
+		--for class, rolecnts in pairs(classCounts) do
+		--	local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+		--	for role, cnt in pairs(rolecnts) do
+		--		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
+		--	end
+		--end
+		local roleClasses = {};
 		for i=1, numMembers do
 			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
-			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-			GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
+			local classcounts = roleClasses[role] or {};
+			roleClasses[role] = classcounts;
+			if not classcounts[class] then
+				classcounts[class] = 1;
+			else
+				classcounts[class] = classcounts[class] + 1;
+			end
 		end
+		table.sort(roleClasses, function(a,b) return a > b end)
+		for role, classcnts in pairs(roleClasses) do
+			--GameTooltip:AddLine(_G[role]..":");
+			for class, cnt in pairs(classcnts) do
+				local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+				GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
+			end
+			table.wipe(classcnts);
+		end
+		table.wipe(roleClasses);
 	else
 		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
@@ -174,22 +220,44 @@ function MyLFGListSearchPanel_OnShow(self)
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
 	end
-
-	if LFRAdvancedOptions.AutoRefresh and LFGListFrame.SearchPanel:IsVisible() and not refreshTicker then
-		refreshTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end)
-	end
 end
 
 function MyLFGListSearchPanel_OnHide(self)
-	--print("MyLFGListSearchPanel_OnHide")
-	if LFRAdvancedOptions.AutoRefresh then
-		refreshTicker:Cancel()
-		refreshTicker = nil
-	end
+	--print("MyLFGListSearchPanel_OnHide");
+	--table.wipe(warnedGroups);
 end
 
-LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow)
-LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide)
+LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow);
+LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide);
+
+local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
+lfgRefreshButton.texture = lfgRefreshButton:CreateTexture("LFGRefreshButtonTexture", "ARTWORK");
+lfgRefreshButton.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
+lfgRefreshButton.texture:SetAllPoints(true);
+lfgRefreshButton.texture:Hide();
+lfgRefreshButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+lfgRefreshButton:SetScript("OnClick", function(self, button)
+	if button == "LeftButton" then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		LFGListSearchPanel_DoSearch(self:GetParent());
+	else
+		if warnTicker then
+			lfgRefreshButton.Icon:Show();
+			lfgRefreshButton.texture:Hide();
+			EyeTemplate_StopAnimating(lfgRefreshButton);
+			warnTicker:Cancel();
+			warnTicker = nil;
+			print("No longer auto refreshing list every 30 seconds");
+		else
+			lfgRefreshButton.Icon:Hide();
+			lfgRefreshButton.texture:Show();
+			EyeTemplate_StartAnimating(lfgRefreshButton);
+			warnTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end);
+			print("Auto refreshing list every 30 seconds");
+		end
+	end
+end)
 
 function LFGListUtil_SortSearchResultsCB(id1, id2)
 	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
@@ -213,13 +281,13 @@ function LFGListUtil_SortSearchResultsCB(id1, id2)
 	return age1 < age2;
 end
 
-local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu
+local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
-	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID)
+	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
 	retVal[2].disabled = not leaderName;
 	retVal[2].tooltipTitle = nil;
 	retVal[2].tooltipText = nil;
-	return retVal
+	return retVal;
 end
