@@ -31,7 +31,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentAutoRefresh" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentAutoRefresh" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowMemberInfo" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
@@ -44,7 +44,7 @@
 			</CheckButton>
 			<Slider name="$parentAutoRefreshInterval" inherits="VideoOptionsSliderTemplate" minValue="5" maxValue="60" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefresh" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentShowMemberInfo" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
 					</Anchor>
 				</Anchors>
