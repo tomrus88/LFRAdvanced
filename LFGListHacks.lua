@@ -1,4 +1,5 @@
-﻿local warnTicker;
+﻿local ADDON_NAME, ADDON_TABLE = ...;
+
 local warnedGroups = {};
 
 LFGListCustomSearchBox:SetParent(LFGListFrame.SearchPanel);
@@ -71,7 +72,7 @@ function LFGListSearchPanel_UpdateResultList(self)
 	end
 
 	-- New groups warning
-	if warnTicker then
+	if ADDON_TABLE.updateFunc then
 		local numNotWarned = 0;
 		for i=1, #self.results do
 			local _, _, name, _, _, _, _, _, _, _, _, leaderName = C_LFGList.GetSearchResultInfo(self.results[i]);
@@ -230,6 +231,17 @@ end
 LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow);
 LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide);
 
+local intervalTracker = 0;
+
+local function RefreshFunc(elapsed)
+	intervalTracker = intervalTracker + elapsed;
+
+	if (intervalTracker > LFRAdvancedOptions.AutoRefreshInterval) then
+		intervalTracker = 0;
+		LFGListFrame.SearchPanel.RefreshButton:Click();
+	end
+end
+
 local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
 lfgRefreshButton.texture = lfgRefreshButton:CreateTexture("LFGRefreshButtonTexture", "ARTWORK");
 lfgRefreshButton.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
@@ -242,19 +254,18 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		LFGListSearchPanel_DoSearch(self:GetParent());
 	else
-		if warnTicker then
+		if ADDON_TABLE.updateFunc then
 			lfgRefreshButton.Icon:Show();
 			lfgRefreshButton.texture:Hide();
 			EyeTemplate_StopAnimating(lfgRefreshButton);
-			warnTicker:Cancel();
-			warnTicker = nil;
-			print("No longer auto refreshing list every 30 seconds");
+			ADDON_TABLE.updateFunc = nil;
+			print("No longer auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
 		else
 			lfgRefreshButton.Icon:Hide();
 			lfgRefreshButton.texture:Show();
 			EyeTemplate_StartAnimating(lfgRefreshButton);
-			warnTicker = C_Timer.NewTicker(30, function() LFGListFrame.SearchPanel.RefreshButton:Click() end);
-			print("Auto refreshing list every 30 seconds");
+			ADDON_TABLE.updateFunc = RefreshFunc;
+			print("Auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
 		end
 	end
 end)

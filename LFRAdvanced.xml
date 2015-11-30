@@ -42,9 +42,43 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<Slider name="$parentAutoRefreshInterval" inherits="VideoOptionsSliderTemplate" minValue="5" maxValue="60" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefresh" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.tooltip = "Set auto refresh interval (sec)";
+						self.name = "Auto refresh interval";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							LFRAdvancedOptions.AutoRefreshInterval = value;
+						end
+						self.GetCurrentValue = function (self) 
+								return LFRAdvancedOptions.AutoRefreshInterval;
+						end
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText("Auto refresh interval");
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+					</OnLoad>
+					<OnValueChanged>
+						self.Label:SetFormattedText("%d sec", value);
+						self:SetValue(value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<CheckButton name="$parentShowOldRaids" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefresh" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefreshInterval" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

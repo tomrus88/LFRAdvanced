@@ -5,6 +5,7 @@ if LFRAdvancedOptions == nil then
 		--ServerSideFiltering = false,
 		ShowMemberInfo = true,
 		AutoRefresh = false,
+		AutoRefreshInterval = 30,
 		LastSearchText = ""
 	}
 end
@@ -23,7 +24,17 @@ local function EventHandler(self, event, ...)
 				--print("fix")
 				LFRAdvancedOptions.LastSearchText = ""
 			end
+			if not LFRAdvancedOptions.AutoRefreshInterval then
+				--print("fix")
+				LFRAdvancedOptions.AutoRefreshInterval = 30
+			end
 		end
+	end
+end
+
+local function OnUpdate(self, elapsed)
+	if ADDON_TABLE.updateFunc then
+		ADDON_TABLE.updateFunc(elapsed);
 	end
 end
 
@@ -31,11 +42,13 @@ end
 --mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
 mainFrame:RegisterEvent("ADDON_LOADED");
 mainFrame:SetScript("OnEvent", EventHandler);
+mainFrame:SetScript("OnUpdate", OnUpdate);
 
 function SaveLFRAOptions()
 	--LFRAdvancedOptions.ServerSideFiltering = LFRAdvancedOptionsFrameServerSideFiltering:GetChecked();
 	LFRAdvancedOptions.ShowMemberInfo = LFRAdvancedOptionsFrameShowMemberInfo:GetChecked();
 	LFRAdvancedOptions.AutoRefresh = LFRAdvancedOptionsFrameAutoRefresh:GetChecked();
+	LFRAdvancedOptions.AutoRefreshInterval = LFRAdvancedOptionsFrameAutoRefreshInterval:GetCurrentValue();
 	--LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
 	--LFRAdvancedOptions.ShowPartyInfo = LFRAdvancedOptionsFrameShowPartyInfo:GetChecked();
 	--LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
@@ -46,6 +59,7 @@ function RefreshLFRAOptions()
 	--LFRAdvancedOptionsFrameServerSideFiltering:SetChecked(LFRAdvancedOptions.ServerSideFiltering);
 	LFRAdvancedOptionsFrameShowMemberInfo:SetChecked(LFRAdvancedOptions.ShowMemberInfo);
 	LFRAdvancedOptionsFrameAutoRefresh:SetChecked(LFRAdvancedOptions.AutoRefresh);
+	LFRAdvancedOptionsFrameAutoRefreshInterval:SetValue(LFRAdvancedOptions.AutoRefreshInterval); 
 	--LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);
 	--LFRAdvancedOptionsFrameShowPartyInfo:SetChecked(LFRAdvancedOptions.ShowPartyInfo);
 	--LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
