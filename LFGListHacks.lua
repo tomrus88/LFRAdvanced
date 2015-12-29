@@ -312,7 +312,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[2].tooltipTitle = nil;
 	retVal[2].tooltipText = nil;
 	-- Copy name
-	retVal[4].text = "Copy leader name"
+	retVal[4].text = "Copy leader name";
 	retVal[4].func = CopyPlayerName;
 	retVal[4].arg1 = leaderName;
 	retVal[4].disabled = not leaderName;
@@ -324,13 +324,19 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 end
 
 local LFGListUtil_GetApplicantMemberMenu_Old = LFGListUtil_GetApplicantMemberMenu;
+local locale = GetLocale();
 
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local retVal = LFGListUtil_GetApplicantMemberMenu_Old(applicantID, memberIdx);
 	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
+	-- Fix bad localization for ignore menu item
+	if (locale == "ruRU")
+		-- Ignore
+		retVal[4].text = IGNORE;
+	end
 	-- Copy name
-	retVal[5].text = "Copy applicant name"
+	retVal[5].text = "Copy applicant name";
 	retVal[5].func = CopyPlayerName;
 	retVal[5].arg1 = name;
 	retVal[5].disabled = not name;
