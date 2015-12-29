@@ -297,8 +297,52 @@ local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	-- Whisper leader
 	retVal[2].disabled = not leaderName;
 	retVal[2].tooltipTitle = nil;
 	retVal[2].tooltipText = nil;
+	-- Copy name
+	retVal[4].text = "Copy leader name;"
+	retVal[4].func = function(_, name)
+		if not name then return end
+		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
+		if (not ChatFrameEditBox:IsShown()) then
+			ChatEdit_ActivateChat(ChatFrameEditBox);
+		end
+		ChatFrameEditBox:Insert(name);
+		ChatFrameEditBox:HighlightText();
+	end
+	retVal[4].arg1 = leaderName;
+	retVal[4].disabled = not leaderName;
+	-- Cancel
+	retVal[5] = {};
+	retVal[5].text = CANCEL;
+	retVal[5].notCheckable = true;
+	return retVal;
+end
+
+local LFGListUtil_GetApplicantMemberMenu_Old = LFGListUtil_GetApplicantMemberMenu;
+
+function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
+	local retVal = LFGListUtil_GetApplicantMemberMenu_Old(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
+	-- Copy name
+	retVal[5].text = "Copy applicant name;"
+	retVal[5].func = function(_, name)
+		if not name then return end
+		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
+		if (not ChatFrameEditBox:IsShown()) then
+			ChatEdit_ActivateChat(ChatFrameEditBox);
+		end
+		ChatFrameEditBox:Insert(name);
+		ChatFrameEditBox:HighlightText();
+	end
+	retVal[5].arg1 = name;
+	retVal[5].disabled = not name;
+	-- Cancel
+	retVal[6] = {};
+	retVal[6].text = CANCEL;
+	retVal[6].notCheckable = true;
 	return retVal;
 end
