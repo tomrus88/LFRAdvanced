@@ -331,7 +331,7 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	-- Fix bad localization for ignore menu item
-	if (locale == "ruRU")
+	if (locale == "ruRU") then
 		-- Ignore
 		retVal[4].text = IGNORE;
 	end
