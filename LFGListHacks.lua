@@ -302,7 +302,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[2].tooltipTitle = nil;
 	retVal[2].tooltipText = nil;
 	-- Copy name
-	retVal[4].text = "Copy leader name;"
+	retVal[4].text = "Copy leader name"
 	retVal[4].func = function(_, name)
 		if not name then return end
 		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
@@ -328,7 +328,7 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	-- Copy name
-	retVal[5].text = "Copy applicant name;"
+	retVal[5].text = "Copy applicant name"
 	retVal[5].func = function(_, name)
 		if not name then return end
 		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
