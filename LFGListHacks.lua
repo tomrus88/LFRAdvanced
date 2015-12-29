@@ -292,6 +292,16 @@ function LFGListUtil_SortSearchResultsCB(id1, id2)
 	return age1 < age2;
 end
 
+local function CopyPlayerName(_, name)
+	if not name then return end
+	local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
+	if (not ChatFrameEditBox:IsShown()) then
+		ChatEdit_ActivateChat(ChatFrameEditBox);
+	end
+	ChatFrameEditBox:Insert(name);
+	ChatFrameEditBox:HighlightText();
+end
+
 local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
@@ -303,15 +313,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[2].tooltipText = nil;
 	-- Copy name
 	retVal[4].text = "Copy leader name"
-	retVal[4].func = function(_, name)
-		if not name then return end
-		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
-		if (not ChatFrameEditBox:IsShown()) then
-			ChatEdit_ActivateChat(ChatFrameEditBox);
-		end
-		ChatFrameEditBox:Insert(name);
-		ChatFrameEditBox:HighlightText();
-	end
+	retVal[4].func = CopyPlayerName;
 	retVal[4].arg1 = leaderName;
 	retVal[4].disabled = not leaderName;
 	-- Cancel
@@ -329,15 +331,7 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	-- Copy name
 	retVal[5].text = "Copy applicant name"
-	retVal[5].func = function(_, name)
-		if not name then return end
-		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend();
-		if (not ChatFrameEditBox:IsShown()) then
-			ChatEdit_ActivateChat(ChatFrameEditBox);
-		end
-		ChatFrameEditBox:Insert(name);
-		ChatFrameEditBox:HighlightText();
-	end
+	retVal[5].func = CopyPlayerName;
 	retVal[5].arg1 = name;
 	retVal[5].disabled = not name;
 	-- Cancel
