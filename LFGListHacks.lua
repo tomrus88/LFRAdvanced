@@ -104,7 +104,7 @@ end
 --	self.AutoCompleteFrame.selected = nil;
 --end
 
-function MyLFGListSearchEntry_OnEnter(self)
+function LFGListSearchEntry_OnEnter(self)
 	--print("LFGListSearchEntry_OnEnter");
 	local resultID = self.resultID;
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
@@ -219,7 +219,7 @@ function MyLFGListSearchPanel_OnShow(self)
 
 	local buttons = self.ScrollFrame.buttons;
 	for i = 1, #buttons do
-		buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
+		buttons[i]:SetScript("OnEnter", LFGListSearchEntry_OnEnter);
 	end
 end
 
