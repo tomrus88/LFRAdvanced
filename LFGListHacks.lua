@@ -245,9 +245,28 @@ end
 local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
 lfgRefreshButton.texture = lfgRefreshButton:CreateTexture("LFGRefreshButtonTexture", "ARTWORK");
 lfgRefreshButton.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
-lfgRefreshButton.texture:SetAllPoints(true);
+lfgRefreshButton.texture:SetAllPoints();
 lfgRefreshButton.texture:Hide();
 lfgRefreshButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+local function StartAutoRefresh()
+	lfgRefreshButton.Icon:Hide();
+	lfgRefreshButton.texture:Show();
+	EyeTemplate_StartAnimating(lfgRefreshButton);
+	ADDON_TABLE.updateFunc = RefreshFunc;
+	print("Auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
+end
+
+local function StopAutoRefresh()
+	if not ADDON_TABLE.updateFunc then return end
+	lfgRefreshButton.Icon:Show();
+	lfgRefreshButton.texture:Hide();
+	EyeTemplate_StopAnimating(lfgRefreshButton);
+	ADDON_TABLE.updateFunc = nil;
+	print("No longer auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
+end
+
+ADDON_TABLE.StopAutoRefresh = StopAutoRefresh
 
 lfgRefreshButton:SetScript("OnClick", function(self, button)
 	if button == "LeftButton" then
@@ -255,17 +274,9 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 		LFGListSearchPanel_DoSearch(self:GetParent());
 	else
 		if ADDON_TABLE.updateFunc then
-			lfgRefreshButton.Icon:Show();
-			lfgRefreshButton.texture:Hide();
-			EyeTemplate_StopAnimating(lfgRefreshButton);
-			ADDON_TABLE.updateFunc = nil;
-			print("No longer auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
+			StopAutoRefresh()
 		else
-			lfgRefreshButton.Icon:Hide();
-			lfgRefreshButton.texture:Show();
-			EyeTemplate_StartAnimating(lfgRefreshButton);
-			ADDON_TABLE.updateFunc = RefreshFunc;
-			print("Auto refreshing list every "..LFRAdvancedOptions.AutoRefreshInterval.." seconds");
+			StartAutoRefresh()
 		end
 	end
 end)

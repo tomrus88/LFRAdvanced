@@ -17,6 +17,8 @@ local function EventHandler(self, event, ...)
 
 	elseif event == "GROUP_ROSTER_UPDATE" then
 
+	elseif event == "LFG_LIST_JOINED_GROUP" then
+		ADDON_TABLE.StopAutoRefresh()
 	elseif event == "ADDON_LOADED" then
 		local addon = select(1, ...);
 		if addon == ADDON_NAME then
@@ -40,6 +42,7 @@ end
 
 --mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 --mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
+mainFrame:RegisterEvent("LFG_LIST_JOINED_GROUP");
 mainFrame:RegisterEvent("ADDON_LOADED");
 mainFrame:SetScript("OnEvent", EventHandler);
 mainFrame:SetScript("OnUpdate", OnUpdate);
