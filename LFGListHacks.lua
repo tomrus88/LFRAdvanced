@@ -75,7 +75,7 @@ function LFGListSearchPanel_UpdateResultList(self)
 	if ADDON_TABLE.updateFunc then
 		local numNotWarned = 0;
 		for i=1, #self.results do
-			local _, _, name, _, _, _, _, _, _, _, _, leaderName = C_LFGList.GetSearchResultInfo(self.results[i]);
+			local _, _, name, _, _, _, _, _, _, _, _, _, leaderName = C_LFGList.GetSearchResultInfo(self.results[i]);
 			if leaderName and not warnedGroups[leaderName] then
 				warnedGroups[leaderName] = true;
 				numNotWarned = numNotWarned + 1;
@@ -107,9 +107,9 @@ end
 function LFGListSearchEntry_OnEnter(self)
 	--print("LFGListSearchEntry_OnEnter");
 	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
 	--print(id, name, leaderName or "NONE");
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
 	GameTooltip:SetText(name, 1, 1, 1, true);
@@ -121,10 +121,13 @@ function LFGListSearchEntry_OnEnter(self)
 	if ( iLvl > 0 ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, iLvl));
 	end
+	if ( useHonorLevel and honorLevel > 0 ) then
+		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, honorLevel));
+	end
 	if ( voiceChat ~= "" ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat), nil, nil, nil, true);
 	end
-	if ( iLvl > 0 or voiceChat ~= "" ) then
+	if ( iLvl > 0 or (useHonorLevel and honorLevel > 0) or voiceChat ~= "" ) then
 		GameTooltip:AddLine(" ");
 	end
 
@@ -282,8 +285,8 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 end)
 
 function LFGListUtil_SortSearchResultsCB(id1, id2)
-	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
-	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
+	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, honorLevel1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
+	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, honorLevel2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
 
 	--If one has more friends, do that one first
 	if ( numBNetFriends1 ~= numBNetFriends2 ) then
@@ -317,7 +320,7 @@ local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
 	-- Whisper leader
 	retVal[2].disabled = not leaderName;
 	retVal[2].tooltipTitle = nil;
