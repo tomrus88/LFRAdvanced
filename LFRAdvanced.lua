@@ -77,11 +77,20 @@ function LFGListCustomSearchBox_OnTextChanged(self)
 end
 
 function LFRAdvanced_MatchSearchResult(pattern, resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
 
-	if iLvl > 0 and pattern:match("i%d+") then
-		local i = tonumber(pattern:sub(2));
-		return iLvl >= i;
+	--if iLvl > 0 and pattern:match("i%d+") then
+	--	local i = tonumber(pattern:sub(2));
+	--	return iLvl >= i;
+	--end
+
+	if iLvl > 0 then
+		for m in pattern:gmatch("i%d+") do
+			if iLvl < tonumber(m:sub(2)) then
+				return false;
+			end
+			pattern = pattern:gsub(m, '', 1);
+		end
 	end
 
 	local activityName = C_LFGList.GetActivityInfo(activityID);
