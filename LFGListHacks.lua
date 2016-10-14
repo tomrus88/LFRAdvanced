@@ -360,3 +360,9 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	retVal[6].notCheckable = true;
 	return retVal;
 end
+
+--local emptyTable = {};
+
+--function C_LFGList.GetDefaultLanguageSearchFilter()
+--	return emptyTable;
+--end
