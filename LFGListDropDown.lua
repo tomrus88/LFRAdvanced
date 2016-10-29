@@ -331,6 +331,17 @@ function LFGListDropDown_UpdateText(activity, text)
 	end
 end
 
+local normalDifficultyText = GetDifficultyInfo(1);
+local heroicDifficultyText = GetDifficultyInfo(2);
+
+local function ShouldHideActivity(activityID, categoryID, shortName)
+	if categoryID ~= 2 then return false end
+	if activityToExpansion[categoryID..":"..activityID] ~= LE_EXPANSION_LEGION then return false end
+	if LFRAdvancedOptions.HideLegionNormals and categoryID == 2 and shortName == normalDifficultyText then return true end
+	if LFRAdvancedOptions.HideLegionHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
+	return false
+end
+
 function LFGListDropDown_Initialize(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 
@@ -404,13 +415,15 @@ function LFGListDropDown_Initialize(self, level)
 			if exp then
 				local customName = _G["EXPANSION_NAME"..exp];
 				local key = categoryID..customName;
-				if UIDROPDOWNMENU_MENU_VALUE == key then
-					info.text = fullName;
-					info.value = activityID;
-					info.func = LFGListDropDownButton_OnClick;
-					info.hasArrow = false;
-					info.checked = (self.activeValue == info.value);
-					UIDropDownMenu_AddButton(info, level);
+				if not ShouldHideActivity(activityID, categoryID, shortName) then
+					if UIDROPDOWNMENU_MENU_VALUE == key then
+						info.text = fullName;
+						info.value = activityID;
+						info.func = LFGListDropDownButton_OnClick;
+						info.hasArrow = false;
+						info.checked = (self.activeValue == info.value);
+						UIDropDownMenu_AddButton(info, level);
+					end
 				end
 			else
 				if UIDROPDOWNMENU_MENU_VALUE == groupID then

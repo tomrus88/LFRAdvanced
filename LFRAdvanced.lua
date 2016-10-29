@@ -6,6 +6,8 @@ if LFRAdvancedOptions == nil then
 		ShowMemberInfo = true,
 		--AutoRefresh = false,
 		AutoRefreshInterval = 30,
+		HideLegionNormals = false,
+		HideLegionHeroics = false,
 		LastSearchText = ""
 	}
 end
@@ -52,8 +54,8 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.ShowMemberInfo = LFRAdvancedOptionsFrameShowMemberInfo:GetChecked();
 	--LFRAdvancedOptions.AutoRefresh = LFRAdvancedOptionsFrameAutoRefresh:GetChecked();
 	LFRAdvancedOptions.AutoRefreshInterval = LFRAdvancedOptionsFrameAutoRefreshInterval:GetCurrentValue();
-	--LFRAdvancedOptions.ShowOldRaids = LFRAdvancedOptionsFrameShowOldRaids:GetChecked();
-	--LFRAdvancedOptions.ShowPartyInfo = LFRAdvancedOptionsFrameShowPartyInfo:GetChecked();
+	LFRAdvancedOptions.HideLegionNormals = LFRAdvancedOptionsFrameHideLegionNormals:GetChecked();
+	LFRAdvancedOptions.HideLegionHeroics = LFRAdvancedOptionsFrameHideLegionHeroics:GetChecked();
 	--LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
 	--LFRAdvancedOptions.CreateRaid = LFRAdvancedOptionsFrameCreateRaid:GetChecked();
 end
@@ -63,8 +65,8 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameShowMemberInfo:SetChecked(LFRAdvancedOptions.ShowMemberInfo);
 	--LFRAdvancedOptionsFrameAutoRefresh:SetChecked(LFRAdvancedOptions.AutoRefresh);
 	LFRAdvancedOptionsFrameAutoRefreshInterval:SetValue(LFRAdvancedOptions.AutoRefreshInterval); 
-	--LFRAdvancedOptionsFrameShowOldRaids:SetChecked(LFRAdvancedOptions.ShowOldRaids);
-	--LFRAdvancedOptionsFrameShowPartyInfo:SetChecked(LFRAdvancedOptions.ShowPartyInfo);
+	LFRAdvancedOptionsFrameHideLegionNormals:SetChecked(LFRAdvancedOptions.HideLegionNormals);
+	LFRAdvancedOptionsFrameHideLegionHeroics:SetChecked(LFRAdvancedOptions.HideLegionHeroics);
 	--LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
 	--LFRAdvancedOptionsFrameCreateRaid:SetChecked(LFRAdvancedOptions.CreateRaid);
 end

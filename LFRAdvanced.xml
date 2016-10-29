@@ -76,31 +76,31 @@
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
-			<CheckButton name="$parentShowOldRaids" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentHideLegionNormals" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAutoRefreshInterval" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show old raids");
-						self.tooltipText = "Show old raids in Raid Browser.";
+						self.Text:SetText("Hide Legion Normal mode dungeons");
+						self.tooltipText = "Hide Legion Normal mode dungeons in dropdown menu.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentShowPartyInfo" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentHideLegionHeroics" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowOldRaids" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideLegionNormals" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Show party info");
-						self.tooltipText = "Show party info (members, ilvl etc) in tooltip.";
+						self.Text:SetText("Hide Legion Heroic mode dungeons");
+						self.tooltipText = "Hide Legion Heroic mode dungeons in dropdown menu.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentIgnoreLevelReq" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowPartyInfo" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideLegionHeroics" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
