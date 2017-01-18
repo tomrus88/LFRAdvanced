@@ -312,6 +312,7 @@ local activityToExpansion = {
 	["3:456"] = LE_EXPANSION_LEGION,
 	["3:457"] = LE_EXPANSION_LEGION,
 	["3:458"] = LE_EXPANSION_LEGION,
+	["3:468"] = LE_EXPANSION_LEGION,
 }
 
 function LFGListDropDown_SetUp(self)
