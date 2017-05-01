@@ -20,7 +20,7 @@ local function EventHandler(self, event, ...)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 
 	elseif event == "LFG_LIST_JOINED_GROUP" then
-		ADDON_TABLE.StopAutoRefresh()
+		--ADDON_TABLE.StopAutoRefresh()
 	elseif event == "ADDON_LOADED" then
 		local addon = select(1, ...);
 		if addon == ADDON_NAME then
@@ -37,23 +37,23 @@ local function EventHandler(self, event, ...)
 end
 
 local function OnUpdate(self, elapsed)
-	if ADDON_TABLE.updateFunc then
-		ADDON_TABLE.updateFunc(elapsed);
-	end
+	--if ADDON_TABLE.updateFunc then
+	--	ADDON_TABLE.updateFunc(elapsed);
+	--end
 end
 
 --mainFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 --mainFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
-mainFrame:RegisterEvent("LFG_LIST_JOINED_GROUP");
+--mainFrame:RegisterEvent("LFG_LIST_JOINED_GROUP");
 mainFrame:RegisterEvent("ADDON_LOADED");
 mainFrame:SetScript("OnEvent", EventHandler);
-mainFrame:SetScript("OnUpdate", OnUpdate);
+--mainFrame:SetScript("OnUpdate", OnUpdate);
 
 function SaveLFRAOptions()
 	--LFRAdvancedOptions.ServerSideFiltering = LFRAdvancedOptionsFrameServerSideFiltering:GetChecked();
 	LFRAdvancedOptions.ShowMemberInfo = LFRAdvancedOptionsFrameShowMemberInfo:GetChecked();
 	--LFRAdvancedOptions.AutoRefresh = LFRAdvancedOptionsFrameAutoRefresh:GetChecked();
-	LFRAdvancedOptions.AutoRefreshInterval = LFRAdvancedOptionsFrameAutoRefreshInterval:GetCurrentValue();
+	--LFRAdvancedOptions.AutoRefreshInterval = LFRAdvancedOptionsFrameAutoRefreshInterval:GetCurrentValue();
 	LFRAdvancedOptions.HideLegionNormals = LFRAdvancedOptionsFrameHideLegionNormals:GetChecked();
 	LFRAdvancedOptions.HideLegionHeroics = LFRAdvancedOptionsFrameHideLegionHeroics:GetChecked();
 	--LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
@@ -64,7 +64,7 @@ function RefreshLFRAOptions()
 	--LFRAdvancedOptionsFrameServerSideFiltering:SetChecked(LFRAdvancedOptions.ServerSideFiltering);
 	LFRAdvancedOptionsFrameShowMemberInfo:SetChecked(LFRAdvancedOptions.ShowMemberInfo);
 	--LFRAdvancedOptionsFrameAutoRefresh:SetChecked(LFRAdvancedOptions.AutoRefresh);
-	LFRAdvancedOptionsFrameAutoRefreshInterval:SetValue(LFRAdvancedOptions.AutoRefreshInterval); 
+	--LFRAdvancedOptionsFrameAutoRefreshInterval:SetValue(LFRAdvancedOptions.AutoRefreshInterval);
 	LFRAdvancedOptionsFrameHideLegionNormals:SetChecked(LFRAdvancedOptions.HideLegionNormals);
 	LFRAdvancedOptionsFrameHideLegionHeroics:SetChecked(LFRAdvancedOptions.HideLegionHeroics);
 	--LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
@@ -74,7 +74,7 @@ end
 function LFGListCustomSearchBox_OnTextChanged(self)
 	--print("LFGListCustomSearchBox_OnTextChanged");
 	SearchBoxTemplate_OnTextChanged(self);
-	LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
+	MyLFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
 	LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel);
 end
 

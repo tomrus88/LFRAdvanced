@@ -11,10 +11,57 @@ LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
 	--print("LFGListCategorySelection_FindGroup");
 	LFGListDropDown.activeValue = 0;
-	LFGListCategorySelectionFindGroupButton_OnClick(self);
+	MyLFGListCategorySelectionFindGroupButton_OnClick(self);
 end)
 
-function LFGListSearchPanel_DoSearch(self)
+function MyLFGListCategorySelectionFindGroupButton_OnClick(self)
+	local panel = self:GetParent();
+	if ( not panel.selectedCategory ) then
+		return;
+	end
+
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	MyLFGListCategorySelection_StartFindGroup(panel);
+end
+
+function MyLFGListCategorySelection_StartFindGroup(self, searchText, questID)
+	local baseFilters = self:GetParent().baseFilters;
+
+	local searchPanel = self:GetParent().SearchPanel;
+	MyLFGListSearchPanel_Clear(searchPanel);
+	searchPanel.SearchBox:SetText(searchText or "");
+	LFGListSearchPanel_SetCategory(searchPanel, self.selectedCategory, self.selectedFilters, baseFilters);
+	MyLFGListSearchPanel_DoSearch(searchPanel);
+	LFGListFrame_SetActivePanel(self:GetParent(), searchPanel);
+end
+
+function MyLFGListSearchPanel_Clear(self)
+	--C_LFGList.ClearSearchResults(); -- can't do 2 secure calls from unsecure environment in one hardware event...
+	self.SearchBox:SetText("");
+	self.selectedResult = nil;
+	MyLFGListSearchPanel_UpdateResultList(self);
+	LFGListSearchPanel_UpdateResults(self);
+end
+
+function MyLFGListSearchPanel_OnEvent(self, event, ...)
+	--print("hooked event handler", event)
+	if ( event == "LFG_LIST_SEARCH_RESULTS_RECEIVED" ) then
+		StaticPopupSpecial_Hide(LFGListApplicationDialog);
+		self.searching = false;
+		self.searchFailed = false;
+		MyLFGListSearchPanel_UpdateResultList(self);
+		LFGListSearchPanel_UpdateResults(self);
+	elseif ( event == "LFG_LIST_SEARCH_FAILED" ) then
+		self.searching = false;
+		self.searchFailed = true;
+		MyLFGListSearchPanel_UpdateResultList(self);
+		LFGListSearchPanel_UpdateResults(self);
+	end
+end
+
+LFGListFrame.SearchPanel:HookScript("OnEvent", MyLFGListSearchPanel_OnEvent);
+
+function MyLFGListSearchPanel_DoSearch(self)
 	--print("LFGListSearchPanel_DoSearch");
 
 	local activity = LFGListDropDown.activeValue;
@@ -44,11 +91,11 @@ function LFGListSearchPanel_DoSearch(self)
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
-	LFGListSearchPanel_UpdateResultList(self);
+	MyLFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
 end
 
-function LFGListSearchPanel_UpdateResultList(self)
+function MyLFGListSearchPanel_UpdateResultList(self)
 	--print("LFGListSearchPanel_UpdateResultList");
 	local searchText = LFGListCustomSearchBox:GetText();
 
@@ -104,7 +151,7 @@ end
 --	self.AutoCompleteFrame.selected = nil;
 --end
 
-function LFGListSearchEntry_OnEnter(self)
+function MyLFGListSearchEntry_OnEnter(self)
 	--print("LFGListSearchEntry_OnEnter");
 	local resultID = self.resultID;
 	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
@@ -209,11 +256,11 @@ function LFGListSearchEntry_OnEnter(self)
 	GameTooltip:Show();
 end
 
-local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
+--local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 
 function MyLFGListSearchPanel_OnShow(self)
 	--print("MyLFGListSearchPanel_OnShow");
-	LFGListSearchPanel_OnShowOld(self);
+	--LFGListSearchPanel_OnShowOld(self);
 
 	local text = LFRAdvancedOptions.LastSearchText;
 	if text and text ~= "" then
@@ -222,7 +269,7 @@ function MyLFGListSearchPanel_OnShow(self)
 
 	local buttons = self.ScrollFrame.buttons;
 	for i = 1, #buttons do
-		buttons[i]:SetScript("OnEnter", LFGListSearchEntry_OnEnter);
+		buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
 	end
 end
 
@@ -231,9 +278,9 @@ function MyLFGListSearchPanel_OnHide(self)
 	--table.wipe(warnedGroups);
 end
 
-LFGListFrame.SearchPanel:SetScript("OnShow", MyLFGListSearchPanel_OnShow);
-LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide);
-
+LFGListFrame.SearchPanel:HookScript("OnShow", MyLFGListSearchPanel_OnShow);
+--LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide);
+--[[
 local intervalTracker = 0;
 
 local function RefreshFunc(elapsed)
@@ -283,8 +330,18 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 		end
 	end
 end)
+--]]
 
-function LFGListUtil_SortSearchResultsCB(id1, id2)
+local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
+
+lfgRefreshButton:SetScript("OnClick", function(self, button)
+	if button == "LeftButton" then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		MyLFGListSearchPanel_DoSearch(self:GetParent());
+	end
+end)
+
+function MyLFGListUtil_SortSearchResultsCB(id1, id2)
 	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, honorLevel1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
 	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, honorLevel2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
 
@@ -305,6 +362,12 @@ function LFGListUtil_SortSearchResultsCB(id1, id2)
 	--return id1 < id2;
 	return age1 < age2;
 end
+
+function MyLFGListUtil_SortSearchResults(results)
+	table.sort(results, MyLFGListUtil_SortSearchResultsCB);
+end
+
+hooksecurefunc("LFGListUtil_SortSearchResults", MyLFGListUtil_SortSearchResults);
 
 local function CopyPlayerName(_, name)
 	if not name then return end

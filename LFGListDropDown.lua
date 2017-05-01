@@ -304,6 +304,13 @@ local activityToExpansion = {
 	["2:465"] = LE_EXPANSION_LEGION,
 	["2:466"] = LE_EXPANSION_LEGION,
 	["2:467"] = LE_EXPANSION_LEGION,
+	["2:470"] = LE_EXPANSION_LEGION,
+	["2:471"] = LE_EXPANSION_LEGION,
+	["2:472"] = LE_EXPANSION_LEGION,
+	["2:473"] = LE_EXPANSION_LEGION,
+	["2:474"] = LE_EXPANSION_LEGION,
+	["2:475"] = LE_EXPANSION_LEGION,
+	["2:476"] = LE_EXPANSION_LEGION,
 
 	["3:413"] = LE_EXPANSION_LEGION,
 	["3:414"] = LE_EXPANSION_LEGION,
@@ -313,6 +320,10 @@ local activityToExpansion = {
 	["3:457"] = LE_EXPANSION_LEGION,
 	["3:458"] = LE_EXPANSION_LEGION,
 	["3:468"] = LE_EXPANSION_LEGION,
+	["3:478"] = LE_EXPANSION_LEGION,
+	["3:479"] = LE_EXPANSION_LEGION,
+	["3:480"] = LE_EXPANSION_LEGION,
+	["3:481"] = LE_EXPANSION_LEGION,
 }
 
 function LFGListDropDown_SetUp(self)
@@ -443,12 +454,12 @@ end
 function LFGListDropDownButton_OnClick(self, arg1, arg2, checked)
 	LFGListDropDown.activeValue = self.value;
 	CloseDropDownMenus();
-	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
+	MyLFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
 end
 
 function LFGListDropDownButton_OnClickCategory(self, arg1, arg2, checked)
 	LFGListDropDown.activeValue = -self.value;
 	CloseDropDownMenus();
 	LFGListFrame.SearchPanel.categoryID = self.value;
-	LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
+	MyLFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
 end
