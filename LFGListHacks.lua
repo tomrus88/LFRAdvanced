@@ -276,10 +276,14 @@ end
 function MyLFGListSearchPanel_OnHide(self)
 	--print("MyLFGListSearchPanel_OnHide");
 	--table.wipe(warnedGroups);
+	local text = self.SearchBox:GetText();
+	if text and text ~= "" then
+		LFRAdvancedOptions.LastSearchText = text;
+	end
 end
 
 LFGListFrame.SearchPanel:HookScript("OnShow", MyLFGListSearchPanel_OnShow);
---LFGListFrame.SearchPanel:SetScript("OnHide", MyLFGListSearchPanel_OnHide);
+LFGListFrame.SearchPanel:HookScript("OnHide", MyLFGListSearchPanel_OnHide);
 --[[
 local intervalTracker = 0;
 
