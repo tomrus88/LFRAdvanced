@@ -8,6 +8,13 @@ LFGListCustomSearchBox.Instructions:SetText(FILTER);
 
 LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
 
+LFGListFrame.SearchPanel.SearchBox:HookScript("OnTextChanged", function(self, userInput)
+	local text = self:GetText();
+	if text and text ~= "" then
+		LFRAdvancedOptions.LastSearchText = text;
+	end
+end)
+
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
 	--print("LFGListCategorySelection_FindGroup");
 	LFGListDropDown.activeValue = 0;
@@ -75,7 +82,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 	if activity <= 0 then
 		-- Blizzard default code
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, LFRAdvancedOptions.LastSearchText, self.filters, self.preferredFilters, languages);
+		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(LFRAdvancedOptions.LastSearchText), self.filters, self.preferredFilters, languages);
 	else
 		-- activity search from dropdown
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
@@ -85,7 +92,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--self.SearchBox:SetText(fullName);
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, fullName);
-		C_LFGList.Search(self.categoryID, fullName, 0, 0, languages);
+		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(fullName), 0, 0, languages);
 	end
 
 	self.searching = true;
@@ -276,10 +283,10 @@ end
 function MyLFGListSearchPanel_OnHide(self)
 	--print("MyLFGListSearchPanel_OnHide");
 	--table.wipe(warnedGroups);
-	local text = self.SearchBox:GetText();
-	if text and text ~= "" then
-		LFRAdvancedOptions.LastSearchText = text;
-	end
+	--local text = self.SearchBox:GetText();
+	--if text and text ~= "" then
+	--	LFRAdvancedOptions.LastSearchText = text;
+	--end
 end
 
 LFGListFrame.SearchPanel:HookScript("OnShow", MyLFGListSearchPanel_OnShow);
@@ -383,6 +390,7 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
+--[[
 local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
@@ -427,7 +435,7 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	retVal[6].notCheckable = true;
 	return retVal;
 end
-
+--]]
 --local emptyTable = {};
 
 --function C_LFGList.GetDefaultLanguageSearchFilter()
