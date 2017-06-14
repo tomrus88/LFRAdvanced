@@ -10,9 +10,9 @@ LFGListFrame.SearchPanel.ResultsInset:SetPoint("TOPLEFT", -1, -102);
 
 LFGListFrame.SearchPanel.SearchBox:HookScript("OnTextChanged", function(self, userInput)
 	local text = self:GetText();
-	if (text and text ~= "") or userInput then
-		LFRAdvancedOptions.LastSearchText = text;
-	end
+	--if (text and text ~= "") or userInput then
+	LFRAdvancedOptions.LastSearchText = text or "";
+	--end
 end)
 
 LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(self)
