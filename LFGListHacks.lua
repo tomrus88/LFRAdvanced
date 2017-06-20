@@ -72,6 +72,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 	--print("LFGListSearchPanel_DoSearch");
 
 	local activity = LFGListDropDown.activeValue;
+	--print("MyLFGListSearchPanel_DoSearch", activity, self.categoryID)
 	local languages = C_LFGList.GetLanguageSearchFilter();
 
 	if LFGListFrame.SearchPanel:IsVisible() then
@@ -83,6 +84,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 		-- Blizzard default code
 		LFGListDropDown_UpdateText(activity);
 		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(LFRAdvancedOptions.LastSearchText), self.filters, self.preferredFilters, languages);
+		--print("1")
 	else
 		-- activity search from dropdown
 		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
@@ -93,6 +95,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, fullName);
 		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(fullName), 0, 0, languages);
+		--print("2")
 	end
 
 	self.searching = true;
@@ -390,16 +393,16 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
---[[
+
 local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
 	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
 	-- Whisper leader
-	retVal[2].disabled = not leaderName;
-	retVal[2].tooltipTitle = nil;
-	retVal[2].tooltipText = nil;
+	--retVal[2].disabled = not leaderName;
+	--retVal[2].tooltipTitle = nil;
+	--retVal[2].tooltipText = nil;
 	-- Copy name
 	retVal[4].text = "Copy leader name";
 	retVal[4].func = CopyPlayerName;
@@ -435,7 +438,7 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	retVal[6].notCheckable = true;
 	return retVal;
 end
---]]
+
 --local emptyTable = {};
 
 --function C_LFGList.GetDefaultLanguageSearchFilter()

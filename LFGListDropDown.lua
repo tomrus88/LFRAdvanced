@@ -460,6 +460,8 @@ end
 function LFGListDropDownButton_OnClickCategory(self, arg1, arg2, checked)
 	LFGListDropDown.activeValue = -self.value;
 	CloseDropDownMenus();
-	LFGListFrame.SearchPanel.categoryID = self.value;
+	if self.value ~= 0 then 
+		LFGListFrame.SearchPanel.categoryID = self.value;
+	end
 	MyLFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel);
 end
