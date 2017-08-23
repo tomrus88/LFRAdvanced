@@ -69,7 +69,7 @@ end
 LFGListFrame.SearchPanel:HookScript("OnEvent", MyLFGListSearchPanel_OnEvent);
 
 function MyLFGListSearchPanel_DoSearch(self)
-	--print("LFGListSearchPanel_DoSearch");
+	--print("MyLFGListSearchPanel_DoSearch");
 
 	local activity = LFGListDropDown.activeValue;
 	--print("MyLFGListSearchPanel_DoSearch", activity, self.categoryID)
@@ -106,7 +106,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 end
 
 function MyLFGListSearchPanel_UpdateResultList(self)
-	--print("LFGListSearchPanel_UpdateResultList");
+	--print("MyLFGListSearchPanel_UpdateResultList");
 	local searchText = LFGListCustomSearchBox:GetText();
 
 	self.totalResults, self.results = C_LFGList.GetSearchResults();
@@ -272,6 +272,10 @@ function MyLFGListSearchPanel_OnShow(self)
 	--print("MyLFGListSearchPanel_OnShow");
 	--LFGListSearchPanel_OnShowOld(self);
 
+	-- fix results not being filtered after reopening frame
+	MyLFGListSearchPanel_UpdateResultList(self);
+	LFGListSearchPanel_UpdateResults(self);
+
 	local text = LFRAdvancedOptions.LastSearchText;
 	if text and text ~= "" then
 		self.SearchBox:SetText(text);
@@ -349,6 +353,7 @@ end)
 local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
 
 lfgRefreshButton:SetScript("OnClick", function(self, button)
+	--print("click!")
 	if button == "LeftButton" then
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		MyLFGListSearchPanel_DoSearch(self:GetParent());
