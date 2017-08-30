@@ -1,7 +1,7 @@
-﻿## Interface: 70200
+﻿## Interface: 70300
 ## Title: LFR Advanced
 ## Title-ruRU: LFR Advanced
-## Version: 7.2.5.24742
+## Version: 7.3.0.24920
 ## Author: TOM_RUS
 ## Notes: Adds intormation tooltips into LFR browser
 ## Notes-ruRU: Добавляет информативные подсказки в поисковик рейдов

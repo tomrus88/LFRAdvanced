@@ -27,7 +27,7 @@ function MyLFGListCategorySelectionFindGroupButton_OnClick(self)
 		return;
 	end
 
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	MyLFGListCategorySelection_StartFindGroup(panel);
 end
 
@@ -141,7 +141,7 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 		end
 
 		if numNotWarned > 0 then
-			PlaySound("ReadyCheck", "Master");
+			PlaySound(SOUNDKIT.READY_CHECK, "Master");
 			FlashClientIcon();
 		end
 	end
@@ -338,7 +338,7 @@ ADDON_TABLE.StopAutoRefresh = StopAutoRefresh
 
 lfgRefreshButton:SetScript("OnClick", function(self, button)
 	if button == "LeftButton" then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		LFGListSearchPanel_DoSearch(self:GetParent());
 	else
 		if ADDON_TABLE.updateFunc then
@@ -355,7 +355,7 @@ local lfgRefreshButton = LFGListFrame.SearchPanel.RefreshButton;
 lfgRefreshButton:SetScript("OnClick", function(self, button)
 	--print("click!")
 	if button == "LeftButton" then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		MyLFGListSearchPanel_DoSearch(self:GetParent());
 	end
 end)
