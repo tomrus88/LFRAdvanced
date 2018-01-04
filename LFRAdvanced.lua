@@ -78,9 +78,11 @@ function LFGListCustomSearchBox_OnTextChanged(self)
 	LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel);
 end
 
-function LFRAdvanced_MatchSearchResult(pattern, resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+function LFRAdvanced_IsSpam(name, comment)
+	if comment:lower():find("wowvendor") then return true end
+end
 
+function LFRAdvanced_MatchSearchResult(pattern, activityID, name, comment, iLvl, leaderName)
 	--if iLvl > 0 and pattern:match("i%d+") then
 	--	local i = tonumber(pattern:sub(2));
 	--	return iLvl >= i;

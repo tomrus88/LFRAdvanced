@@ -111,22 +111,20 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 
 	self.totalResults, self.results = C_LFGList.GetSearchResults();
 
-	if searchText ~= "" then
-		--print("SearchText: "..searchText);
+	local numResults = 0;
+	local newResults = {};
 
-		local numResults = 0;
-		local newResults = {};
-
-		for i=1, #self.results do
-			if LFRAdvanced_MatchSearchResult(searchText, self.results[i]) then
-				numResults = numResults + 1;
-				newResults[numResults] = self.results[i];
-			end
+	for i=1, #self.results do
+		local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(self.results[i]);
+		local isSpam = LFRAdvanced_IsSpam(name, comment);
+		if (searchText ~= "" and LFRAdvanced_MatchSearchResult(searchText, activityID, name, comment, iLvl, leaderName) and not isSpam) or (searchText == "" and not isSpam) then
+			numResults = numResults + 1;
+			newResults[numResults] = self.results[i];
 		end
-
-		--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults);
-		self.totalResults, self.results = numResults, newResults;
 	end
+
+	--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults);
+	self.totalResults, self.results = numResults, newResults;
 
 	-- New groups warning
 	if ADDON_TABLE.updateFunc then
@@ -161,63 +159,43 @@ end
 --	self.AutoCompleteFrame.selected = nil;
 --end
 
-function MyLFGListSearchEntry_OnEnter(self)
-	--print("LFGListSearchEntry_OnEnter");
-	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
-	--print(id, name, leaderName or "NONE");
+function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
+	--print("MyLFGListUtil_SetSearchEntryTooltip")
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
-	GameTooltip:SetText(name, 1, 1, 1, true);
-	GameTooltip:AddLine(activityName);
+	tooltip:SetText(name, 1, 1, 1, true);
+	tooltip:AddLine(activityName);
 	if ( comment ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
-	GameTooltip:AddLine(" ");
+	tooltip:AddLine(" ");
 	if ( iLvl > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, iLvl));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, iLvl));
 	end
 	if ( useHonorLevel and honorLevel > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, honorLevel));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, honorLevel));
 	end
 	if ( voiceChat ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat), nil, nil, nil, true);
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat), nil, nil, nil, true);
 	end
 	if ( iLvl > 0 or (useHonorLevel and honorLevel > 0) or voiceChat ~= "" ) then
-		GameTooltip:AddLine(" ");
+		tooltip:AddLine(" ");
 	end
 
 	if ( leaderName ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, leaderName));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, leaderName));
 	end
 	if ( age > 0 ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(age, false, false, 1, false)));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(age, false, false, 1, false)));
 	end
 
 	if ( leaderName or age > 0 ) then
-		GameTooltip:AddLine(" ");
+		tooltip:AddLine(" ");
 	end
 
 	if ( LFRAdvancedOptions.ShowMemberInfo ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
-		--local classCounts = {};
-		--for i=1, numMembers do
-		--	local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
-		--	local counts = classCounts[class] or {};
-		--	classCounts[class] = counts;
-		--	if not counts[role] then
-		--		counts[role] = 1;
-		--	else
-		--		counts[role] = counts[role] + 1;
-		--	end
-		--end
-		--for class, rolecnts in pairs(classCounts) do
-		--	local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-		--	for role, cnt in pairs(rolecnts) do
-		--		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
-		--	end
-		--end
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 		local roleClasses = {};
 		for i=1, numMembers do
 			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
@@ -231,40 +209,49 @@ function MyLFGListSearchEntry_OnEnter(self)
 		end
 		table.sort(roleClasses, function(a,b) return a > b end)
 		for role, classcnts in pairs(roleClasses) do
-			--GameTooltip:AddLine(_G[role]..":");
+			--tooltip:AddLine(_G[role]..":");
 			for class, cnt in pairs(classcnts) do
 				local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-				GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
+				tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
 			end
 			table.wipe(classcnts);
 		end
 		table.wipe(roleClasses);
 	else
-		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
 
 	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
-		GameTooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
+		tooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
 	end
 
 	local completedEncounters = C_LFGList.GetSearchResultEncounterInfo(resultID);
 	if ( completedEncounters and #completedEncounters > 0 ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_BOSSES_DEFEATED);
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_BOSSES_DEFEATED);
 		for i=1, #completedEncounters do
-			GameTooltip:AddLine(completedEncounters[i], RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			tooltip:AddLine(completedEncounters[i], RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		end
 	end
 
-	if ( isDelisted ) then
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	autoAcceptOption = autoAcceptOption or LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE;
+
+	if autoAcceptOption == LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE and isAutoAccept then
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_TOOLTIP_AUTO_ACCEPT, LIGHTBLUE_FONT_COLOR:GetRGB());
 	end
 
-	GameTooltip:Show();
+	if ( isDelisted ) then
+		tooltip:AddLine(" ");
+		tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+
+	tooltip:Show();
 end
+
+hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntryTooltip);
 
 --local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 
@@ -281,10 +268,10 @@ function MyLFGListSearchPanel_OnShow(self)
 		self.SearchBox:SetText(text);
 	end
 
-	local buttons = self.ScrollFrame.buttons;
-	for i = 1, #buttons do
-		buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
-	end
+	--local buttons = self.ScrollFrame.buttons;
+	--for i = 1, #buttons do
+	--	buttons[i]:SetScript("OnEnter", MyLFGListSearchEntry_OnEnter);
+	--end
 end
 
 function MyLFGListSearchPanel_OnHide(self)
