@@ -8,7 +8,8 @@ if LFRAdvancedOptions == nil then
 		AutoRefreshInterval = 30,
 		HideLegionNormals = false,
 		HideLegionHeroics = false,
-		LastSearchText = ""
+		LastSearchText = "",
+		SpamWords = { "wowvendor", "foxstore.pro", "prestige-wow" }
 	}
 end
 
@@ -26,13 +27,45 @@ local function EventHandler(self, event, ...)
 		if addon == ADDON_NAME then
 			if not LFRAdvancedOptions.LastSearchText then
 				--print("fix")
-				LFRAdvancedOptions.LastSearchText = ""
+				LFRAdvancedOptions.LastSearchText = "";
 			end
 			if not LFRAdvancedOptions.AutoRefreshInterval then
 				--print("fix")
-				LFRAdvancedOptions.AutoRefreshInterval = 30
+				LFRAdvancedOptions.AutoRefreshInterval = 30;
+			end
+			if not LFRAdvancedOptions.SpamWords then
+				--print("fix")
+				LFRAdvancedOptions.SpamWords = { "wowvendor", "foxstore.pro", "prestige-wow" };
 			end
 		end
+	end
+end
+
+SLASH_LFRA1 = "/lfra"
+
+SlashCmdList["LFRA"] = function(msg, editBox)
+	local msgLower = msg:lower();
+	if msgLower:find("spamadd") then
+		local word = msgLower:sub(9);
+		--print(msg, word);
+		table.insert(LFRAdvancedOptions.SpamWords, word:lower());
+		DEFAULT_CHAT_FRAME:AddMessage("Added word " .. word .. " to spam filter");
+	elseif msgLower:find("spamdel") then
+		local id = msgLower:sub(9);
+		--print(msg, id);
+		local word = table.remove(LFRAdvancedOptions.SpamWords, tonumber(id));
+		DEFAULT_CHAT_FRAME:AddMessage("Removed word #" ..id .. " (".. word .. ") from spam filter");
+	elseif msgLower == "spamlist" then
+		for i, word in pairs(LFRAdvancedOptions.SpamWords) do
+			DEFAULT_CHAT_FRAME:AddMessage("Spam word #" .. i .. ": " .. word);
+		end
+	elseif msgLower == "spamclear" then
+		table.wipe(LFRAdvancedOptions.SpamWords);
+	else
+		DEFAULT_CHAT_FRAME:AddMessage("Usage: /lfra spamadd <word> - Add word to spam filter");
+		DEFAULT_CHAT_FRAME:AddMessage("Usage: /lfra spamdel <id> - Remove word from spam filter by id");
+		DEFAULT_CHAT_FRAME:AddMessage("Usage: /lfra spamlist - List all words in spam filter");
+		DEFAULT_CHAT_FRAME:AddMessage("Usage: /lfra spamclear - Clear all words from spam filter");
 	end
 end
 
@@ -79,7 +112,10 @@ function LFGListCustomSearchBox_OnTextChanged(self)
 end
 
 function LFRAdvanced_IsSpam(name, comment)
-	if comment:lower():find("wowvendor") then return true end
+	local commentLower = comment:lower();
+	for _, word in pairs(LFRAdvancedOptions.SpamWords) do
+		if commentLower:find(word, 1, true) then return true end
+	end
 end
 
 function LFRAdvanced_MatchSearchResult(pattern, activityID, name, comment, iLvl, leaderName)
