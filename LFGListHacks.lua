@@ -385,25 +385,53 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
+local function LinkAchievement(_, name)
+	if not name then return end
+	local achievementLink = GetAchievementLink(12110);
+	if achievementLink then
+		SendChatMessage(achievementLink, "WHISPER", nil, name);
+	end
+end
 
 local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
 	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	--print("Debug", id, activityID)
 	-- Whisper leader
 	--retVal[2].disabled = not leaderName;
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
-	-- Copy name
-	retVal[4].text = "Copy leader name";
-	retVal[4].func = CopyPlayerName;
-	retVal[4].arg1 = leaderName;
-	retVal[4].disabled = not leaderName;
+	local index = 4;
+	if activityID == 482 or activityID == 483 then
+		-- Link Achievement
+		retVal[index] = {};
+		retVal[index].text = "Link Antorus \"Curve\" Achievement to leader";
+		retVal[index].func = LinkAchievement;
+		retVal[index].arg1 = leaderName;
+		retVal[index].disabled = not leaderName;
+		retVal[index].notCheckable = true;
+		index = index + 1;
+	end
+	-- Copy leader name
+	retVal[index] = {};
+	retVal[index].text = "Copy leader name";
+	retVal[index].func = CopyPlayerName;
+	retVal[index].arg1 = leaderName;
+	retVal[index].disabled = not leaderName;
+	retVal[index].notCheckable = true;
+	index = index + 1;
 	-- Cancel
-	retVal[5] = {};
-	retVal[5].text = CANCEL;
-	retVal[5].notCheckable = true;
+	retVal[index] = {};
+	retVal[index].text = CANCEL;
+	retVal[index].notCheckable = true;
+	index = index + 1;
+
+	if index == 6 then
+		retVal[index] = nil;
+	end
+
 	return retVal;
 end
 
