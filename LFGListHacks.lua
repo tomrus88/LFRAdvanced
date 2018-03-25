@@ -428,7 +428,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[index].notCheckable = true;
 	index = index + 1;
 
-	if index == 6 then
+	if index == 6 and retVal[index] and retVal[index].text == CANCEL then
 		retVal[index] = nil;
 	end
 
