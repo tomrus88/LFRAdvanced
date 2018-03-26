@@ -403,34 +403,32 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	--retVal[2].disabled = not leaderName;
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
+
+	local achLinkEnabled = activityID == 482 or activityID == 483;
+
+	-- Link Achievement
 	local index = 4;
-	if activityID == 482 or activityID == 483 then
-		-- Link Achievement
-		retVal[index] = {};
-		retVal[index].text = "Link Antorus \"Curve\" Achievement to leader";
-		retVal[index].func = LinkAchievement;
-		retVal[index].arg1 = leaderName;
-		retVal[index].disabled = not leaderName;
-		retVal[index].notCheckable = true;
-		index = index + 1;
-	end
+	retVal[index] = {};
+	retVal[index].text = "Link Antorus \"Curve\" Achievement to leader";
+	retVal[index].func = LinkAchievement;
+	retVal[index].arg1 = leaderName;
+	retVal[index].disabled = not leaderName or not achLinkEnabled;
+	retVal[index].notCheckable = true;
+
 	-- Copy leader name
+	index = index + 1;
 	retVal[index] = {};
 	retVal[index].text = "Copy leader name";
 	retVal[index].func = CopyPlayerName;
 	retVal[index].arg1 = leaderName;
 	retVal[index].disabled = not leaderName;
 	retVal[index].notCheckable = true;
-	index = index + 1;
+
 	-- Cancel
+	index = index + 1;	
 	retVal[index] = {};
 	retVal[index].text = CANCEL;
 	retVal[index].notCheckable = true;
-	index = index + 1;
-
-	if index == 6 and retVal[index] and retVal[index].text == CANCEL then
-		retVal[index] = nil;
-	end
 
 	return retVal;
 end
