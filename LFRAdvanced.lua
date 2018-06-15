@@ -113,8 +113,10 @@ end
 
 function LFRAdvanced_IsSpam(name, comment)
 	local commentLower = comment:lower();
+	local nameLower = name:lower();
 	for _, word in pairs(LFRAdvancedOptions.SpamWords) do
 		if commentLower:find(word, 1, true) then return true end
+		if nameLower:find(word, 1, true) then return true end
 	end
 end
 
