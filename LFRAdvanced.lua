@@ -37,6 +37,12 @@ local function EventHandler(self, event, ...)
 				--print("fix")
 				LFRAdvancedOptions.SpamWords = { "wowvendor", "foxstore.pro", "prestige-wow" };
 			end
+
+			LFGListCustomSearchBox.clearButton:SetScript("OnClick", function(btn)
+				SearchBoxTemplateClearButton_OnClick(btn);
+				--print("clear click!");
+				--LFGListSearchPanel_DoSearch(self);
+			end);
 		end
 	end
 end
@@ -109,6 +115,11 @@ function LFGListCustomSearchBox_OnTextChanged(self)
 	SearchBoxTemplate_OnTextChanged(self);
 	MyLFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel);
 	LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel);
+end
+
+function LFGListCustomSearchBox_OnEnterPressed(self)
+	--print("LFGListCustomSearchBox_OnEnterPressed");
+	self:ClearFocus();
 end
 
 function LFRAdvanced_IsSpam(name, comment)

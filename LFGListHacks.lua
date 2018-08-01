@@ -2,6 +2,12 @@
 
 local warnedGroups = {};
 
+-- /script LFGListFrame.CategorySelection:Hide()
+-- /script LFGListFrame.SearchPanel:Show()
+-- /script LFGListFrame.ApplicationViewer:Hide()
+-- /script LFGListFrame.ApplicationViewer:Hide() LFGListFrame.SearchPanel:Show()
+-- /script LFGListFrame.ApplicationViewer:Show() LFGListFrame.SearchPanel:Hide()
+
 LFGListCustomSearchBox:SetParent(LFGListFrame.SearchPanel);
 LFGListCustomSearchBox:SetPoint("TOPLEFT", LFGListFrame.SearchPanel.CategoryName, "BOTTOMLEFT", 4, -30);
 LFGListCustomSearchBox.Instructions:SetText(FILTER);
@@ -123,7 +129,7 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 		end
 	end
 
-	--print("totalResults: "..self.totalResults..", received: "..#self.results..", displayed: "..numResults);
+	--print("LFRA: totalResults "..self.totalResults..", received "..#self.results..", displayed "..numResults);
 	self.totalResults, self.results = numResults, newResults;
 
 	-- New groups warning
@@ -161,7 +167,7 @@ end
 
 function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	--print("MyLFGListUtil_SetSearchEntryTooltip")
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(name, 1, 1, 1, true);
@@ -253,6 +259,27 @@ end
 
 hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntryTooltip);
 
+-- fix name if created with addon by questid
+function MyLFGListSearchEntry_Update(self)
+	local resultID = self.resultID;
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
+	--print("MyLFGListSearchEntry_Update", resultID, name, questID)
+	local qId = tonumber(name);
+	if qId and questID then
+		-- we never get here, oh well, fuck Blizzard...
+		--print("qId and questID")
+		local qName = QuestUtils_GetQuestName(questID);
+		name = qName ~= "" and qName or name;
+	elseif qId then
+		--print("qId")
+		local qName = QuestUtils_GetQuestName(qId);
+		name = qName ~= "" and qName or name;
+	end
+	self.Name:SetText(name);
+end
+
+hooksecurefunc("LFGListSearchEntry_Update", MyLFGListSearchEntry_Update);
+
 --local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 
 function MyLFGListSearchPanel_OnShow(self)
@@ -285,6 +312,7 @@ end
 
 LFGListFrame.SearchPanel:HookScript("OnShow", MyLFGListSearchPanel_OnShow);
 LFGListFrame.SearchPanel:HookScript("OnHide", MyLFGListSearchPanel_OnHide);
+
 --[[
 local intervalTracker = 0;
 
@@ -343,13 +371,18 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 	--print("click!")
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		MyLFGListSearchPanel_DoSearch(self:GetParent());
+		local activity = LFGListDropDown.activeValue;
+		if activity <= 0 then
+			LFGListSearchPanel_DoSearch(self:GetParent());
+		else
+			MyLFGListSearchPanel_DoSearch(self:GetParent());
+		end
 	end
 end)
 
 function MyLFGListUtil_SortSearchResultsCB(id1, id2)
-	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, honorLevel1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
-	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, honorLevel2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
+	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, honorLevel1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(id1);
+	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, honorLevel2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(id2);
 
 	--If one has more friends, do that one first
 	if ( numBNetFriends1 ~= numBNetFriends2 ) then
@@ -397,7 +430,7 @@ local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
 	--print("Debug", id, activityID)
 	-- Whisper leader
 	--retVal[2].disabled = not leaderName;
@@ -438,7 +471,7 @@ local locale = GetLocale();
 
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local retVal = LFGListUtil_GetApplicantMemberMenu_Old(applicantID, memberIdx);
-	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	-- Fix bad localization for ignore menu item
 	if (locale == "ruRU") then

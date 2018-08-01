@@ -5,6 +5,9 @@
 		<Size x="319" y="18"/>
 			<Scripts>
 				<OnTextChanged function="LFGListCustomSearchBox_OnTextChanged"/>
+				<OnEnterPressed function="LFGListCustomSearchBox_OnEnterPressed"/>
+				<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
+				<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 			</Scripts>
 	</EditBox>
 	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
