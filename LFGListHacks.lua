@@ -270,7 +270,7 @@ function MyLFGListSearchEntry_Update(self)
 		--print("qId and questID")
 		local qName = QuestUtils_GetQuestName(questID);
 		name = qName ~= "" and qName or name;
-	elseif qId then
+	elseif qId and qId > 0 and qId < 100000 then
 		--print("qId")
 		local qName = QuestUtils_GetQuestName(qId);
 		name = qName ~= "" and qName or name;
