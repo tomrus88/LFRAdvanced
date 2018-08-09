@@ -37,12 +37,15 @@ function MyLFGListCategorySelectionFindGroupButton_OnClick(self)
 	MyLFGListCategorySelection_StartFindGroup(panel);
 end
 
-function MyLFGListCategorySelection_StartFindGroup(self, searchText, questID)
+function MyLFGListCategorySelection_StartFindGroup(self, questID)
 	local baseFilters = self:GetParent().baseFilters;
 
 	local searchPanel = self:GetParent().SearchPanel;
 	MyLFGListSearchPanel_Clear(searchPanel);
-	searchPanel.SearchBox:SetText(searchText or "");
+	--searchPanel.SearchBox:SetText(searchText or "");
+	if questID then
+		C_LFGList.SetSearchToQuestID(questID);
+	end
 	LFGListSearchPanel_SetCategory(searchPanel, self.selectedCategory, self.selectedFilters, baseFilters);
 	MyLFGListSearchPanel_DoSearch(searchPanel);
 	LFGListFrame_SetActivePanel(self:GetParent(), searchPanel);
@@ -50,7 +53,8 @@ end
 
 function MyLFGListSearchPanel_Clear(self)
 	--C_LFGList.ClearSearchResults(); -- can't do 2 secure calls from unsecure environment in one hardware event...
-	self.SearchBox:SetText("");
+	--self.SearchBox:SetText("");
+	C_LFGList.ClearSearchTextFields();
 	self.selectedResult = nil;
 	MyLFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
@@ -89,7 +93,8 @@ function MyLFGListSearchPanel_DoSearch(self)
 	if activity <= 0 then
 		-- Blizzard default code
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(LFRAdvancedOptions.LastSearchText), self.filters, self.preferredFilters, languages);
+		C_LFGList.SetSearchToActivity(activity);
+		C_LFGList.Search(self.categoryID, self.filters, self.preferredFilters, languages);
 		--print("1")
 	else
 		-- activity search from dropdown
@@ -100,7 +105,8 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--self.SearchBox:SetText(fullName);
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, fullName);
-		C_LFGList.Search(self.categoryID, LFGListSearchPanel_ParseSearchTerms(fullName), 0, 0, languages);
+		C_LFGList.SetSearchToActivity(activity);
+		C_LFGList.Search(self.categoryID, 0, 0, languages);
 		--print("2")
 	end
 
@@ -263,7 +269,7 @@ hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntry
 function MyLFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
 	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
-	--print("MyLFGListSearchEntry_Update", resultID, name, questID)
+	--print("MyLFGListSearchEntry_Update", resultID, activityID, name, questID)
 	local qId = tonumber(name);
 	if qId and questID then
 		-- we never get here, oh well, fuck Blizzard...
@@ -290,10 +296,10 @@ function MyLFGListSearchPanel_OnShow(self)
 	MyLFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
 
-	local text = LFRAdvancedOptions.LastSearchText;
-	if text and text ~= "" then
-		self.SearchBox:SetText(text);
-	end
+	--local text = LFRAdvancedOptions.LastSearchText;
+	--if text and text ~= "" then
+	--	self.SearchBox:SetText(text);
+	--end
 
 	--local buttons = self.ScrollFrame.buttons;
 	--for i = 1, #buttons do
