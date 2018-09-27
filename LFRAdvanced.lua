@@ -8,6 +8,8 @@ if LFRAdvancedOptions == nil then
 		AutoRefreshInterval = 30,
 		HideLegionNormals = false,
 		HideLegionHeroics = false,
+		HideBFANormals = false,
+		HideBFAHeroics = false,
 		LastSearchText = "",
 		SpamWords = { "wowvendor", "foxstore.pro", "prestige-wow" }
 	}
@@ -95,8 +97,8 @@ function SaveLFRAOptions()
 	--LFRAdvancedOptions.AutoRefreshInterval = LFRAdvancedOptionsFrameAutoRefreshInterval:GetCurrentValue();
 	LFRAdvancedOptions.HideLegionNormals = LFRAdvancedOptionsFrameHideLegionNormals:GetChecked();
 	LFRAdvancedOptions.HideLegionHeroics = LFRAdvancedOptionsFrameHideLegionHeroics:GetChecked();
-	--LFRAdvancedOptions.IgnoreLevelReq = LFRAdvancedOptionsFrameIgnoreLevelReq:GetChecked();
-	--LFRAdvancedOptions.CreateRaid = LFRAdvancedOptionsFrameCreateRaid:GetChecked();
+	LFRAdvancedOptions.HideBFANormals = LFRAdvancedOptionsFrameHideBFANormals:GetChecked();
+	LFRAdvancedOptions.HideBFAHeroics = LFRAdvancedOptionsFrameHideBFAHeroics:GetChecked();
 end
 
 function RefreshLFRAOptions()
@@ -106,8 +108,8 @@ function RefreshLFRAOptions()
 	--LFRAdvancedOptionsFrameAutoRefreshInterval:SetValue(LFRAdvancedOptions.AutoRefreshInterval);
 	LFRAdvancedOptionsFrameHideLegionNormals:SetChecked(LFRAdvancedOptions.HideLegionNormals);
 	LFRAdvancedOptionsFrameHideLegionHeroics:SetChecked(LFRAdvancedOptions.HideLegionHeroics);
-	--LFRAdvancedOptionsFrameIgnoreLevelReq:SetChecked(LFRAdvancedOptions.IgnoreLevelReq);
-	--LFRAdvancedOptionsFrameCreateRaid:SetChecked(LFRAdvancedOptions.CreateRaid);
+	LFRAdvancedOptionsFrameHideBFANormals:SetChecked(LFRAdvancedOptions.HideBFANormals);
+	LFRAdvancedOptionsFrameHideBFAHeroics:SetChecked(LFRAdvancedOptions.HideBFAHeroics);
 end
 
 function LFGListCustomSearchBox_OnTextChanged(self)

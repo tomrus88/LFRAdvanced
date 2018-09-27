@@ -389,6 +389,10 @@ local activityToExpansion = {
 	["2:644"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 	["2:645"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 	["2:646"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+	["2:658"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+	["2:659"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+	["2:660"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
+	["2:661"] = LE_EXPANSION_BATTLE_FOR_AZEROTH,
 }
 
 function LFGListDropDown_SetUp(self)
@@ -413,9 +417,14 @@ local heroicDifficultyText = GetDifficultyInfo(2);
 
 local function ShouldHideActivity(activityID, categoryID, shortName)
 	if categoryID ~= 2 then return false end
-	if activityToExpansion[categoryID..":"..activityID] ~= LE_EXPANSION_LEGION then return false end
-	if LFRAdvancedOptions.HideLegionNormals and categoryID == 2 and shortName == normalDifficultyText then return true end
-	if LFRAdvancedOptions.HideLegionHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
+	if activityToExpansion[categoryID..":"..activityID] == LE_EXPANSION_LEGION then
+		if LFRAdvancedOptions.HideLegionNormals and categoryID == 2 and shortName == normalDifficultyText then return true end
+		if LFRAdvancedOptions.HideLegionHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end		
+	end
+	if activityToExpansion[categoryID..":"..activityID] == LE_EXPANSION_BATTLE_FOR_AZEROTH then
+		if LFRAdvancedOptions.HideBFANormals and categoryID == 2 and shortName == normalDifficultyText then return true end
+		if LFRAdvancedOptions.HideBFAHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end		
+	end
 	return false
 end
 

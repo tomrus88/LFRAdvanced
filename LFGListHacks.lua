@@ -269,14 +269,14 @@ hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntry
 function MyLFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
 	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers, isAutoAccept, questID = C_LFGList.GetSearchResultInfo(resultID);
-	--print("MyLFGListSearchEntry_Update", resultID, activityID, name, questID)
 	local qId = tonumber(name);
+	--print("MyLFGListSearchEntry_Update", resultID, activityID, name, questID, qId)
 	if qId and questID then
 		-- we never get here, oh well, fuck Blizzard...
 		--print("qId and questID")
 		local qName = QuestUtils_GetQuestName(questID);
 		name = qName ~= "" and qName or name;
-	elseif qId and qId > 0 and qId < 100000 then
+	elseif qId and (qId > 0 and qId < 100000) then
 		--print("qId")
 		local qName = QuestUtils_GetQuestName(qId);
 		name = qName ~= "" and qName or name;
@@ -501,3 +501,28 @@ end
 --function C_LFGList.GetDefaultLanguageSearchFilter()
 --	return emptyTable;
 --end
+
+function MyLFGListApplicationViewer_UpdateInfo(self)
+	local active, activityID, ilvl, honorLevel, name, comment, voiceChat, duration, autoAccept, privateGroup, questID = C_LFGList.GetActiveEntryInfo();
+	--Update the AutoAccept button
+	self.AutoAcceptButton:SetChecked(autoAccept);
+	--print("C_LFGList.CanActiveEntryUseAutoAccept", C_LFGList.CanActiveEntryUseAutoAccept());
+	--if ( not C_LFGList.CanActiveEntryUseAutoAccept() ) then
+	--	self.AutoAcceptButton:Hide();
+	--elseif ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+	if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+		self.AutoAcceptButton:Show();
+		self.AutoAcceptButton:Enable();
+		self.AutoAcceptButton.Label:SetFontObject(GameFontHighlightSmall);
+	elseif ( UnitIsGroupAssistant("player", LE_PARTY_CATEGORY_HOME) ) then
+		self.AutoAcceptButton:Show();
+		self.AutoAcceptButton:Disable();
+		self.AutoAcceptButton.Label:SetFontObject(GameFontDisableSmall);
+	else
+		self.AutoAcceptButton:SetShown(autoAccept);
+		self.AutoAcceptButton:Disable();
+		self.AutoAcceptButton.Label:SetFontObject(GameFontDisableSmall);
+	end
+end
+
+--hooksecurefunc("LFGListApplicationViewer_UpdateInfo", MyLFGListApplicationViewer_UpdateInfo);

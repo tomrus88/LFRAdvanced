@@ -101,25 +101,25 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentIgnoreLevelReq" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentHideBFANormals" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHideLegionHeroics" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Ignore level requirements");
-						self.tooltipText = "Allows you to list for any raid with character of any level.";
+						self.Text:SetText("Hide BFA Normal mode dungeons");
+						self.tooltipText = "Hide BFA Normal mode dungeons in dropdown menu.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCreateRaid" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
+			<CheckButton name="$parentHideBFAHeroics" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentIgnoreLevelReq" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideBFANormals" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self.Text:SetText("Enable Create Raid button");
-						self.tooltipText = "Enables Create Raid button in Raid Browser.";
+						self.Text:SetText("Hide BFA Heroic mode dungeons");
+						self.tooltipText = "Hide BFA Heroic mode dungeons in dropdown menu.";
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
