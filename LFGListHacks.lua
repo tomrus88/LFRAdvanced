@@ -127,9 +127,9 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 	local newResults = {};
 
 	for i=1, #self.results do
-		local searchResultData = C_LFGList.GetSearchResultInfo(self.results[i]);
-		local isSpam = LFRAdvanced_IsSpam(searchResultData.name, searchResultData.comment);
-		if (searchText ~= "" and LFRAdvanced_MatchSearchResult(searchText, searchResultData.activityID, searchResultData.name, searchResultData.comment, searchResultData.requiredItemLevel, searchResultData.leaderName) and not isSpam) or (searchText == "" and not isSpam) then
+		local searchResultInfo = C_LFGList.GetSearchResultInfo(self.results[i]);
+		local isSpam = LFRAdvanced_IsSpam(searchResultInfo.name, searchResultInfo.comment);
+		if (searchText ~= "" and LFRAdvanced_MatchSearchResult(searchText, searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.comment, searchResultInfo.requiredItemLevel, searchResultInfo.leaderName) and not isSpam) or (searchText == "" and not isSpam) then
 			numResults = numResults + 1;
 			newResults[numResults] = self.results[i];
 		end
@@ -142,11 +142,11 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 	if ADDON_TABLE.updateFunc then
 		local numNotWarned = 0;
 		for i=1, #self.results do
-			local _, _, name, _, _, _, _, _, _, _, _, _, leaderName = C_LFGList.GetSearchResultInfo(self.results[i]);
-			if leaderName and not warnedGroups[leaderName] then
-				warnedGroups[leaderName] = true;
+			local searchResultInfo = C_LFGList.GetSearchResultInfo(self.results[i]);
+			if searchResultInfo.leaderName and not warnedGroups[searchResultInfo.leaderName] then
+				warnedGroups[searchResultInfo.leaderName] = true;
 				numNotWarned = numNotWarned + 1;
-				print("New group "..name.." by "..leaderName);
+				print("New group "..searchResultInfo.name.." by "..searchResultInfo.leaderName);
 			end
 		end
 
@@ -173,43 +173,46 @@ end
 
 function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	--print("MyLFGListUtil_SetSearchEntryTooltip")
-	local searchResultData = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(searchResultData.activityID);
+	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
-	tooltip:SetText(searchResultData.name, 1, 1, 1, true);
+	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	tooltip:AddLine(activityName);
-	if ( searchResultData.comment ~= "" ) then
-		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultData.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
+	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
+		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
+	end
+	if ( searchResultInfo.comment ~= "" ) then
+		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	tooltip:AddLine(" ");
-	if ( searchResultData.requiredItemLevel > 0 ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, searchResultData.requiredItemLevel));
+	if ( searchResultInfo.requiredItemLevel > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, searchResultInfo.requiredItemLevel));
 	end
-	if ( useHonorLevel and searchResultData.requiredHonorLevel > 0 ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, searchResultData.requiredHonorLevel));
+	if ( useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, searchResultInfo.requiredHonorLevel));
 	end
-	if ( searchResultData.voiceChat ~= "" ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultData.voiceChat), nil, nil, nil, true);
+	if ( searchResultInfo.voiceChat ~= "" ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
 	end
-	if ( searchResultData.requiredItemLevel > 0 or (useHonorLevel and searchResultData.requiredHonorLevel > 0) or searchResultData.voiceChat ~= "" ) then
+	if ( searchResultInfo.requiredItemLevel > 0 or (useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(" ");
 	end
 
-	if ( searchResultData.leaderName ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultData.leaderName));
+	if ( searchResultInfo.leaderName ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
 	end
-	if ( searchResultData.age > 0 ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultData.age, false, false, 1, false)));
+	if ( searchResultInfo.age > 0 ) then
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));
 	end
 
-	if ( searchResultData.leaderName or searchResultData.age > 0 ) then
+	if ( searchResultInfo.leaderName or searchResultInfo.age > 0 ) then
 		tooltip:AddLine(" ");
 	end
 
 	if ( LFRAdvancedOptions.ShowMemberInfo ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultData.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 		local roleClasses = {};
-		for i=1, searchResultData.numMembers do
+		for i=1, searchResultInfo.numMembers do
 			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
 			local classcounts = roleClasses[role] or {};
 			roleClasses[role] = classcounts;
@@ -230,10 +233,10 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 		end
 		table.wipe(roleClasses);
 	else
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultData.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
 
-	if ( searchResultData.numBNetFriends + searchResultData.numCharFriends + searchResultData.numGuildMates > 0 ) then
+	if ( searchResultInfo.numBNetFriends + searchResultInfo.numCharFriends + searchResultInfo.numGuildMates > 0 ) then
 		tooltip:AddLine(" ");
 		tooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
 		tooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
@@ -250,12 +253,12 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 
 	autoAcceptOption = autoAcceptOption or LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE;
 
-	if autoAcceptOption == LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE and searchResultData.autoAccept then
+	if autoAcceptOption == LFG_LIST_UTIL_ALLOW_AUTO_ACCEPT_LINE and searchResultInfo.autoAccept then
 		tooltip:AddLine(" ");
 		tooltip:AddLine(LFG_LIST_TOOLTIP_AUTO_ACCEPT, LIGHTBLUE_FONT_COLOR:GetRGB());
 	end
 
-	if ( searchResultData.isDelisted ) then
+	if ( searchResultInfo.isDelisted ) then
 		tooltip:AddLine(" ");
 		tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
@@ -268,20 +271,20 @@ hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntry
 -- fix name if created with addon by questid
 function MyLFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
-	local searchResultData = C_LFGList.GetSearchResultInfo(resultID);
-	local qId = tonumber(searchResultData.name);
-	--print("MyLFGListSearchEntry_Update", resultID, searchResultData.activityID, searchResultData.name, searchResultData.questID, qId)
-	if qId and searchResultData.questID then
+	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
+	local qId = tonumber(searchResultInfo.name);
+	--print("MyLFGListSearchEntry_Update", resultID, searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.questID, qId)
+	if qId and searchResultInfo.questID then
 		-- we never get here, oh well, fuck Blizzard...
 		--print("qId and questID")
-		local qName = QuestUtils_GetQuestName(searchResultData.questID);
-		searchResultData.name = qName ~= "" and qName or searchResultData.name;
+		local qName = QuestUtils_GetQuestName(searchResultInfo.questID);
+		searchResultInfo.name = qName ~= "" and qName or searchResultInfo.name;
 	elseif qId and (qId > 0 and qId < 100000) then
 		--print("qId")
 		local qName = QuestUtils_GetQuestName(qId);
-		searchResultData.name = qName ~= "" and qName or searchResultData.name;
+		searchResultInfo.name = qName ~= "" and qName or searchResultInfo.name;
 	end
-	self.Name:SetText(searchResultData.name);
+	self.Name:SetText(searchResultInfo.name);
 end
 
 hooksecurefunc("LFGListSearchEntry_Update", MyLFGListSearchEntry_Update);
@@ -387,25 +390,25 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 end)
 
 function MyLFGListUtil_SortSearchResultsCB(id1, id2)
-	local searchResultData1 = C_LFGList.GetSearchResultInfo(id1);
-	local searchResultData2 = C_LFGList.GetSearchResultInfo(id2);
+	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(id1);
+	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(id2);
 
 	--If one has more friends, do that one first
-	if ( searchResultData1.numBNetFriends ~= searchResultData2.numBNetFriends ) then
-		return searchResultData1.numBNetFriends > searchResultData2.numBNetFriends;
+	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
+		return searchResultInfo1.numBNetFriends > searchResultInfo2.numBNetFriends;
 	end
 
-	if ( searchResultData1.numCharFriends ~= searchResultData2.numCharFriends ) then
-		return searchResultData1.numCharFriends > searchResultData2.numCharFriends;
+	if ( searchResultInfo1.numCharFriends ~= searchResultInfo2.numCharFriends ) then
+		return searchResultInfo1.numCharFriends > searchResultInfo2.numCharFriends;
 	end
 
-	if ( searchResultData1.numGuildMates ~= searchResultData2.numGuildMates ) then
-		return searchResultData1.numGuildMates > searchResultData2.numGuildMates;
+	if ( searchResultInfo1.numGuildMates ~= searchResultInfo2.numGuildMates ) then
+		return searchResultInfo1.numGuildMates > searchResultInfo2.numGuildMates;
 	end
 
 	--If we aren't sorting by anything else, just go by ID
 	--return id1 < id2;
-	return searchResultData1.age < searchResultData2.age;
+	return searchResultInfo1.age < searchResultInfo2.age;
 end
 
 function MyLFGListUtil_SortSearchResults(results)
@@ -436,22 +439,22 @@ local LFGListUtil_GetSearchEntryMenu_Old = LFGListUtil_GetSearchEntryMenu;
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local retVal = LFGListUtil_GetSearchEntryMenu_Old(resultID);
-	local searchResultData = C_LFGList.GetSearchResultInfo(resultID);
-	--print("Debug", resultID, searchResultData.activityID)
+	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
+	--print("Debug", resultID, searchResultInfo.activityID)
 	-- Whisper leader
-	--retVal[2].disabled = not searchResultData.leaderName;
+	--retVal[2].disabled = not searchResultInfo.leaderName;
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
 
-	local achLinkEnabled = searchResultData.activityID == 482 or searchResultData.activityID == 483;
+	local achLinkEnabled = searchResultInfo.activityID == 482 or searchResultInfo.activityID == 483;
 
 	-- Link Achievement
 	local index = 4;
 	retVal[index] = {};
 	retVal[index].text = "Link Antorus \"Curve\" Achievement to leader";
 	retVal[index].func = LinkAchievement;
-	retVal[index].arg1 = searchResultData.leaderName;
-	retVal[index].disabled = not searchResultData.leaderName or not achLinkEnabled;
+	retVal[index].arg1 = searchResultInfo.leaderName;
+	retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
 	retVal[index].notCheckable = true;
 
 	-- Copy leader name
@@ -460,7 +463,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[index].text = "Copy leader name";
 	retVal[index].func = CopyPlayerName;
 	retVal[index].arg1 = leaderName;
-	retVal[index].disabled = not searchResultData.leaderName;
+	retVal[index].disabled = not searchResultInfo.leaderName;
 	retVal[index].notCheckable = true;
 
 	-- Cancel
@@ -478,7 +481,6 @@ local locale = GetLocale();
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local retVal = LFGListUtil_GetApplicantMemberMenu_Old(applicantID, memberIdx);
 	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
-	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	-- Fix bad localization for ignore menu item
 	if (locale == "ruRU") then
 		-- Ignore
