@@ -389,9 +389,29 @@ lfgRefreshButton:SetScript("OnClick", function(self, button)
 	end
 end)
 
-function MyLFGListUtil_SortSearchResultsCB(id1, id2)
-	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(id1);
-	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(id2);
+local roleRemainingKeyLookup = {
+	["TANK"] = "TANK_REMAINING",
+	["HEALER"] = "HEALER_REMAINING",
+	["DAMAGER"] = "DAMAGER_REMAINING",
+};
+
+local function HasRemainingSlotsForLocalPlayerRole(lfgSearchResultID)
+	local roles = C_LFGList.GetSearchResultMemberCounts(lfgSearchResultID);
+	local playerRole = GetSpecializationRole(GetSpecialization());
+	return roles[roleRemainingKeyLookup[playerRole]] > 0;
+end
+
+function MyLFGListUtil_SortSearchResultsCB(searchResultID1, searchResultID2)
+	local searchResultInfo1 = C_LFGList.GetSearchResultInfo(searchResultID1);
+	local searchResultInfo2 = C_LFGList.GetSearchResultInfo(searchResultID2);
+
+	local hasRemainingRole1 = HasRemainingSlotsForLocalPlayerRole(searchResultID1);
+	local hasRemainingRole2 = HasRemainingSlotsForLocalPlayerRole(searchResultID2);
+
+	-- Groups with your current role available are preferred
+	if (hasRemainingRole1 ~= hasRemainingRole2) then
+		return hasRemainingRole1;
+	end
 
 	--If one has more friends, do that one first
 	if ( searchResultInfo1.numBNetFriends ~= searchResultInfo2.numBNetFriends ) then
@@ -407,7 +427,7 @@ function MyLFGListUtil_SortSearchResultsCB(id1, id2)
 	end
 
 	--If we aren't sorting by anything else, just go by ID
-	--return id1 < id2;
+	--return searchResultID1 < searchResultID2;
 	return searchResultInfo1.age < searchResultInfo2.age;
 end
 
