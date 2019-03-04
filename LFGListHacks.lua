@@ -482,7 +482,7 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[index] = {};
 	retVal[index].text = "Copy leader name";
 	retVal[index].func = CopyPlayerName;
-	retVal[index].arg1 = leaderName;
+	retVal[index].arg1 = searchResultInfo.leaderName;
 	retVal[index].disabled = not searchResultInfo.leaderName;
 	retVal[index].notCheckable = true;
 
