@@ -449,7 +449,7 @@ end
 
 local function LinkAchievement(_, name)
 	if not name then return end
-	local achievementLink = GetAchievementLink(12536);
+	local achievementLink = GetAchievementLink(13784);
 	if achievementLink then
 		SendChatMessage(achievementLink, "WHISPER", nil, name);
 	end
@@ -466,12 +466,12 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
 
-	local achLinkEnabled = searchResultInfo.activityID == 494 or searchResultInfo.activityID == 495 or searchResultInfo.activityID == 496;
+	local achLinkEnabled = searchResultInfo.activityID == 670 or searchResultInfo.activityID == 671 or searchResultInfo.activityID == 672;
 
 	-- Link Achievement
 	local index = 4;
 	retVal[index] = {};
-	retVal[index].text = "Link Uldir \"Curve\" Achievement to leader";
+	retVal[index].text = "Link The Eternal Palace \"Curve\" Achievement to leader";
 	retVal[index].func = LinkAchievement;
 	retVal[index].arg1 = searchResultInfo.leaderName;
 	retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
