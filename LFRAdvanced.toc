@@ -1,4 +1,4 @@
-﻿## Interface: 80205
+﻿## Interface: 80300
 ## Title: LFR Advanced
 ## Title-ruRU: LFR Advanced
 ## Version: 8.2.5.31960
