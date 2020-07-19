@@ -436,11 +436,11 @@ local function ShouldHideActivity(activityID, categoryID, shortName)
 	if categoryID ~= 2 then return false end
 	if activityToExpansion[categoryID..":"..activityID] == LE_EXPANSION_LEGION then
 		if LFRAdvancedOptions.HideLegionNormals and categoryID == 2 and shortName == normalDifficultyText then return true end
-		if LFRAdvancedOptions.HideLegionHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end		
+		if LFRAdvancedOptions.HideLegionHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
 	end
 	if activityToExpansion[categoryID..":"..activityID] == LE_EXPANSION_BATTLE_FOR_AZEROTH then
 		if LFRAdvancedOptions.HideBFANormals and categoryID == 2 and shortName == normalDifficultyText then return true end
-		if LFRAdvancedOptions.HideBFAHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end		
+		if LFRAdvancedOptions.HideBFAHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
 	end
 	return false
 end

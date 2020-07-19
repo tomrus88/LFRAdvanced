@@ -447,11 +447,22 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
+local curveAchievementId = 14068;
+local _, achievementTitle = GetAchievementInfo(curveAchievementId);
+local achievementLink = GetAchievementLink(curveAchievementId);
+local achievementLinkTemplate = "Link '%s' Achievement to leader";
+local achievementActivityEnabled = {
+	[685] = true,
+	[686] = true,
+	[687] = true,
+}
+
 local function LinkAchievement(_, name)
 	if not name then return end
-	local achievementLink = GetAchievementLink(13784);
+
 	if achievementLink then
 		SendChatMessage(achievementLink, "WHISPER", nil, name);
+		--print(achievementLink)
 	end
 end
 
@@ -466,12 +477,12 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
 
-	local achLinkEnabled = searchResultInfo.activityID == 670 or searchResultInfo.activityID == 671 or searchResultInfo.activityID == 672;
+	local achLinkEnabled = achievementActivityEnabled[searchResultInfo.activityID];
 
 	-- Link Achievement
 	local index = 4;
 	retVal[index] = {};
-	retVal[index].text = "Link The Eternal Palace \"Curve\" Achievement to leader";
+	retVal[index].text = achievementLinkTemplate:format(achievementTitle);
 	retVal[index].func = LinkAchievement;
 	retVal[index].arg1 = searchResultInfo.leaderName;
 	retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
