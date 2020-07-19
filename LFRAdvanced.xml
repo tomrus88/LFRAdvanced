@@ -1,7 +1,7 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFRAdvanced.lua"/>
-	<EditBox name="LFGListCustomSearchBox" inherits="SearchBoxTemplate" letters="128">
+	<EditBox name="LFGListCustomSearchBox" hidden="true" inherits="SearchBoxTemplate" letters="128">
 		<Size x="319" y="18"/>
 			<Scripts>
 				<OnTextChanged function="LFGListCustomSearchBox_OnTextChanged"/>
