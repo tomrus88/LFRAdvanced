@@ -58,6 +58,7 @@ function MyLFGListCategorySelection_StartFindGroup(self, questID)
 end
 
 function MyLFGListSearchPanel_Clear(self)
+	--print("MyLFGListSearchPanel_Clear");
 	--C_LFGList.ClearSearchResults(); -- can't do 2 secure calls from unsecure environment in one hardware event...
 	--self.SearchBox:SetText("");
 	C_LFGList.ClearSearchTextFields();
