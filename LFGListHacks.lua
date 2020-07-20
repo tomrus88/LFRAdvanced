@@ -22,7 +22,7 @@ LFGListFrame.SearchPanel.SearchBox:HookScript("OnTextChanged", function(self, us
 end)
 
 LFGListFrame.SearchPanel.SearchBox.clearButton:HookScript("OnClick", function(btn)
-	print("LFGListFrame.SearchPanel.SearchBox.clearButton:HookScript(\"OnClick\")");
+	--print("LFGListFrame.SearchPanel.SearchBox.clearButton:HookScript(\"OnClick\")");
 	LFGListDropDown.activeValue = 0;
 	LFGListDropDown_UpdateText(0);
 end);
