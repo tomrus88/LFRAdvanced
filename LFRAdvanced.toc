@@ -1,4 +1,4 @@
-﻿## Interface: 80300
+﻿## Interface: 90001
 ## Title: LFR Advanced
 ## Title-ruRU: LFR Advanced
 ## Version: 8.3.0.34963
