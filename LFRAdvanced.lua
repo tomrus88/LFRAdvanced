@@ -17,6 +17,16 @@ end
 
 local mainFrame = CreateFrame("Frame")
 
+local function WeeklyRewardsClickHandler()
+	LoadAddOn("Blizzard_WeeklyRewards")
+	if WeeklyRewardsFrame:IsShown() then
+		WeeklyRewardsFrame:Hide()
+	else
+		WeeklyRewardsFrame:Show()
+		tinsert(UISpecialFrames, "WeeklyRewardsFrame") -- make it closeable with Esc
+	end
+end
+
 local function EventHandler(self, event, ...)
 	if event == "MODIFIER_STATE_CHANGED" then
 
@@ -45,6 +55,11 @@ local function EventHandler(self, event, ...)
 				--print("clear click!");
 				--LFGListSearchPanel_DoSearch(self);
 			end);
+		elseif addon == "Blizzard_ChallengesUI" then
+			ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
+		elseif addon == "Blizzard_PVPUI" then
+			PVPQueueFrame.HonorInset.RatedPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
+			PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
 		end
 	end
 end
