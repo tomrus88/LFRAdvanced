@@ -454,14 +454,14 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
-local curveAchievementId = 14068;
+local curveAchievementId = 14460;
 local _, achievementTitle = GetAchievementInfo(curveAchievementId);
 local achievementLink = GetAchievementLink(curveAchievementId);
 local achievementLinkTemplate = "Link '%s' Achievement to leader";
 local achievementActivityEnabled = {
-	[685] = true,
-	[686] = true,
-	[687] = true,
+	[720] = true,
+	[721] = true,
+	[722] = true,
 }
 
 local function LinkAchievement(_, name)
