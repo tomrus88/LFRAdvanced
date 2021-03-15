@@ -56,10 +56,10 @@ local function EventHandler(self, event, ...)
 				--LFGListSearchPanel_DoSearch(self);
 			end);
 		elseif addon == "Blizzard_ChallengesUI" then
-			ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
+			--ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
 		elseif addon == "Blizzard_PVPUI" then
-			PVPQueueFrame.HonorInset.RatedPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
-			PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
+			--PVPQueueFrame.HonorInset.RatedPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
+			--PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest:HookScript("OnMouseDown", WeeklyRewardsClickHandler)
 		end
 	end
 end
