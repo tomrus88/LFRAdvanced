@@ -492,6 +492,10 @@ local function ShouldHideActivity(activityID, categoryID, shortName)
 		if LFRAdvancedOptions.HideBFANormals and categoryID == 2 and shortName == normalDifficultyText then return true end
 		if LFRAdvancedOptions.HideBFAHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
 	end
+	if activityToExpansion[categoryID..":"..activityID] == LE_EXPANSION_SHADOWLANDS then
+		if LFRAdvancedOptions.HideSLNormals and categoryID == 2 and shortName == normalDifficultyText then return true end
+		if LFRAdvancedOptions.HideSLHeroics and categoryID == 2 and shortName == heroicDifficultyText then return true end
+	end
 	return false
 end
 
@@ -509,9 +513,9 @@ function LFGListDropDown_Initialize(self, level)
 		local categories = C_LFGList.GetAvailableCategories();
 		for i=1, #categories do
 			local categoryID = categories[i];
-			local name, separateRecommended, autoChoose, preferCurrentArea = C_LFGList.GetCategoryInfo(categoryID);
+			local categoryInfo = C_LFGList.GetLfgCategoryInfo(categoryID);
 
-			info.text = name;
+			info.text = categoryInfo.name;
 			info.value = categoryID;
 			info.func = LFGListDropDownButton_OnClickCategory;
 			info.hasArrow = true;
@@ -528,7 +532,7 @@ function LFGListDropDown_Initialize(self, level)
 
 		for i=1, #activities do
 			local activityID = activities[i];
-			local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 
 			local exp = activityToExpansion[browseCategory..":"..activityID];
 			if exp then
@@ -545,11 +549,11 @@ function LFGListDropDown_Initialize(self, level)
 					UIDropDownMenu_AddButton(info, level);
 				end
 			else
-				if not browseGroups[groupID] then
-					browseGroups[groupID] = true;
+				if not browseGroups[activityInfo.groupFinderActivityGroupID] then
+					browseGroups[activityInfo.groupFinderActivityGroupID] = true;
 
-					info.text = groupID == 0 and OTHER or C_LFGList.GetActivityGroupInfo(groupID);
-					info.value = groupID;
+					info.text = activityInfo.groupFinderActivityGroupID == 0 and OTHER or C_LFGList.GetActivityGroupInfo(activityInfo.groupFinderActivityGroupID);
+					info.value = activityInfo.groupFinderActivityGroupID;
 					info.func = nil;
 					info.hasArrow = true;
 					info.checked = false;
@@ -562,15 +566,15 @@ function LFGListDropDown_Initialize(self, level)
 
 		for i=1, #activities do
 			local activityID = activities[i];
-			local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 
 			local exp = activityToExpansion[categoryID..":"..activityID];
 			if exp then
 				local customName = _G["EXPANSION_NAME"..exp];
-				local key = categoryID..customName;
-				if not ShouldHideActivity(activityID, categoryID, shortName) then
+				local key = activityInfo.categoryID..customName;
+				if not ShouldHideActivity(activityID, activityInfo.categoryID, activityInfo.shortName) then
 					if UIDROPDOWNMENU_MENU_VALUE == key then
-						info.text = fullName;
+						info.text = activityInfo.fullName;
 						info.value = activityID;
 						info.func = LFGListDropDownButton_OnClick;
 						info.hasArrow = false;
@@ -579,8 +583,8 @@ function LFGListDropDown_Initialize(self, level)
 					end
 				end
 			else
-				if UIDROPDOWNMENU_MENU_VALUE == groupID then
-					info.text = fullName;
+				if UIDROPDOWNMENU_MENU_VALUE == activityInfo.groupFinderActivityGroupID then
+					info.text = activityInfo.fullName;
 					info.value = activityID;
 					info.func = LFGListDropDownButton_OnClick;
 					info.hasArrow = false;
@@ -599,7 +603,7 @@ function LFGListDropDownButton_OnClick(self, arg1, arg2, checked)
 end
 
 function LFGListDropDownButton_OnClickCategory(self, arg1, arg2, checked)
-	LFGListDropDown.activeValue = self.value;
+	LFGListDropDown.activeCategory = self.value;
 	CloseDropDownMenus();
 	if self.value ~= 0 then 
 		LFGListFrame.SearchPanel.categoryID = self.value;

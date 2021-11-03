@@ -10,6 +10,8 @@ if LFRAdvancedOptions == nil then
 		HideLegionHeroics = false,
 		HideBFANormals = false,
 		HideBFAHeroics = false,
+		HideSLNormals = false,
+		HideSLHeroics = false,
 		LastSearchText = "",
 		SpamWords = { "wowvendor", "foxstore.pro", "prestige-wow" }
 	}
@@ -114,6 +116,8 @@ function SaveLFRAOptions()
 	LFRAdvancedOptions.HideLegionHeroics = LFRAdvancedOptionsFrameHideLegionHeroics:GetChecked();
 	LFRAdvancedOptions.HideBFANormals = LFRAdvancedOptionsFrameHideBFANormals:GetChecked();
 	LFRAdvancedOptions.HideBFAHeroics = LFRAdvancedOptionsFrameHideBFAHeroics:GetChecked();
+	LFRAdvancedOptions.HideSLNormals = LFRAdvancedOptionsFrameHideSLNormals:GetChecked();
+	LFRAdvancedOptions.HideSLHeroics = LFRAdvancedOptionsFrameHideSLHeroics:GetChecked();
 end
 
 function RefreshLFRAOptions()
@@ -125,6 +129,8 @@ function RefreshLFRAOptions()
 	LFRAdvancedOptionsFrameHideLegionHeroics:SetChecked(LFRAdvancedOptions.HideLegionHeroics);
 	LFRAdvancedOptionsFrameHideBFANormals:SetChecked(LFRAdvancedOptions.HideBFANormals);
 	LFRAdvancedOptionsFrameHideBFAHeroics:SetChecked(LFRAdvancedOptions.HideBFAHeroics);
+	LFRAdvancedOptionsFrameHideSLNormals:SetChecked(LFRAdvancedOptions.HideSLNormals);
+	LFRAdvancedOptionsFrameHideSLHeroics:SetChecked(LFRAdvancedOptions.HideSLHeroics);
 end
 
 function LFGListCustomSearchBox_OnTextChanged(self)
@@ -163,8 +169,8 @@ function LFRAdvanced_MatchSearchResult(pattern, activityID, name, comment, iLvl,
 		end
 	end
 
-	local activityName = C_LFGList.GetActivityInfo(activityID);
-	local text = activityName:lower().." "..name:lower().." "..comment:lower().." "..(leaderName and leaderName:lower() or "");
+	local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+	local text = activityInfo.fullName:lower().." "..name:lower().." "..comment:lower().." "..(leaderName and leaderName:lower() or "");
 	--print(id.." : "..text);
 	return LFRAdvanced_MatchString(pattern:lower(), text);
 end

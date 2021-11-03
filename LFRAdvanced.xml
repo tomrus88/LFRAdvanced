@@ -123,6 +123,28 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentHideSLNormals" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideBFAHeroics" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetText("Hide SL Normal mode dungeons");
+						self.tooltipText = "Hide SL Normal mode dungeons in dropdown menu.";
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentHideSLHeroics" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHideSLNormals" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.Text:SetText("Hide SL Heroic mode dungeons");
+						self.tooltipText = "Hide SL Heroic mode dungeons in dropdown menu.";
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>

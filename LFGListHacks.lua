@@ -105,13 +105,13 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--print("1")
 	else
 		-- activity search from dropdown
-		local fullName, shortName, categoryID, groupID, itemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activity);
-		self.categoryID = categoryID;
+		local activityInfo = C_LFGList.GetActivityInfoTable(activityID, questID, showWarmode);
+		self.categoryID = activityInfo.categoryID;
 		--local oldScript = self.SearchBox:GetScript("OnTextChanged");
 		--self.SearchBox:SetScript("OnTextChanged", nil);
-		--self.SearchBox:SetText(fullName);
+		--self.SearchBox:SetText(activityInfo.fullName);
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
-		LFGListDropDown_UpdateText(activity, fullName);
+		LFGListDropDown_UpdateText(activity, activityInfo.fullName);
 		C_LFGList.SetSearchToActivity(activity);
 		C_LFGList.Search(self.categoryID, 0, 0, languages);
 		--print("2")
@@ -181,10 +181,16 @@ end
 function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	--print("MyLFGListUtil_SetSearchEntryTooltip")
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType, orderIndex, useHonorLevel = C_LFGList.GetActivityInfo(searchResultInfo.activityID);
+	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
-	tooltip:AddLine(activityName);
+	tooltip:AddLine(activityInfo.fullName);
+
+	if (searchResultInfo.playstyle > 0) then 
+		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
+		GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
+	end
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
 		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
 	end
@@ -192,21 +198,56 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 		tooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, searchResultInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	tooltip:AddLine(" ");
-	if ( searchResultInfo.requiredItemLevel > 0 ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_ILVL, searchResultInfo.requiredItemLevel));
+	if ( searchResultInfo.requiredDungeonScore > 0 ) then
+		tooltip:AddLine(GROUP_FINDER_MYTHIC_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredDungeonScore));
 	end
-	if ( useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
+	if ( searchResultInfo.requiredPvpRating > 0 ) then
+		tooltip:AddLine(GROUP_FINDER_PVP_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredPvpRating));
+	end
+	if ( searchResultInfo.requiredItemLevel > 0 ) then
+		if(activityInfo.isPvpActivity) then 
+			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL_PVP:format(searchResultInfo.requiredItemLevel));
+		else 
+			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL:format(searchResultInfo.requiredItemLevel));
+		end 
+	end
+	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, searchResultInfo.requiredHonorLevel));
 	end
 	if ( searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
 	end
-	if ( searchResultInfo.requiredItemLevel > 0 or (useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" ) then
+	if ( searchResultInfo.requiredItemLevel > 0 or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) or searchResultInfo.voiceChat ~= "" or  searchResultInfo.requiredDungeonScore > 0 or searchResultInfo.requiredPvpRating > 0 ) then
 		tooltip:AddLine(" ");
 	end
 
 	if ( searchResultInfo.leaderName ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
+	end
+
+	if( activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo) then
+		GameTooltip_AddNormalLine(tooltip, PVP_RATING_GROUP_FINDER:format(searchResultInfo.leaderPvpRatingInfo.activityName, searchResultInfo.leaderPvpRatingInfo.rating, PVPUtil.GetTierName(searchResultInfo.leaderPvpRatingInfo.tier)));
+	elseif ( isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore) then 
+		local color = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore);
+		if(not color) then 
+			color = HIGHLIGHT_FONT_COLOR; 
+		end 
+		GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));	
+	end 
+
+	if(activityInfo.isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
+		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo; 
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(leaderDungeonScoreInfo.mapScore);
+		if (not color) then 
+			color = HIGHLIGHT_FONT_COLOR;
+		end 
+		if(leaderDungeonScoreInfo.mapScore == 0) then 
+			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_PER_DUNGEON_NO_RATING:format(leaderDungeonScoreInfo.mapName, leaderDungeonScoreInfo.mapScore));
+		elseif (leaderDungeonScoreInfo.finishedSuccess) then 
+			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_DUNGEON_RATING:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
+		else 
+			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
+		end 	
 	end
 	if ( searchResultInfo.age > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));
@@ -484,16 +525,19 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	--retVal[2].tooltipTitle = nil;
 	--retVal[2].tooltipText = nil;
 
+	local index = 3;
 	local achLinkEnabled = achievementActivityEnabled[searchResultInfo.activityID];
 
-	-- Link Achievement
-	local index = 4;
-	retVal[index] = {};
-	retVal[index].text = achievementLinkTemplate:format(achievementTitle);
-	retVal[index].func = LinkAchievement;
-	retVal[index].arg1 = searchResultInfo.leaderName;
-	retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
-	retVal[index].notCheckable = true;
+	if achLinkEnabled then
+		-- Link Achievement
+		index = index + 1;
+		retVal[index] = {};
+		retVal[index].text = achievementLinkTemplate:format(achievementTitle);
+		retVal[index].func = LinkAchievement;
+		retVal[index].arg1 = searchResultInfo.leaderName;
+		retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
+		retVal[index].notCheckable = true;
+	end
 
 	-- Copy leader name
 	index = index + 1;
@@ -505,10 +549,14 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	retVal[index].notCheckable = true;
 
 	-- Cancel
-	index = index + 1;	
+	index = index + 1;
 	retVal[index] = {};
 	retVal[index].text = CANCEL;
 	retVal[index].notCheckable = true;
+
+	if not achLinkEnabled then
+		retVal[index + 1] = nil;
+	end
 
 	return retVal;
 end
