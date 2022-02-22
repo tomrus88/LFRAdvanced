@@ -34,6 +34,7 @@ LFGListFrame.CategorySelection.FindGroupButton:SetScript("OnClick", function(sel
 end)
 
 function MyLFGListCategorySelectionFindGroupButton_OnClick(self)
+	--print("MyLFGListCategorySelectionFindGroupButton_OnClick")
 	local panel = self:GetParent();
 	if ( not panel.selectedCategory ) then
 		return;
@@ -44,6 +45,7 @@ function MyLFGListCategorySelectionFindGroupButton_OnClick(self)
 end
 
 function MyLFGListCategorySelection_StartFindGroup(self, questID)
+	--print("MyLFGListCategorySelection_StartFindGroup")
 	local baseFilters = self:GetParent().baseFilters;
 
 	local searchPanel = self:GetParent().SearchPanel;
@@ -85,23 +87,34 @@ end
 
 LFGListFrame.SearchPanel:HookScript("OnEvent", MyLFGListSearchPanel_OnEvent);
 
+local function ResolveCategoryFilters(categoryID, filters)
+	-- Dungeons ONLY display recommended groups.
+	if categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+		return bit.band(bit.bnot(LE_LFG_LIST_FILTER_NOT_RECOMMENDED), bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED));
+	end
+
+	return filters;
+end
+
 function MyLFGListSearchPanel_DoSearch(self)
 	--print("MyLFGListSearchPanel_DoSearch");
 
 	local activity = LFGListDropDown.activeValue;
 	--print("MyLFGListSearchPanel_DoSearch", activity, self.categoryID)
+	local searchText = self.SearchBox:GetText();
 	local languages = C_LFGList.GetLanguageSearchFilter();
 
 	if LFGListFrame.SearchPanel:IsVisible() then
 		--print("LFGListFrame.SearchPanel:IsVisible()");
-		LFRAdvancedOptions.LastSearchText = self.SearchBox:GetText();
+		LFRAdvancedOptions.LastSearchText = searchText;
 	end
 
 	if activity <= 0 then
 		-- Blizzard default code
 		LFGListDropDown_UpdateText(activity);
-		C_LFGList.SetSearchToActivity(activity);
-		C_LFGList.Search(self.categoryID, self.filters, self.preferredFilters, languages);
+		--C_LFGList.SetSearchToActivity(activity);
+		local filters = ResolveCategoryFilters(self.categoryID, self.filters);
+		C_LFGList.Search(self.categoryID, filters, self.preferredFilters, languages);
 		--print("1")
 	else
 		-- activity search from dropdown
@@ -112,7 +125,7 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--self.SearchBox:SetText(activityInfo.fullName);
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, activityInfo.fullName);
-		C_LFGList.SetSearchToActivity(activity);
+		--C_LFGList.SetSearchToActivity(activity);
 		C_LFGList.Search(self.categoryID, 0, 0, languages);
 		--print("2")
 	end
@@ -122,6 +135,14 @@ function MyLFGListSearchPanel_DoSearch(self)
 	self.selectedResult = nil;
 	MyLFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
+
+	-- If auto-create is desired, then the caller needs to set up that data after the search begins.
+	-- There's an issue with using OnTextChanged to handle this due to how OnShow processes the update.
+	if self.previousSearchText ~= searchText then
+		LFGListEntryCreation_ClearAutoCreateMode(self:GetParent().EntryCreation);
+	end
+
+	self.previousSearchText = searchText;
 end
 
 function MyLFGListSearchPanel_UpdateResultList(self)
@@ -178,18 +199,42 @@ end
 --	self.AutoCompleteFrame.selected = nil;
 --end
 
+local function GetPlaystyleString2(playstyle, activityInfo)
+    local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
+    if not categoryInfo.showPlaystyleDropdown then
+        return
+    end
+    if activityInfo.isMythicPlusActivity then
+        return _G["GROUP_FINDER_PVE_PLAYSTYLE"..playstyle]
+    end
+    if activityInfo.isCurrentRaidActivity then
+        return _G["GROUP_FINDER_PVE_RAID_PLAYSTYLE"..playstyle]
+    end
+    if activityInfo.isMythicActivity then
+        return _G["GROUP_FINDER_PVE_MYTHICZERO_PLAYSTYLE"..playstyle]
+    end
+    if activityInfo.isRatedPvpActivity then
+    --if activityInfo.isRatedPvpActivity or activityInfo.isPvpActivity then
+        return _G["GROUP_FINDER_PVP_PLAYSTYLE"..playstyle]
+    end
+    return "Unknown playstyle"
+end
+
 function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
-	--print("MyLFGListUtil_SetSearchEntryTooltip")
+	--print("MyLFGListUtil_SetSearchEntryTooltip", resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
-	tooltip:AddLine(activityInfo.fullName);
+	--tooltip:AddLine(activityName);
 
-	if (searchResultInfo.playstyle > 0) then 
-		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
-		GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
+	if (searchResultInfo.playstyle > 0) then
+        local playstyleString = GetPlaystyleString2(searchResultInfo.playstyle, activityInfo);
+		--print(searchResultInfo.playstyle, playstyleString);
+		if playstyleString then
+		    GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR);
+		end
 	end
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
 		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
@@ -212,7 +257,7 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 		end 
 	end
 	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_HONOR_LEVEL, searchResultInfo.requiredHonorLevel));
+		tooltip:AddLine(LFG_LIST_TOOLTIP_HONOR_LEVEL:format(searchResultInfo.requiredHonorLevel));
 	end
 	if ( searchResultInfo.voiceChat ~= "" ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
@@ -259,27 +304,29 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 
 	if ( LFRAdvancedOptions.ShowMemberInfo ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
-		local roleClasses = {};
+		--local roleClasses = {};
 		for i=1, searchResultInfo.numMembers do
-			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
-			local classcounts = roleClasses[role] or {};
-			roleClasses[role] = classcounts;
-			if not classcounts[class] then
-				classcounts[class] = 1;
-			else
-				classcounts[class] = classcounts[class] + 1;
-			end
+			local role, class, classLocalized, specLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+			tooltip:AddLine(string.format("%s (%s) - %s", classLocalized, specLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
+			--local classcounts = roleClasses[role] or {};
+			--roleClasses[role] = classcounts;
+			--if not classcounts[class] then
+			--	classcounts[class] = 1;
+			--else
+			--	classcounts[class] = classcounts[class] + 1;
+			--end
 		end
-		table.sort(roleClasses, function(a,b) return a > b end)
-		for role, classcnts in pairs(roleClasses) do
-			--tooltip:AddLine(_G[role]..":");
-			for class, cnt in pairs(classcnts) do
-				local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
-				tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
-			end
-			table.wipe(classcnts);
-		end
-		table.wipe(roleClasses);
+		--table.sort(roleClasses, function(a,b) return a > b end)
+		--for role, classcnts in pairs(roleClasses) do
+		--	--tooltip:AddLine(_G[role]..":");
+		--	for class, cnt in pairs(classcnts) do
+		--		local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+		--		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE.." - %d", LOCALIZED_CLASS_NAMES_MALE[class], _G[role], cnt), classColor.r, classColor.g, classColor.b);
+		--	end
+		--	table.wipe(classcnts);
+		--end
+		--table.wipe(roleClasses);
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 	end
@@ -314,28 +361,8 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 	tooltip:Show();
 end
 
-hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntryTooltip);
-
--- fix name if created with addon by questid
-function MyLFGListSearchEntry_Update(self)
-	local resultID = self.resultID;
-	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
-	local qId = tonumber(searchResultInfo.name);
-	--print("MyLFGListSearchEntry_Update", resultID, searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.questID, qId)
-	if qId and searchResultInfo.questID then
-		-- we never get here, oh well, fuck Blizzard...
-		--print("qId and questID")
-		local qName = QuestUtils_GetQuestName(searchResultInfo.questID);
-		searchResultInfo.name = qName ~= "" and qName or searchResultInfo.name;
-	elseif qId and (qId > 0 and qId < 100000) then
-		--print("qId")
-		local qName = QuestUtils_GetQuestName(qId);
-		searchResultInfo.name = qName ~= "" and qName or searchResultInfo.name;
-	end
-	self.Name:SetText(searchResultInfo.name);
-end
-
-hooksecurefunc("LFGListSearchEntry_Update", MyLFGListSearchEntry_Update);
+--hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", MyLFGListUtil_SetSearchEntryTooltip);
+LFGListUtil_SetSearchEntryTooltip = MyLFGListUtil_SetSearchEntryTooltip;
 
 --local LFGListSearchPanel_OnShowOld = LFGListSearchPanel_OnShow;
 

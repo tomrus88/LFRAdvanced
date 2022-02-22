@@ -422,6 +422,9 @@ local activityToExpansion = {
 	["3:743"] = LE_EXPANSION_SHADOWLANDS,
 	["3:744"] = LE_EXPANSION_SHADOWLANDS,
 	["3:745"] = LE_EXPANSION_SHADOWLANDS,
+	["3:1020"] = LE_EXPANSION_SHADOWLANDS,
+	["3:1021"] = LE_EXPANSION_SHADOWLANDS,
+	["3:1022"] = LE_EXPANSION_SHADOWLANDS,
 	-- Dungeons
 	["2:688"] = LE_EXPANSION_SHADOWLANDS,
 	["2:689"] = LE_EXPANSION_SHADOWLANDS,
@@ -456,6 +459,10 @@ local activityToExpansion = {
 	["2:718"] = LE_EXPANSION_SHADOWLANDS,
 	["2:719"] = LE_EXPANSION_SHADOWLANDS,
 	["2:746"] = LE_EXPANSION_SHADOWLANDS,
+	["2:1016"] = LE_EXPANSION_SHADOWLANDS,
+	["2:1017"] = LE_EXPANSION_SHADOWLANDS,
+	["2:1018"] = LE_EXPANSION_SHADOWLANDS,
+	["2:1019"] = LE_EXPANSION_SHADOWLANDS,
 }
 
 function LFGListDropDown_SetUp(self)
@@ -470,9 +477,9 @@ function LFGListDropDown_UpdateText(activity, text, isSetup)
 	if activity <= 0 then
 		if not isSetup then
 			C_LFGList.ClearSearchTextFields();
+			local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
+			UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
 		end
-		local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
-		UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
 	else
 		local fullName = text or C_LFGList.GetActivityInfo(activity);
 		UIDropDownMenu_SetText(LFGListDropDown, fullName);
