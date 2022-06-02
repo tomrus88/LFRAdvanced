@@ -90,7 +90,7 @@ LFGListFrame.SearchPanel:HookScript("OnEvent", MyLFGListSearchPanel_OnEvent);
 local function ResolveCategoryFilters(categoryID, filters)
 	-- Dungeons ONLY display recommended groups.
 	if categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
-		return bit.band(bit.bnot(LE_LFG_LIST_FILTER_NOT_RECOMMENDED), bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED));
+		return bit.band(bit.bnot(Enum.LFGListFilter.NotRecommended), bit.bor(filters, Enum.LFGListFilter.Recommended));
 	end
 
 	return filters;
@@ -118,14 +118,15 @@ function MyLFGListSearchPanel_DoSearch(self)
 		--print("1")
 	else
 		-- activity search from dropdown
-		local activityInfo = C_LFGList.GetActivityInfoTable(activityID, questID, showWarmode);
+		--print(activity)
+		local activityInfo = C_LFGList.GetActivityInfoTable(activity); -- activityID, questID, showWarmode
 		self.categoryID = activityInfo.categoryID;
 		--local oldScript = self.SearchBox:GetScript("OnTextChanged");
 		--self.SearchBox:SetScript("OnTextChanged", nil);
 		--self.SearchBox:SetText(activityInfo.fullName);
 		--self.SearchBox:SetScript("OnTextChanged", oldScript);
 		LFGListDropDown_UpdateText(activity, activityInfo.fullName);
-		--C_LFGList.SetSearchToActivity(activity);
+		C_LFGList.SetSearchToActivity(activity);
 		C_LFGList.Search(self.categoryID, 0, 0, languages);
 		--print("2")
 	end

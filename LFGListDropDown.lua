@@ -575,7 +575,7 @@ function LFGListDropDown_Initialize(self, level)
 			local activityID = activities[i];
 			local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
 
-			local exp = activityToExpansion[categoryID..":"..activityID];
+			local exp = activityToExpansion[activityInfo.categoryID..":"..activityID];
 			if exp then
 				local customName = _G["EXPANSION_NAME"..exp];
 				local key = activityInfo.categoryID..customName;
