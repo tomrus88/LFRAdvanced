@@ -2,6 +2,8 @@
 
 local warnedGroups = {};
 
+local FACTION_STRINGS = { [0] = FACTION_HORDE, [1] = FACTION_ALLIANCE}; 
+
 -- /script LFGListFrame.CategorySelection:Hide()
 -- /script LFGListFrame.SearchPanel:Show()
 -- /script LFGListFrame.ApplicationViewer:Hide()
@@ -234,8 +236,14 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
         local playstyleString = GetPlaystyleString2(searchResultInfo.playstyle, activityInfo);
 		--print(searchResultInfo.playstyle, playstyleString);
 		if playstyleString then
-		    GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR);
+			if(not searchResultInfo.crossFactionListing) then 
+				GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
+			else 
+				GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
+			end 
 		end
+	elseif(not searchResultInfo.crossFactionListing) then 
+		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
 		searchResultInfo.comment = LFGListUtil_GetQuestDescription(searchResultInfo.questID);
@@ -268,7 +276,12 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 	end
 
 	if ( searchResultInfo.leaderName ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
+		if(searchResultInfo.leaderFactionGroup and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then 
+			local factionString = FACTION_STRINGS[searchResultInfo.leaderFactionGroup]; 
+			tooltip:AddLine(LFG_LIST_TOOLTIP_LEADER_FACTION:format(searchResultInfo.leaderName, factionString))
+		else
+			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
+		end
 	end
 
 	if( activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo) then
