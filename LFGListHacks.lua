@@ -227,22 +227,24 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 	--print("MyLFGListUtil_SetSearchEntryTooltip", resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local activityInfo = C_LFGList.GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode);
+	local categoryInfo = C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID);
+	local allowsCrossFaction = (categoryInfo and categoryInfo.allowCrossFaction) and (activityInfo and activityInfo.allowCrossFaction);
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
 	--tooltip:AddLine(activityName);
 
 	if (searchResultInfo.playstyle > 0) then
-        local playstyleString = GetPlaystyleString2(searchResultInfo.playstyle, activityInfo);
+		local playstyleString = GetPlaystyleString2(searchResultInfo.playstyle, activityInfo);
 		--print(searchResultInfo.playstyle, playstyleString);
 		if playstyleString then
-			if(not searchResultInfo.crossFactionListing) then 
+			if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 				GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
-			else 
-				GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR); 
-			end 
+			else
+				GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR);
+			end
 		end
-	elseif(not searchResultInfo.crossFactionListing) then 
+	elseif(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
@@ -259,11 +261,11 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 		tooltip:AddLine(GROUP_FINDER_PVP_RATING_REQ_TOOLTIP:format(searchResultInfo.requiredPvpRating));
 	end
 	if ( searchResultInfo.requiredItemLevel > 0 ) then
-		if(activityInfo.isPvpActivity) then 
+		if(activityInfo.isPvpActivity) then
 			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL_PVP:format(searchResultInfo.requiredItemLevel));
-		else 
+		else
 			tooltip:AddLine(LFG_LIST_TOOLTIP_ILVL:format(searchResultInfo.requiredItemLevel));
-		end 
+		end
 	end
 	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
 		tooltip:AddLine(LFG_LIST_TOOLTIP_HONOR_LEVEL:format(searchResultInfo.requiredHonorLevel));
@@ -276,8 +278,8 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 	end
 
 	if ( searchResultInfo.leaderName ) then
-		if(searchResultInfo.leaderFactionGroup and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then 
-			local factionString = FACTION_STRINGS[searchResultInfo.leaderFactionGroup]; 
+		if(searchResultInfo.leaderFactionGroup and (UnitFactionGroup("player") ~= PLAYER_FACTION_GROUP[searchResultInfo.leaderFactionGroup])) then
+			local factionString = FACTION_STRINGS[searchResultInfo.leaderFactionGroup];
 			tooltip:AddLine(LFG_LIST_TOOLTIP_LEADER_FACTION:format(searchResultInfo.leaderName, factionString))
 		else
 			tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_LEADER, searchResultInfo.leaderName));
@@ -286,27 +288,27 @@ function MyLFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption
 
 	if( activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo) then
 		GameTooltip_AddNormalLine(tooltip, PVP_RATING_GROUP_FINDER:format(searchResultInfo.leaderPvpRatingInfo.activityName, searchResultInfo.leaderPvpRatingInfo.rating, PVPUtil.GetTierName(searchResultInfo.leaderPvpRatingInfo.tier)));
-	elseif ( isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore) then 
+	elseif ( isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore) then
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(searchResultInfo.leaderOverallDungeonScore);
-		if(not color) then 
-			color = HIGHLIGHT_FONT_COLOR; 
-		end 
-		GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));	
-	end 
-
-	if(activityInfo.isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then 
-		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo; 
-		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(leaderDungeonScoreInfo.mapScore);
-		if (not color) then 
+		if(not color) then
 			color = HIGHLIGHT_FONT_COLOR;
-		end 
-		if(leaderDungeonScoreInfo.mapScore == 0) then 
+		end
+		GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_LEADER:format(color:WrapTextInColorCode(searchResultInfo.leaderOverallDungeonScore)));
+	end
+
+	if(activityInfo.isMythicPlusActivity and searchResultInfo.leaderDungeonScoreInfo) then
+		local leaderDungeonScoreInfo = searchResultInfo.leaderDungeonScoreInfo;
+		local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(leaderDungeonScoreInfo.mapScore);
+		if (not color) then
+			color = HIGHLIGHT_FONT_COLOR;
+		end
+		if(leaderDungeonScoreInfo.mapScore == 0) then
 			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_PER_DUNGEON_NO_RATING:format(leaderDungeonScoreInfo.mapName, leaderDungeonScoreInfo.mapScore));
-		elseif (leaderDungeonScoreInfo.finishedSuccess) then 
+		elseif (leaderDungeonScoreInfo.finishedSuccess) then
 			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_DUNGEON_RATING:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
-		else 
+		else
 			GameTooltip_AddNormalLine(tooltip, DUNGEON_SCORE_DUNGEON_RATING_OVERTIME:format(leaderDungeonScoreInfo.mapName, color:WrapTextInColorCode(leaderDungeonScoreInfo.mapScore), leaderDungeonScoreInfo.bestRunLevel));
-		end 	
+		end
 	end
 	if ( searchResultInfo.age > 0 ) then
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_AGE, SecondsToTime(searchResultInfo.age, false, false, 1, false)));
