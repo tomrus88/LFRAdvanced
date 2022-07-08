@@ -538,22 +538,27 @@ local function CopyPlayerName(_, name)
 	ChatFrameEditBox:HighlightText();
 end
 
-local curveAchievementId = 15470;
-local _, achievementTitle = GetAchievementInfo(curveAchievementId);
-local achievementLink = GetAchievementLink(curveAchievementId);
 local achievementLinkTemplate = "Link '%s' Achievement to leader";
 local achievementActivityEnabled = {
-	[1020] = true,
-	[1021] = true,
-	[1022] = true,
+	[720] = 14460,
+	[721] = 14460,
+	[722] = 14460,
+	[743] = 15134,
+	[744] = 15134,
+	[745] = 15134,
+	[1020] = 15470,
+	[1021] = 15470,
+	[1022] = 15470,
 }
 
-local function LinkAchievement(_, name)
+local function LinkAchievement(_, name, curveAchievementId)
 	if not name then return end
+
+	local achievementLink = GetAchievementLink(curveAchievementId);
 
 	if achievementLink then
 		SendChatMessage(achievementLink, "WHISPER", nil, name);
-		--print(achievementLink)
+		--print(name, curveAchievementId, achievementLink)
 	end
 end
 
@@ -569,15 +574,18 @@ function LFGListUtil_GetSearchEntryMenu(resultID)
 	--retVal[2].tooltipText = nil;
 
 	local index = 3;
-	local achLinkEnabled = achievementActivityEnabled[searchResultInfo.activityID];
+	local curveAchievementId = achievementActivityEnabled[searchResultInfo.activityID];
+	local achLinkEnabled = curveAchievementId and true or false;
 
 	if achLinkEnabled then
+		local _, achievementTitle = GetAchievementInfo(curveAchievementId);
 		-- Link Achievement
 		index = index + 1;
 		retVal[index] = {};
 		retVal[index].text = achievementLinkTemplate:format(achievementTitle);
 		retVal[index].func = LinkAchievement;
 		retVal[index].arg1 = searchResultInfo.leaderName;
+		retVal[index].arg2 = curveAchievementId;
 		retVal[index].disabled = not searchResultInfo.leaderName or not achLinkEnabled;
 		retVal[index].notCheckable = true;
 	end
