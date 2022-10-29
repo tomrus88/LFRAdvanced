@@ -10,7 +10,7 @@
 				<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 			</Scripts>
 	</EditBox>
-	<Frame name="LFRAdvancedOptionsFrame" parent="InterfaceOptionsFramePanelContainer">
+	<Frame name="LFRAdvancedOptionsFrame">
 		<Frames>
 			<CheckButton name="$parentServerSideFiltering" hidden="true" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -45,7 +45,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentAutoRefreshInterval" hidden="true" inherits="VideoOptionsSliderTemplate" minValue="5" maxValue="60" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
+			<Slider name="$parentAutoRefreshInterval" hidden="true" inherits="OptionsSliderTemplate" minValue="5" maxValue="60" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowMemberInfo" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
