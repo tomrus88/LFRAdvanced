@@ -477,8 +477,8 @@ function LFGListDropDown_UpdateText(activity, text, isSetup)
 	if activity <= 0 then
 		if not isSetup then
 			C_LFGList.ClearSearchTextFields();
-			local text = C_LFGList.GetCategoryInfo(LFGListFrame.SearchPanel.categoryID);
-			UIDropDownMenu_SetText(LFGListDropDown, text or LFG_TYPE_NONE);
+			local categoryInfo = C_LFGList.GetLfgCategoryInfo(LFGListFrame.SearchPanel.categoryID);
+			UIDropDownMenu_SetText(LFGListDropDown, categoryInfo and categoryInfo.name or LFG_TYPE_NONE);
 		end
 	else
 		local fullName = text or C_LFGList.GetActivityInfo(activity);
