@@ -188,7 +188,7 @@ function MyLFGListSearchPanel_UpdateResultList(self)
 	end
 
 	self.applications = C_LFGList.GetApplications();
-	LFGListUtil_SortSearchResults(self.results);
+	LFGListUtil_SortSearchResults(self);
 end
 
 -- disable autocomplete
